@@ -163,7 +163,7 @@ class PrimaryTask {
     required this.suggestedSearches,
   });
 
-  List<String> dayTimes = [
+  static List<String> dayTimes = [
     '06:00',
     '07:00',
     '08:00',
@@ -171,7 +171,6 @@ class PrimaryTask {
     '10:00',
     '11:00',
     '12:00',
-    '13:00',
     '13:00',
     '14:00',
     '15:00',
@@ -183,7 +182,7 @@ class PrimaryTask {
     '21:00',
     '22:00',
     '23:00',
-    '24:00',
+    '00:00',
   ];
   String findSlot({
     required List<String> occupiedTimes,

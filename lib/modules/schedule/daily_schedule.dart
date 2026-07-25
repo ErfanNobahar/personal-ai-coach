@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/modules/task/task_page.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class DailySchedule extends StatelessWidget {
@@ -34,6 +36,14 @@ class TaskCard extends StatelessWidget {
   final DayTask task;
   const TaskCard({super.key, required this.task});
 
+  bool isCurrent() {
+    final currentHour = DateTime.now().hour;
+    print('currentHour');
+    print(currentHour);
+    final part1 = task.primaryTask.scheduledStartTime.split(':')[0];
+    return currentHour.toString() == part1;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,7 +55,12 @@ class TaskCard extends StatelessWidget {
             Expanded(
               flex: 10,
               child: Center(
-                child: U.Text(text: task.primaryTask.scheduledStartTime),
+                child: U.Text(
+                  text: isCurrent()
+                      ? 'NOW'
+                      : task.primaryTask.scheduledStartTime,
+                  color: U.Theme.tertiaryText,
+                ),
               ),
             ),
             // const Spacer(flex: 10),
@@ -54,16 +69,58 @@ class TaskCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: U.Theme.divider,
+                  color: isCurrent()
+                      ? U.Theme.outlineHigh.withValues(alpha: 0.7)
+                      : U.Theme.surfaceLight.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    U.Text(text: task.primaryTask.title),
-                    const SizedBox(height: 15),
-                    U.Text(text: task.primaryTask.description),
+                    Flexible(
+                      child: Row(
+                        // mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: U.Text(
+                              softWrap: false,
+                              overFlow: TextOverflow.ellipsis,
+                              text: task.primaryTask.title,
+                              color: isCurrent()
+                                  ? U.Theme.secondaryText
+                                  : U.Theme.tertiaryText,
+                              textWeight: U.TextWeight.semiBold,
+                              textSize: U.TextSize.s16,
+                            ),
+                          ),
+                          // Spacer(),
+                          U.IconButton(
+                            isPrimary: false,
+                            icon: U.Icons.back,
+                            color: U.Theme.white,
+                            onTapped: () {
+                              GoRouter.of(
+                                context,
+                              ).pushNamed(TaskDetailPage.route,
+                              extra: {
+                                'task' : task 
+                              }
+                              );
+                            },
+                            size: 12,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    U.Text(
+                      color: isCurrent()
+                          ? U.Theme.secondaryText
+                          : U.Theme.tertiaryText,
+                      text: task.primaryTask.description,
+                    ),
                   ],
                 ),
               ),
@@ -87,21 +144,18 @@ class DailyBanner extends StatelessWidget {
       // height: 333,
       // width: 422,
       decoration: BoxDecoration(
-        color: U.Theme.secondaryButton,
+        color: U.Theme.outlineHigh.withValues(alpha: 0.7),
 
         borderRadius: BorderRadius.circular(16),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // const Spacer(flex: 10),
-          SizedBox(height: 15,),
-          U.Text(
-            text: day,
-            textSize: U.TextSize.s18,
-            color: U.Theme.primaryText,
-          ),
-          SizedBox(height: 45,),
+          SizedBox(height: 15),
+          U.Text(text: day, textSize: U.TextSize.s18, color: U.Theme.white),
+          SizedBox(height: 45),
           // const Spacer(flex: 20),
           TaskProgressCard(progress: 0.5),
 
@@ -157,44 +211,53 @@ class _TaskProgressCardState extends State<TaskProgressCard>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: U.Theme.divider,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AnimatedBuilder(
-                animation: _animation,
-                builder: (context, _) => Text(
-                  '${(_animation.value * 100).round()}%',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, _) => Flexible(
+                child: Row(
+                  children: [
+                    U.Text(
+                      textSize: U.TextSize.s14,
+                      text: 'completed',
+                      color: U.Theme.secondaryText,
+                    ),
+                    Spacer(),
+                    Text(
+                      '${(_animation.value * 100).round()}%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          AnimatedBuilder(
-            animation: _animation,
-            builder: (context, _) {
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: LinearProgressIndicator(
-                  value: _animation.value,
-                  minHeight: 8,
-                  backgroundColor: widget.trackColor,
-                  valueColor: AlwaysStoppedAnimation<Color>(widget.barColor),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        AnimatedBuilder(
+          animation: _animation,
+          builder: (context, _) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: _animation.value,
+                minHeight: 8,
+                backgroundColor: widget.trackColor,
+                valueColor: AlwaysStoppedAnimation<Color>(widget.barColor),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

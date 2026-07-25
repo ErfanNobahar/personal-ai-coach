@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/task/cubit/task_cubit.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 // Adjust these imports to match your actual project structure
@@ -10,7 +9,7 @@ import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 class TaskDetailPage extends StatelessWidget {
   static String route = '/taskdetail';
 
-  final String milestoneTitle;
+  final String? milestoneTitle;
   final DayTask? initialTask;
 
   const TaskDetailPage({
@@ -18,15 +17,6 @@ class TaskDetailPage extends StatelessWidget {
     required this.milestoneTitle,
     this.initialTask,
   });
-
-  Future<void> _openSearch(String query) async {
-    final uri = Uri.parse(
-      'https://www.google.com/search?q=${Uri.encodeComponent(query)}',
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +48,11 @@ class TaskDetailPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(height: 77),
-                        _MilestoneBreadcrumb(milestoneTitle: milestoneTitle),
+                        milestoneTitle != null
+                            ? _MilestoneBreadcrumb(
+                                milestoneTitle: milestoneTitle!,
+                              )
+                            : SizedBox(),
                         const SizedBox(height: 16),
                         _StatusBadge(status: state.task!.status),
                         const SizedBox(height: 12),
@@ -160,7 +154,7 @@ class TaskDetailPage extends StatelessWidget {
                     left: 0,
                     right: 0,
                     top: 0,
-                    child: U.AppBar(title: 'todays task',blur: true,),
+                    child: U.AppBar(title: 'todays task', blur: true),
                   ),
                 ],
               ),

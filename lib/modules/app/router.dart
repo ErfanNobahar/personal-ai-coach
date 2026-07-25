@@ -47,7 +47,7 @@ final router = GoRouter(
               builder: (context, state) {
                 final extra = state.extra as Map<String, dynamic>;
                 return TaskDetailPage(
-                  milestoneTitle: extra['milestone'] as String,
+                  milestoneTitle: extra['milestone'] as String?,
                   initialTask: extra['task'] as dynamic,
                 );
               },

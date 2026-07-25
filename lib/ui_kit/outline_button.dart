@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:personal_ai_coach/ui_kit/text.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 enum OutlineButtonSize { small, medium, large }

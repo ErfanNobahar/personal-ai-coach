@@ -5,9 +5,11 @@ class IconButton extends StatelessWidget {
   final String icon;
   final double size;
   final Color? color;
+  final bool isPrimary;
   final void Function() onTapped;
 
   const IconButton({
+    this.isPrimary = true,
     super.key,
     required this.icon,
     required this.onTapped,
@@ -26,7 +28,10 @@ class IconButton extends StatelessWidget {
           color: color ?? Colors.white.withValues(alpha: 1.0),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 19.0, vertical: 9),
+          padding: EdgeInsets.symmetric(
+            horizontal: isPrimary ? 19.0 : 9.0,
+            vertical: 9,
+          ),
           child: U.Image.icon(path: icon, size: size),
         ),
       ),

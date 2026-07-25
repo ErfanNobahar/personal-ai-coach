@@ -1,8 +1,6 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
@@ -22,17 +20,17 @@ class _SchedulePageState extends State<SchedulePage> {
   List<GlobalKey> _pageKeys = [];
   double _maxPageHeight = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    // _pageKeys = List.generate(
-    //   7,
-    //   // widget.initialTasks[0].tasks.length,
-    //   (_) => GlobalKey(),
-    // );
-    // Measure after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) => _measurePages());
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // _pageKeys = List.generate(
+  //   //   7,
+  //   //   // widget.initialTasks[0].tasks.length,
+  //   //   (_) => GlobalKey(),
+  //   // );
+  //   // Measure after first frame
+  //   WidgetsBinding.instance.addPostFrameCallback((_) => _measurePages());
+  // }
 
   void _measurePages() {
     double maxHeight = 0;
@@ -70,6 +68,7 @@ class _SchedulePageState extends State<SchedulePage> {
             // widget.initialTasks[0].tasks.length,
             (_) => GlobalKey(),
           );
+          WidgetsBinding.instance.addPostFrameCallback((_) => _measurePages());
         },
         builder: (context, state) {
           final cubit = context.read<ScheduleCubit>();
@@ -109,9 +108,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                 final e = entry.value;
                                 return Container(
                                   key: _pageKeys[index],
-                                  child: DailySchedule(
-                                    tasks: state.selectedDay!.tasks,
-                                  ),
+                                  child: DailySchedule(tasks: e.tasks),
                                 );
                               }),
                             ],
