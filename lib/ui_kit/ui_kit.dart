@@ -9,3 +9,5 @@ export 'package:personal_ai_coach/ui_kit/outline_button.dart';
 export 'package:personal_ai_coach/ui_kit/outline_icon_button.dart';
 export 'package:personal_ai_coach/ui_kit/stepper.dart';
 export 'package:personal_ai_coach/ui_kit/scrollable_tabview.dart';
+export 'package:personal_ai_coach/ui_kit/dialog.dart';
+export 'package:personal_ai_coach/ui_kit/time_picker_dlg.dart';

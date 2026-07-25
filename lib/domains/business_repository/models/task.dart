@@ -75,7 +75,7 @@ class MilestoneContext {
 
 class DayTask {
   final String date;
-  String status;
+  final String status;
   final String scheduledTimeSlot;
   final String scheduledTimeLabel;
   final PrimaryTask primaryTask;
