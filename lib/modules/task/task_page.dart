@@ -143,8 +143,8 @@ class TaskDetailPage extends StatelessWidget {
                         _ActionButtons(
                           onComplete: () {},
                           onSkip: () {},
-                          onReschedule: () {
-                            U.TimePickerDialog.show(
+                          onReschedule: () async {
+                            final res = await U.TimePickerDialog.show(
                               int.parse(
                                 state.task!.primaryTask.scheduledStartTime
                                     .split(':')[0],

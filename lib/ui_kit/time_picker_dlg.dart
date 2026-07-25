@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class TimePickerDialog extends StatefulWidget {
@@ -12,6 +13,7 @@ class TimePickerDialog extends StatefulWidget {
     return U.Dialog.show(
       TimePickerDialog(currentTime: currentTime),
       context: context,
+      useRootNavigator: true,
     );
   }
 
@@ -40,14 +42,11 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text(
-          'Select Hour',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-            letterSpacing: 0.5,
-          ),
+        SizedBox(height: 10),
+        const U.Text(
+          text: 'Select Hour',
+          textWeight: U.TextWeight.semiBold,
+          textSize: U.TextSize.s18,
         ),
         const SizedBox(height: 20),
         Expanded(
@@ -55,14 +54,17 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
             alignment: Alignment.center,
             children: [
               // Center highlight bar
-              Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  color: U.Theme.primary.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
+              Padding(
+                padding: const EdgeInsets.all(9.0),
+                child: Container(
+                  height: 53,
+                  decoration: BoxDecoration(
                     color: U.Theme.primary.withValues(alpha: 0.5),
-                    width: 1,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: U.Theme.primary.withValues(alpha: 0.5),
+                      width: 1,
+                    ),
                   ),
                 ),
               ),
@@ -94,8 +96,8 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                               ? FontWeight.bold
                               : FontWeight.w400,
                           color: isSelected
-                              ? Colors.white
-                              : Colors.white.withOpacity(1.0),
+                              ? U.Theme.primaryText
+                              : U.Theme.primaryText.withOpacity(1.0),
                           letterSpacing: 1.2,
                         ),
                       ),
@@ -107,24 +109,41 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
           ),
         ),
         const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, _selectedIndex),
-              child: const Text(
-                'OK',
-                style: TextStyle(fontWeight: FontWeight.bold),
+        Padding(
+          padding: EdgeInsetsGeometry.symmetric(horizontal: 18),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Flexible(
+                child: U.OutlineButton(
+                  // size: U.OutlineButtonSize.large,
+                  title: 'Cancel',
+                  onTap: () {
+                    GoRouter.of(
+                      context,
+                    ).pop();
+                  },
+                ),
               ),
-            ),
-          ],
+              SizedBox(width: 12),
+              Flexible(
+                child: U.OutlineButton(
+                  color: U.OutLineButtonColor.secondary,
+
+                  foregroundColor: U.OutLineButtonForeground.secondary,
+                  // size: U.OutlineButtonSize.large,
+                  title: 'OK',
+                  onTap: () {
+                    GoRouter.of(context).pop('${_selectedIndex.toString().padLeft(2, '0')}:00');
+                  },
+                ),
+              ),
+              // onPressed: () => Navigator.pop(context, _selectedIndex),
+            ],
+          ),
         ),
+        SizedBox(height: 16),
       ],
     );
   }
 }
-

@@ -86,7 +86,7 @@ class OutlineButton extends StatelessWidget {
         onTap: disabled ? null : onTap,
         child: Container(
           //TODO:
-          // height: _size,
+          height: _size,
           decoration: BoxDecoration(
             border: Border.all(width: 1, color: _color.border),
             color: _foregroundColor,
