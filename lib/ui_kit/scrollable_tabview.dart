@@ -5,12 +5,18 @@ class ScrollableTabview extends StatefulWidget {
   final List<Widget> pages;
   final ScrollController tabController;
   final PageController pageController;
+
+  /// Called ONLY when the active page settles on a whole integer.
+  /// [progress] is a double between 0.0 (first page) and 1.0 (last page).
+  final Function(double progress) onPageCountChanged;
+
   const ScrollableTabview({
     super.key,
     required this.headers,
     required this.pages,
     required this.tabController,
     required this.pageController,
+    required this.onPageCountChanged,
   }) : assert(headers.length == pages.length);
 
   @override
@@ -20,101 +26,61 @@ class ScrollableTabview extends StatefulWidget {
 enum _SyncSource { tabs, pages }
 
 class _ScrollableTabviewState extends State<ScrollableTabview> {
-  // final ScrollController tabController = ScrollController();
-  // final PageController pageController = PageController();
-  // 0.5 means change at halfway.
-  // 0.7 means user must drag 70% toward the next item before changing.
-  // Increase it for less sensitivity, e.g. 0.8.
   static const double _pageChangeThreshold = 0.70;
-
   static const Duration _pageChangeDuration = Duration(milliseconds: 220);
   _SyncSource? _syncSource;
   int _activeIndex = 0;
 
-  @override
-  void dispose() {
-    // widget.tabController.dispose();
-    // pageController.dispose();
-    super.dispose();
-  }
-
   double _progress(ScrollMetrics metrics) {
     if (metrics.maxScrollExtent <= 0) return 0;
-
     return (metrics.pixels / metrics.maxScrollExtent).clamp(0.0, 1.0);
   }
 
-  void _updateActiveIndex(double progress) {
-    if (widget.pages.length <= 1) return;
-
-    final index = (progress * (widget.pages.length - 1)).round().clamp(
-      0,
-      widget.pages.length - 1,
-    );
-
-    if (index != _activeIndex && mounted) {
-      setState(() => _activeIndex = index);
-    }
+  double _indexToProgress(int index) {
+    final maxIndex = widget.pages.length - 1;
+    if (maxIndex <= 0) return 0.0;
+    return (index / maxIndex).clamp(0.0, 1.0);
   }
 
   void _jumpToIfNeeded(ScrollController controller, double target) {
     if (!controller.hasClients) return;
-
     final position = controller.position;
     final clampedTarget = target.clamp(
       position.minScrollExtent,
       position.maxScrollExtent,
     );
-
-    // Avoid unnecessary jumpTo calls, which can cause jitter.
     if ((position.pixels - clampedTarget).abs() > 0.5) {
       controller.jumpTo(clampedTarget);
     }
   }
 
   void _updatePageFromTabScroll() {
-    if (!widget.tabController.hasClients || !widget.pageController.hasClients) return;
+    if (!widget.tabController.hasClients || !widget.pageController.hasClients)
+      return;
     if (widget.pages.length <= 1) return;
 
-    final progress = _progress(widget.tabController.position);
-
     final maxIndex = widget.pages.length - 1;
-
-    // Progress distance represented by one page.
-    //
-    // Example with 4 pages:
-    // page 0 = 0.0
-    // page 1 = 0.333
-    // page 2 = 0.666
-    // page 3 = 1.0
+    final progress = _progress(widget.tabController.position);
     final onePageProgress = 1 / maxIndex;
-
-    // Where the currently active page sits in the tab-list progress.
     final activePageProgress = _activeIndex * onePageProgress;
-
     final difference = progress - activePageProgress;
 
     int targetIndex = _activeIndex;
 
-    // User is scrolling toward later pages.
     if (difference >= onePageProgress * _pageChangeThreshold) {
       final pagesToMove = (difference / onePageProgress).ceil();
-
       targetIndex = (_activeIndex + pagesToMove).clamp(0, maxIndex);
-    }
-    // User is scrolling back toward earlier pages.
-    else if (difference <= -onePageProgress * _pageChangeThreshold) {
+    } else if (difference <= -onePageProgress * _pageChangeThreshold) {
       final pagesToMove = (difference.abs() / onePageProgress).ceil();
-
       targetIndex = (_activeIndex - pagesToMove).clamp(0, maxIndex);
     }
 
-    // Do nothing until the user crosses the threshold.
     if (targetIndex == _activeIndex) return;
 
     setState(() => _activeIndex = targetIndex);
 
-    // Animate only once after crossing the threshold.
+    widget.onPageCountChanged(_indexToProgress(targetIndex));
+
     widget.pageController.animateToPage(
       targetIndex,
       duration: _pageChangeDuration,
@@ -122,7 +88,6 @@ class _ScrollableTabviewState extends State<ScrollableTabview> {
     );
   }
 
-  // User drags the tab ListView -> move the PageView.
   bool _onTabNotification(ScrollNotification notification) {
     if (notification.depth != 0) return false;
 
@@ -144,11 +109,9 @@ class _ScrollableTabviewState extends State<ScrollableTabview> {
     return false;
   }
 
-  // User drags the PageView -> move the tab ListView.
   bool _onPageNotification(ScrollNotification notification) {
     if (notification.depth != 0) return false;
 
-    // A real user drag started on the PageView.
     if (notification is ScrollStartNotification &&
         notification.dragDetails != null) {
       _syncSource = _SyncSource.pages;
@@ -158,17 +121,21 @@ class _ScrollableTabviewState extends State<ScrollableTabview> {
         _syncSource == _SyncSource.pages &&
         widget.tabController.hasClients) {
       final progress = _progress(notification.metrics);
-
       final targetTabPixels =
           progress * widget.tabController.position.maxScrollExtent;
-
       _jumpToIfNeeded(widget.tabController, targetTabPixels);
-      _updateActiveIndex(progress);
     }
 
+    // Only fire callback when the page settles on a whole integer
     if (notification is ScrollEndNotification &&
         _syncSource == _SyncSource.pages) {
       _syncSource = null;
+
+      final page = widget.pageController.page?.round() ?? _activeIndex;
+      if (page != _activeIndex) {
+        setState(() => _activeIndex = page);
+      }
+      widget.onPageCountChanged(_indexToProgress(page));
     }
 
     return false;
@@ -178,9 +145,9 @@ class _ScrollableTabviewState extends State<ScrollableTabview> {
     if (!widget.pageController.hasClients) return;
 
     setState(() => _activeIndex = index);
-
-    // Treat this animation as a page-originated change, so tabs follow it.
     _syncSource = _SyncSource.pages;
+
+    widget.onPageCountChanged(_indexToProgress(index));
 
     await widget.pageController.animateToPage(
       index,
@@ -198,22 +165,18 @@ class _ScrollableTabviewState extends State<ScrollableTabview> {
     return Column(
       children: [
         Expanded(
-          flex: 12,
+          flex: 19,
           child: NotificationListener<ScrollNotification>(
             onNotification: _onTabNotification,
             child: ListView.separated(
               controller: widget.tabController,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12),
-
-              // Optional, but avoids iOS overscroll/bounce affecting sync.
               physics: const ClampingScrollPhysics(),
-
               itemCount: widget.headers.length,
               separatorBuilder: (_, __) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
                 final isActive = index == _activeIndex;
-
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () => _onTabTap(index),
@@ -228,7 +191,7 @@ class _ScrollableTabviewState extends State<ScrollableTabview> {
           ),
         ),
         Expanded(
-          flex: 77,
+          flex: 81,
           child: NotificationListener<ScrollNotification>(
             onNotification: _onPageNotification,
             child: PageView(

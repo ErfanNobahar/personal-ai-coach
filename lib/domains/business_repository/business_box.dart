@@ -36,19 +36,6 @@ abstract class BusinessBox {
   static Future<void> setWeeklyTasks(List<SpecificTasks> tasks) async {
     List<SpecificTasks> newTasks = List.from(tasks);
     final existingTasks = await getWeeklyTasks();
-    // for (var i = 0; i < res.length; i++) {
-    //   for (var b = 0; b < tasks.length; b++) {
-    //     if(res[i].day == tasks[b].day){
-    //         for (var c = 0; c < res[i].tasks.length; c++) {
-    //           for (var d = 0; d < tasks[b].tasks.length; d++) {
-    //             if (res[i].tasks[c] ==  tasks[b].tasks[d]){
-    //               tasks[b].tasks[d].primaryTask.copyWith(scheduledStartTime: )
-    //             }
-    //           }
-    //         }
-    //     }
-    //   }
-    // }
 
     List<SpecificTasks> rescheduledTasks = [];
     if (existingTasks.isNotEmpty) {
@@ -84,31 +71,8 @@ abstract class BusinessBox {
 
         return taskGroup.copyWith(tasks: finalTasks);
       }).toList();
-
-      // existingTasks.map((e) {
-      //       e.tasks.map((b)=>  )
-
-      // });
-
-      // for (var i = 0; i < existingTasks.length; i++) {
-      //   tasks.where((element){
-
-      //     if((element.day == existingTasks[i].day)  ){
-      //       existingTasks[i].tasks.where((e){
-      //           element.tasks.where((b)=> b.primaryTask.scheduledStartTime == e.primaryTask.scheduledStartTime );
-      //       } );
-      //     };
-      //     return
-      //   })
-      // }
-
-      // existingTasks.map((e){
-      //   e.day == tasks.map((element){
-
-      //   }  )
-      // });
-      // existingTasks.followedBy(newTasks);
-    } else {
+    }  else
+        {
       rescheduledTasks = [...newTasks];
     }
     print('boxxxxxxxxx');

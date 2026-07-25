@@ -10,10 +10,10 @@ class DailySchedule extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       shrinkWrap: true,
-       physics: const NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       // mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(height: 55),
+        SizedBox(height: 15),
         ...tasks.expand((e) => [TaskCard(task: e), SizedBox(height: 12)]),
         SizedBox(height: 21),
         // Expanded(
@@ -36,7 +36,7 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: SizedBox(
         width: double.infinity,
@@ -44,7 +44,9 @@ class TaskCard extends StatelessWidget {
           children: [
             Expanded(
               flex: 10,
-              child: Center(child: U.Text(text: task.primaryTask.scheduledStartTime)),
+              child: Center(
+                child: U.Text(text: task.primaryTask.scheduledStartTime),
+              ),
             ),
             // const Spacer(flex: 10),
             Expanded(
@@ -83,25 +85,28 @@ class DailyBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       // height: 333,
-      // width: double.infinity,
-      color: U.Theme.secondaryButton,
+      // width: 422,
+      decoration: BoxDecoration(
+        color: U.Theme.secondaryButton,
+
+        borderRadius: BorderRadius.circular(16),
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Expanded(
-        child: Column(
-          children: [
-            // const Spacer(flex: 10),
-            U.Text(
-              text: day,
-              textSize: U.TextSize.s18,
-              color: U.Theme.primaryText,
-            ),
+      child: Column(
+        children: [
+          // const Spacer(flex: 10),
+          SizedBox(height: 15,),
+          U.Text(
+            text: day,
+            textSize: U.TextSize.s18,
+            color: U.Theme.primaryText,
+          ),
+          SizedBox(height: 45,),
+          // const Spacer(flex: 20),
+          TaskProgressCard(progress: 0.5),
 
-            // const Spacer(flex: 20),
-            TaskProgressCard(progress: 0.5),
-
-            // const Spacer(flex: 20),
-          ],
-        ),
+          // const Spacer(flex: 20),
+        ],
       ),
     );
   }

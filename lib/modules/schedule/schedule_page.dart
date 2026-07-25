@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
@@ -11,7 +12,7 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 class SchedulePage extends StatefulWidget {
   static String route = '/schedule';
   final List<SpecificTasks>? initialTasks;
-  const SchedulePage({super.key,  this.initialTasks});
+  const SchedulePage({super.key, this.initialTasks});
 
   @override
   State<SchedulePage> createState() => _SchedulePageState();
@@ -24,18 +25,16 @@ class _SchedulePageState extends State<SchedulePage> {
   @override
   void initState() {
     super.initState();
-    _pageKeys = List.generate(
-      7,
-      // widget.initialTasks[0].tasks.length,
-      (_) => GlobalKey(),
-    );
+    // _pageKeys = List.generate(
+    //   7,
+    //   // widget.initialTasks[0].tasks.length,
+    //   (_) => GlobalKey(),
+    // );
     // Measure after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) => _measurePages());
   }
 
   void _measurePages() {
-    print('_pageKeys.length');
-    print(_pageKeys.length);
     double maxHeight = 0;
     for (final key in _pageKeys) {
       final context = key.currentContext;
@@ -43,8 +42,6 @@ class _SchedulePageState extends State<SchedulePage> {
         final box = context.findRenderObject() as RenderBox?;
         if (box != null) {
           maxHeight = math.max(maxHeight, box.size.height);
-          print('maxHeight');
-          print(maxHeight);
         }
       }
     }
@@ -60,53 +57,70 @@ class _SchedulePageState extends State<SchedulePage> {
         initialTasks: widget.initialTasks,
         repo: context.read<BusinessRepository>(),
       ),
-      child: BlocBuilder<ScheduleCubit, ScheduleState>(
+      child: BlocConsumer<ScheduleCubit, ScheduleState>(
+        listenWhen: (previous, current) {
+          return ((previous.loading != current.loading) ||
+              (previous.dailyTasks.length != current.dailyTasks.length));
+        },
+        listener: (BuildContext context, ScheduleState state) {
+          final cubit = context.read<ScheduleCubit>();
+          // print('state.dailyTasks.lengthhhhhhhhhhhhhhh');
+          _pageKeys = List.generate(
+            state.dailyTasks.length,
+            // widget.initialTasks[0].tasks.length,
+            (_) => GlobalKey(),
+          );
+        },
         builder: (context, state) {
           final cubit = context.read<ScheduleCubit>();
-          return Scaffold(
-            body: SafeArea(
-              child: ListView(
-                children: [
-                  U.AppBar(title: 'todays tasks', blur: true),
-                  const SizedBox(height: 22),
-                  // Wrap ScrollableTabview in SizedBox with measured height
-                  SizedBox(
-                    height:
-                        350 +
-                        (_maxPageHeight > 0
-                            ? _maxPageHeight
-                            : MediaQuery.of(context).size.height * 0.7),
-                    child: U.ScrollableTabview(
-                      tabController: cubit.tabCtril,
-                      pageController: cubit.pageCtrl,
-                      headers: [
-                        ...state.dailyTasks.map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              height: 111,
-                              width: 111,
-                              child: DailyBanner(day: e.day, done: 11),
-                            ),
+          return state.loading
+              ? CircularProgressIndicator()
+              : Scaffold(
+                  body: SafeArea(
+                    child: ListView(
+                      children: [
+                        U.AppBar(title: 'todays tasks', blur: true),
+                        const SizedBox(height: 22),
+                        // Wrap ScrollableTabview in SizedBox with measured height
+                        SizedBox(
+                          height:
+                              280 +
+                              (_maxPageHeight > 0
+                                  ? _maxPageHeight
+                                  : MediaQuery.of(context).size.height * 0.7),
+                          child: U.ScrollableTabview(
+                            onPageCountChanged: cubit.onPageCountChanged,
+                            tabController: cubit.tabCtril,
+                            pageController: cubit.pageCtrl,
+                            headers: [
+                              ...state.dailyTasks.map(
+                                (e) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    width: 251,
+                                    child: DailyBanner(day: e.day, done: 11),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            pages: [
+                              ...state.dailyTasks.asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final e = entry.value;
+                                return Container(
+                                  key: _pageKeys[index],
+                                  child: DailySchedule(
+                                    tasks: state.selectedDay!.tasks,
+                                  ),
+                                );
+                              }),
+                            ],
                           ),
                         ),
                       ],
-                      pages: [
-                        ...state.dailyTasks.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final e = entry.value;
-                          return Container(
-                            key: _pageKeys[index],
-                            child: DailySchedule(tasks: e.tasks),
-                          );
-                        }),
-                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          );
+                );
         },
       ),
     );

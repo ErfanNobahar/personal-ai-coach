@@ -20,7 +20,14 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   void onInit() async {
     emit(state.copyWith(loading: true));
     final res = await _repo.readSchedule();
-    emit(state.copyWith(loading: false, dailyTasks: res));
+    emit(state.copyWith(loading: false, dailyTasks: res, selectedDay: res[0]));
+  }
+
+  void onPageCountChanged(double count) {
+    
+    // emit(state.copyWith(selectedDay: state.dailyTasks[count.floor()]));
+    // print('state.selectedDay');
+    // print(count);
   }
 
   void selectDay(String day) {
