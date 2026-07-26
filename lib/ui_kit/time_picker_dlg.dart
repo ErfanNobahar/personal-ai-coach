@@ -4,14 +4,22 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class TimePickerDialog extends StatefulWidget {
   final int currentTime;
-  const TimePickerDialog({super.key, required this.currentTime});
+  final List<int> occupiedTimes;
+  const TimePickerDialog({
+    super.key,
+    required this.currentTime,
+    this.occupiedTimes = const [],
+  });
 
   static Future<dynamic> show(
     int currentTime, {
+    List<int> occupiedTimes = const [],
     required BuildContext context,
   }) {
+    print('occupiedTimessssss');
+    print(occupiedTimes);
     return U.Dialog.show(
-      TimePickerDialog(currentTime: currentTime),
+      TimePickerDialog(currentTime: currentTime, occupiedTimes: occupiedTimes),
       context: context,
       useRootNavigator: true,
     );
@@ -95,9 +103,11 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                           fontWeight: isSelected
                               ? FontWeight.bold
                               : FontWeight.w400,
-                          color: isSelected
-                              ? U.Theme.primaryText
-                              : U.Theme.primaryText.withOpacity(1.0),
+                          color:
+                              (isSelected &&
+                                  widget.occupiedTimes.contains(index))
+                              ? U.Theme.primaryText.withValues(alpha: 0.3)
+                              : U.Theme.primaryText,
                           letterSpacing: 1.2,
                         ),
                       ),
@@ -119,9 +129,7 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                   // size: U.OutlineButtonSize.large,
                   title: 'Cancel',
                   onTap: () {
-                    GoRouter.of(
-                      context,
-                    ).pop();
+                    GoRouter.of(context).pop();
                   },
                 ),
               ),
@@ -129,12 +137,16 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
               Flexible(
                 child: U.OutlineButton(
                   color: U.OutLineButtonColor.secondary,
-
                   foregroundColor: U.OutLineButtonForeground.secondary,
                   // size: U.OutlineButtonSize.large,
                   title: 'OK',
                   onTap: () {
-                    GoRouter.of(context).pop('${_selectedIndex.toString().padLeft(2, '0')}:00');
+                    if (widget.occupiedTimes.contains(_selectedIndex)) {
+                      return ;
+                    }
+                    GoRouter.of(
+                      context,
+                    ).pop('${_selectedIndex.toString().padLeft(2, '0')}:00');
                   },
                 ),
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/task/cubit/task_cubit.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
@@ -21,154 +22,176 @@ class TaskDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskCubit(task: initialTask),
-      child: BlocBuilder<TaskCubit, TaskState>(
-        builder: (context, state) {
-          return Scaffold(
-            backgroundColor: U.Theme.background,
-            // appBar: AppBar(
-            //   backgroundColor: U.Theme.background,
-            //   elevation: 0,
-            //   iconTheme: IconThemeData(color: U.Theme.primaryText),
-            //   title: Text(
-            //     'Today\'s Task',
-            //     style: TextStyle(
-            //       color: U.Theme.primaryText,
-            //       fontWeight: FontWeight.bold,
-            //       fontSize: 18,
-            //     ),
-            //   ),
-            // ),
-            body: SafeArea(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: 77),
-                        milestoneTitle != null
-                            ? _MilestoneBreadcrumb(
-                                milestoneTitle: milestoneTitle!,
-                              )
-                            : SizedBox(),
-                        const SizedBox(height: 16),
-                        _StatusBadge(status: state.task!.status),
-                        const SizedBox(height: 12),
-                        Text(
-                          state.task!.date,
-                          style: TextStyle(
-                            color: U.Theme.primaryText,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            height: 1.25,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        _MetaRow(
-                          estimatedMinutes:
-                              state.task!.primaryTask.estimatedMinutes,
-                          type: state.task!.primaryTask.type,
-                        ),
-                        const SizedBox(height: 24),
-
-                        _SectionCard(
-                          title: 'What to do',
-                          child: Text(
-                            state.task!.primaryTask.description,
+      create: (context) => TaskCubit(
+        task: initialTask,
+        repo: context.read<BusinessRepository>(),
+      ),
+      child: BlocListener<TaskCubit, TaskState>(
+        listenWhen: (previous, current) => previous.task != current.task,
+        listener: (context, state) {
+          context.read<TaskCubit>().onInit();
+        },
+        child: BlocBuilder<TaskCubit, TaskState>(
+          builder: (context, state) {
+            return Scaffold(
+              backgroundColor: U.Theme.background,
+              // appBar: AppBar(
+              //   backgroundColor: U.Theme.background,
+              //   elevation: 0,
+              //   iconTheme: IconThemeData(color: U.Theme.primaryText),
+              //   title: Text(
+              //     'Today\'s Task',
+              //     style: TextStyle(
+              //       color: U.Theme.primaryText,
+              //       fontWeight: FontWeight.bold,
+              //       fontSize: 18,
+              //     ),
+              //   ),
+              // ),
+              body: SafeArea(
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 77),
+                          milestoneTitle != null
+                              ? _MilestoneBreadcrumb(
+                                  milestoneTitle: milestoneTitle!,
+                                )
+                              : SizedBox(),
+                          const SizedBox(height: 16),
+                          _StatusBadge(status: state.task!.status),
+                          const SizedBox(height: 12),
+                          Text(
+                            state.task!.date,
                             style: TextStyle(
                               color: U.Theme.primaryText,
-                              fontSize: 15,
-                              height: 1.5,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              height: 1.25,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        _WhyItMattersCard(
-                          text: state.task!.primaryTask.whyItMatters,
-                        ),
-
-                        if (state
-                            .task!
-                            .primaryTask
-                            .suggestedSearches
-                            .isNotEmpty) ...[
-                          const SizedBox(height: 20),
-                          Text(
-                            'Helpful resources',
-                            style: TextStyle(
-                              color: U.Theme.tertiaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.3,
-                            ),
+                          const SizedBox(height: 8),
+                          _MetaRow(
+                            estimatedMinutes:
+                                state.task!.primaryTask.estimatedMinutes,
+                            type: state.task!.primaryTask.type,
                           ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: state.task!.primaryTask.suggestedSearches
-                                .map(
-                                  (s) => _SearchChip(
-                                    query: s.query,
-                                    onTap: () => T.Launcher.url(
-                                      'https://www.google.com/search?q=${Uri.encodeComponent(s.query)} ',
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                          ),
-                        ],
-
-                        if (state.task!.supportingTasks.isNotEmpty) ...[
                           const SizedBox(height: 24),
-                          Text(
-                            'Optional extras',
-                            style: TextStyle(
-                              color: U.Theme.tertiaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.3,
+
+                          _SectionCard(
+                            title: 'What to do',
+                            child: Text(
+                              state.task!.primaryTask.description,
+                              style: TextStyle(
+                                color: U.Theme.primaryText,
+                                fontSize: 15,
+                                height: 1.5,
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 10),
-                          ...state.task!.supportingTasks.map(
-                            (t) => _SupportingTaskTile(task: t),
+                          const SizedBox(height: 16),
+
+                          _WhyItMattersCard(
+                            text: state.task!.primaryTask.whyItMatters,
                           ),
-                        ],
 
-                        const SizedBox(height: 32),
-                        _ActionButtons(
-                          onComplete: () {},
-                          onSkip: () {},
-                          onReschedule: () async {
-                            final res = await U.TimePickerDialog.show(
-                              int.parse(
-                                state.task!.primaryTask.scheduledStartTime
-                                    .split(':')[0],
+                          if (state
+                              .task!
+                              .primaryTask
+                              .suggestedSearches
+                              .isNotEmpty) ...[
+                            const SizedBox(height: 20),
+                            Text(
+                              'Helpful resources',
+                              style: TextStyle(
+                                color: U.Theme.tertiaryText,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.3,
                               ),
-                              context: context,
-                            );
-                          },
-                        ),
-                        SizedBox(height: 110),
-                      ],
-                    ),
-                  ),
+                            ),
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: state
+                                  .task!
+                                  .primaryTask
+                                  .suggestedSearches
+                                  .map(
+                                    (s) => _SearchChip(
+                                      query: s.query,
+                                      onTap: () => T.Launcher.url(
+                                        'https://www.google.com/search?q=${Uri.encodeComponent(s.query)} ',
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ],
 
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    child: U.AppBar(title: 'todays task', blur: true),
-                  ),
-                ],
+                          if (state.task!.supportingTasks.isNotEmpty) ...[
+                            const SizedBox(height: 24),
+                            Text(
+                              'Optional extras',
+                              style: TextStyle(
+                                color: U.Theme.tertiaryText,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ...state.task!.supportingTasks.map(
+                              (t) => _SupportingTaskTile(task: t),
+                            ),
+                          ],
+
+                          const SizedBox(height: 32),
+                          _ActionButtons(
+                            onComplete: () {},
+                            onSkip: () {},
+                            onReschedule: () async {
+                              final res = await U.TimePickerDialog.show(
+                                occupiedTimes: state.occupiedTimes
+                                    .map((e) => int.parse(e.split(':')[0]))
+                                    .toList(),
+                                int.parse(
+                                  state.task!.primaryTask.scheduledStartTime
+                                      .split(':')[0],
+                                ),
+                                context: context,
+                              );
+                              context.read<TaskCubit>().onScheduleChanged(
+                                state.task!.copyWith(
+                                  primaryTask: state.task!.primaryTask.copyWith(
+                                    scheduledStartTime: res,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(height: 110),
+                        ],
+                      ),
+                    ),
+
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      child: U.AppBar(title: 'todays task', blur: true),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

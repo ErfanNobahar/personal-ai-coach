@@ -1,13 +1,49 @@
 import 'package:bloc/bloc.dart';
+import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 
 part 'task_state.dart';
 
 class TaskCubit extends Cubit<TaskState> {
+  final BusinessRepository _repo;
   final DayTask? task;
-  TaskCubit({this.task}) : super(TaskState.init(task)) {}
+  TaskCubit({this.task, required BusinessRepository repo})
+    : _repo = repo,
+      super(TaskState.init(task)) {
+    onInit();
+  }
 
-void onScheduleChanged(){
+  /////////// Functions
+  Future<SpecificTasks> readTask() async {
+    final res = await _repo.readTask(task!);
+    return res;
+  }
 
-}
+  Future<List<String>> getTimes() async {
+    final res = await readTask();
+    final temp = res.tasks
+        .map((e) => e.primaryTask.scheduledStartTime)
+        .toList();
+    emit(state.copyWith(occupiedTimes: temp));
+    print('tempssssssssssssssssss');
+    print(temp);
+    return temp;
+  }
+
+  //////// Methods
+  void onInit() async {
+    emit(state.copyWith(loading: true));
+    await getTimes();
+    emit(state.copyWith(loading: false));
+  }
+
+  void onScheduleChanged(DayTask task) async {
+    print('task.primaryTask.scheduledStartTime');
+    print(task.primaryTask.scheduledStartTime);
+    emit(state.copyWith(loading: true, task: task));
+    await _repo.updateTasks(task);
+    await getTimes();
+    emit(state.copyWith(loading: true));
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 class WeeklyTasks {
@@ -73,7 +74,7 @@ class MilestoneContext {
   }
 }
 
-class DayTask {
+class DayTask extends Equatable {
   final String date;
   final String status;
   final String scheduledTimeSlot;
@@ -81,7 +82,7 @@ class DayTask {
   final PrimaryTask primaryTask;
   final List<SupportingTask> supportingTasks;
 
-  DayTask({
+  const DayTask({
     required this.date,
     required this.status,
     required this.scheduledTimeSlot,
@@ -138,9 +139,13 @@ class DayTask {
       ).map((e) => e.toMap()).toList(),
     };
   }
+
+  @override
+  List<Object?> get props => [date, status,
+  scheduledTimeLabel,scheduledTimeSlot,];
 }
 
-class PrimaryTask {
+class PrimaryTask extends Equatable {
   final String id;
   final String title;
   final String description;
@@ -151,7 +156,7 @@ class PrimaryTask {
   final String whyItMatters;
   final List<SuggestedSearch> suggestedSearches;
 
-  PrimaryTask({
+  const PrimaryTask({
     required this.id,
     required this.title,
     required this.description,
@@ -295,6 +300,9 @@ class PrimaryTask {
     final parts = scheduledStartTime.split(':');
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
+
+  @override
+  List<Object?> get props => [id, type, whyItMatters,  title];
 }
 
 extension Primary on List<DayTask> {

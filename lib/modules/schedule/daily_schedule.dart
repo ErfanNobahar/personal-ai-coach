@@ -38,8 +38,6 @@ class TaskCard extends StatelessWidget {
 
   bool isCurrent() {
     final currentHour = DateTime.now().hour;
-    print('currentHour');
-    print(currentHour);
     final part1 = task.primaryTask.scheduledStartTime.split(':')[0];
     return currentHour.toString() == part1;
   }

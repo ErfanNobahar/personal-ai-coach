@@ -1,8 +1,9 @@
 import 'package:personal_ai_coach/data_providers/hive/hive_db.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
-import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 
-enum keys { weeklyTasks }
+import 'models/task.dart';
+
+enum Keys { weeklyTasks }
 
 abstract class BusinessBox {
   static String boxName = 'business';
@@ -18,7 +19,7 @@ abstract class BusinessBox {
   static Future<List<SpecificTasks>> getWeeklyTasks() async {
     final res = await HiveDB.get(
       boxName: boxName,
-      key: keys.weeklyTasks.index.toString(),
+      key: Keys.weeklyTasks.index.toString(),
     );
     List<SpecificTasks> temp = [];
     if (res != null) {
@@ -33,54 +34,90 @@ abstract class BusinessBox {
     return temp;
   }
 
-  static Future<void> setWeeklyTasks(List<SpecificTasks> tasks) async {
+  static Future<void> setWeeklyTasks(
+    List<SpecificTasks> tasks, {
+    bool conflictCheck = true,
+  }) async {
     List<SpecificTasks> newTasks = List.from(tasks);
     final existingTasks = await getWeeklyTasks();
 
     List<SpecificTasks> rescheduledTasks = [];
-    if (existingTasks.isNotEmpty) {
-      final resByDay = {for (var r in existingTasks) r.day: r};
+    if (conflictCheck) {
+      if (existingTasks.isNotEmpty) {
+        final resByDay = {for (var r in existingTasks) r.day: r};
 
-      newTasks = newTasks.map((taskGroup) {
-        final matchedDay = resByDay[taskGroup.day];
-        if (matchedDay == null) return taskGroup;
-        final inComingDailySchedule = taskGroup.tasks
-            .map((e) => e.primaryTask.scheduledStartTime)
-            .toList();
-        final existingDailySchedule = matchedDay.tasks
-            .map((e) => e.primaryTask.scheduledStartTime)
-            .toList();
+        newTasks = newTasks.map((taskGroup) {
+          final matchedDay = resByDay[taskGroup.day];
+          if (matchedDay == null) return taskGroup;
+          final inComingDailySchedule = taskGroup.tasks
+              .map((e) => e.primaryTask.scheduledStartTime)
+              .toList();
+          final existingDailySchedule = matchedDay.tasks
+              .map((e) => e.primaryTask.scheduledStartTime)
+              .toList();
 
-        final finalTasks = taskGroup.tasks.map((element) {
-          if (existingDailySchedule.contains(inComingDailySchedule[0])) {
-            final temp = element.copyWith(
-              primaryTask: element.primaryTask.reschedule(
-                occupiedTimes: existingDailySchedule,
-                scheduledStartTime: element.primaryTask.scheduledStartTime,
-              ),
-            );
-            matchedDay.addToList(task: temp);
-            rescheduledTasks.add(matchedDay);
-            return temp;
-          } else {
-            matchedDay.addToList(task: element);
-            rescheduledTasks.add(matchedDay);
-            return element;
-          }
+          final finalTasks = taskGroup.tasks.map((element) {
+            if (existingDailySchedule.contains(inComingDailySchedule[0])) {
+              final temp = element.copyWith(
+                primaryTask: element.primaryTask.reschedule(
+                  occupiedTimes: existingDailySchedule,
+                  scheduledStartTime: element.primaryTask.scheduledStartTime,
+                ),
+              );
+              matchedDay.addToList(task: temp);
+              rescheduledTasks.add(matchedDay);
+              return temp;
+            } else {
+              matchedDay.addToList(task: element);
+              rescheduledTasks.add(matchedDay);
+              return element;
+            }
+          }).toList();
+
+          return taskGroup.copyWith(tasks: finalTasks);
         }).toList();
-
-        return taskGroup.copyWith(tasks: finalTasks);
-      }).toList();
-    }  else
-        {
-      rescheduledTasks = [...newTasks];
+      } else {
+        rescheduledTasks = [...newTasks];
+      }
     }
-    print('boxxxxxxxxx');
-    print(rescheduledTasks.length);
     HiveDB.set(
       boxName: boxName,
-      key: keys.weeklyTasks.index.toString(),
-      value: List.from(rescheduledTasks).map((e) => e.toMap()).toList(),
+      key: Keys.weeklyTasks.index.toString(),
+      value: List.from(
+        conflictCheck ? rescheduledTasks : newTasks,
+      ).map((e) => e.toMap()).toList(),
     );
+  }
+
+  static Future<SpecificTasks> readSpecificTask(DayTask task) async {
+    final res = await getWeeklyTasks();
+    final temp = res.where((e) => e.tasks.contains(task)).toList().first;
+    print('the task voxxxxx');
+    print(temp.toMap());
+    return temp;
+  }
+
+  static Future<void> updateTasks(DayTask task) async {
+    final res = await getWeeklyTasks();
+    final temp = res
+        .map(
+          (weekEntry) => weekEntry.copyWith(
+            tasks: weekEntry.tasks.map((b) {
+              // print('b.primaryTask == task.primaryTask');
+              // print('${b.primaryTask == task.primaryTask} vs ${b.primaryTask.id} ${task.primaryTask.id}  ');
+              if (b.primaryTask == task.primaryTask) {
+                return b.copyWith(
+                  primaryTask: b.primaryTask.copyWith(
+                    scheduledStartTime: task.primaryTask.scheduledStartTime,
+                  ),
+                );
+              } else {
+                return b;
+              }
+            }).toList(),
+          ),
+        )
+        .toList();
+    await setWeeklyTasks(temp, conflictCheck: false);
   }
 }
