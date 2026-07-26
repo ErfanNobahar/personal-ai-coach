@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/modules/task/task_page.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
@@ -98,14 +100,16 @@ class TaskCard extends StatelessWidget {
                             isPrimary: false,
                             icon: U.Icons.back,
                             color: U.Theme.white,
-                            onTapped: () {
-                              GoRouter.of(
-                                context,
-                              ).pushNamed(TaskDetailPage.route,
-                              extra: {
-                                'task' : task 
-                              }
+                            onTapped: () async {
+                              final temp = await GoRouter.of(context).pushNamed(
+                                TaskDetailPage.route,
+                                extra: {'task': task},
                               );
+                                print('temp');
+                                print(temp);
+                              if (temp == true) {
+                                context.read<ScheduleCubit>().onRefresh();
+                              }
                             },
                             size: 12,
                           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/task/cubit/task_cubit.dart';
@@ -21,6 +22,7 @@ class TaskDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var dialogRes;
     return BlocProvider(
       create: (context) => TaskCubit(
         task: initialTask,
@@ -156,7 +158,7 @@ class TaskDetailPage extends StatelessWidget {
                             onComplete: () {},
                             onSkip: () {},
                             onReschedule: () async {
-                              final res = await U.TimePickerDialog.show(
+                              dialogRes = await U.TimePickerDialog.show(
                                 occupiedTimes: state.occupiedTimes
                                     .map((e) => int.parse(e.split(':')[0]))
                                     .toList(),
@@ -169,7 +171,7 @@ class TaskDetailPage extends StatelessWidget {
                               context.read<TaskCubit>().onScheduleChanged(
                                 state.task!.copyWith(
                                   primaryTask: state.task!.primaryTask.copyWith(
-                                    scheduledStartTime: res,
+                                    scheduledStartTime: dialogRes,
                                   ),
                                 ),
                               );
@@ -184,7 +186,13 @@ class TaskDetailPage extends StatelessWidget {
                       left: 0,
                       right: 0,
                       top: 0,
-                      child: U.AppBar(title: 'todays task', blur: true),
+                      child: U.AppBar(
+                        title: 'todays task',
+                        blur: true,
+                        onPop: () {
+                          GoRouter.of(context).pop(dialogRes != null);
+                        },
+                      ),
                     ),
                   ],
                 ),

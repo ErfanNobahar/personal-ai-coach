@@ -5,7 +5,8 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 class AppBar extends StatelessWidget {
   final String title;
   final bool blur;
-  const AppBar({super.key, required this.title, this.blur = false});
+  final dynamic Function()? onPop;
+  const AppBar({super.key, required this.title, this.onPop, this.blur = false});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class AppBar extends StatelessWidget {
           children: [
             InkWell(
               onTap: () {
-                GoRouter.of(context).pop();
+                onPop != null ? onPop!() : GoRouter.of(context).pop();
               },
               child: U.Image(path: U.Icons.back, width: 28, height: 14),
             ),
@@ -47,7 +48,7 @@ class AppBar extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                GoRouter.of(context).pop();
+                onPop != null ? onPop!() : GoRouter.of(context).pop();
               },
               child: Container(
                 decoration: BoxDecoration(
