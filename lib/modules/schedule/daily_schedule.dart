@@ -66,64 +66,76 @@ class TaskCard extends StatelessWidget {
             // const Spacer(flex: 10),
             Expanded(
               flex: 70,
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isCurrent()
-                      ? U.Theme.outlineHigh.withValues(alpha: 0.7)
-                      : U.Theme.surfaceLight.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      child: Row(
-                        // mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: U.Text(
-                              softWrap: false,
-                              overFlow: TextOverflow.ellipsis,
-                              text: task.primaryTask.title,
-                              color: isCurrent()
-                                  ? U.Theme.secondaryText
-                                  : U.Theme.tertiaryText,
-                              textWeight: U.TextWeight.semiBold,
-                              textSize: U.TextSize.s16,
+              child: InkWell(
+                onTap: () async {
+                  final temp = await GoRouter.of(context).pushNamed(
+                    TaskDetailPage.route,
+                    extra: {
+                      'task': task,
+                      'cubit': context.read<ScheduleCubit>(),
+                    },
+                  );
+                  if (temp == true) {
+                    context.read<ScheduleCubit>().onRefresh();
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isCurrent()
+                        ? U.Theme.outlineHigh.withValues(alpha: 0.7)
+                        : U.Theme.surfaceLight.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Row(
+                          // mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: U.Text(
+                                softWrap: false,
+                                overFlow: TextOverflow.ellipsis,
+                                text: task.primaryTask.title,
+                                color: isCurrent()
+                                    ? U.Theme.secondaryText
+                                    : U.Theme.tertiaryText,
+                                textWeight: U.TextWeight.semiBold,
+                                textSize: U.TextSize.s16,
+                              ),
                             ),
-                          ),
-                          // Spacer(),
-                          U.IconButton(
-                            isPrimary: false,
-                            icon: U.Icons.back,
-                            color: U.Theme.white,
-                            onTapped: () async {
-                              final temp = await GoRouter.of(context).pushNamed(
-                                TaskDetailPage.route,
-                                extra: {'task': task},
-                              );
-                                print('temp');
-                                print(temp);
-                              if (temp == true) {
-                                context.read<ScheduleCubit>().onRefresh();
-                              }
-                            },
-                            size: 12,
-                          ),
-                        ],
+                            SizedBox(width: 22),
+                            // Spacer(),
+                            U.Text(
+                              text: task.status,
+                              textWeight: U.TextWeight.semiBold,
+                              textSize: U.TextSize.s12,
+                            ),
+                            SizedBox(width: 8),
+                            Container(
+                              height: 15,
+                              width: 15,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: U.Theme.secondaryText,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    U.Text(
-                      color: isCurrent()
-                          ? U.Theme.secondaryText
-                          : U.Theme.tertiaryText,
-                      text: task.primaryTask.description,
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      U.Text(
+                        color: isCurrent()
+                            ? U.Theme.secondaryText
+                            : U.Theme.tertiaryText,
+                        text: task.primaryTask.description,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -20,6 +20,8 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
   Future<void> getData() async {
     final res = await _repo.readSchedule();
+    // print('res[0].toMap()');
+    // print(res[0].toMap());
     emit(state.copyWith(dailyTasks: res, selectedDay: res[0]));
   }
 

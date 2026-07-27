@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/modules/task/cubit/task_cubit.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
@@ -13,25 +14,46 @@ class TaskDetailPage extends StatelessWidget {
 
   final String? milestoneTitle;
   final DayTask? initialTask;
+  final ScheduleCubit? scheduleCubit;
 
   const TaskDetailPage({
     super.key,
     required this.milestoneTitle,
     this.initialTask,
+    this.scheduleCubit,
   });
 
   @override
   Widget build(BuildContext context) {
     var dialogRes;
-    return BlocProvider(
-      create: (context) => TaskCubit(
-        task: initialTask,
-        repo: context.read<BusinessRepository>(),
-      ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => TaskCubit(
+            task: initialTask,
+            repo: context.read<BusinessRepository>(),
+          ),
+        ),
+        BlocProvider.value(
+          value:
+              scheduleCubit ??
+              ScheduleCubit(repo: context.read<BusinessRepository>()),
+        ),
+      ],
       child: BlocListener<TaskCubit, TaskState>(
-        listenWhen: (previous, current) => previous.task != current.task,
+        listenWhen: (previous, current) {
+          print('listniiiiiiiiingggggggg');
+          print(
+            '${previous.task} vssss ${current.task} vs ${previous.task!.primaryTask.scheduledStartTime != current.task!.primaryTask.scheduledStartTime} ',
+          );
+          print(previous.task.hashCode);
+          print(current.task.hashCode);
+          return ((previous.task != current.task) && current.loading == false );
+        },
         listener: (context, state) {
-          context.read<TaskCubit>().onInit();
+          print('listnedddd');
+          context.read<ScheduleCubit>().onRefresh();
+          // context.read<TaskCubit>().onInit();
         },
         child: BlocBuilder<TaskCubit, TaskState>(
           builder: (context, state) {
@@ -128,7 +150,7 @@ class TaskDetailPage extends StatelessWidget {
                                     (s) => _SearchChip(
                                       query: s.query,
                                       onTap: () => T.Launcher.url(
-                                        'https://www.google.com/search?q=${Uri.encodeComponent(s.query)} ',
+                                        'https://www.google.com/search?q=//${Uri.encodeComponent(s.query)} ',
                                       ),
                                     ),
                                   )
@@ -155,7 +177,11 @@ class TaskDetailPage extends StatelessWidget {
 
                           const SizedBox(height: 32),
                           _ActionButtons(
-                            onComplete: () {},
+                            onComplete: () {
+                              context.read<TaskCubit>().onStatusChanged(
+                                state.task!.copyWith(status: 'completed'),
+                              );
+                            },
                             onSkip: () {},
                             onReschedule: () async {
                               dialogRes = await U.TimePickerDialog.show(

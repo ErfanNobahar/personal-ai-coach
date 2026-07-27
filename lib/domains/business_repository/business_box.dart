@@ -91,9 +91,8 @@ abstract class BusinessBox {
 
   static Future<SpecificTasks> readSpecificTask(DayTask task) async {
     final res = await getWeeklyTasks();
-    final temp = res.where((e) => e.tasks.contains(task)).toList().first;
-    print('the task voxxxxx');
-    print(temp.toMap());
+  final temp =  res.where((e)=> e.tasks.any((b)=>b.primaryTask.description == task.primaryTask.description)).first;
+    // final temp = res.where((e) => e.tasks.contains(task)).toList().first;
     return temp;
   }
 
@@ -105,8 +104,9 @@ abstract class BusinessBox {
             tasks: weekEntry.tasks.map((b) {
               // print('b.primaryTask == task.primaryTask');
               // print('${b.primaryTask == task.primaryTask} vs ${b.primaryTask.id} ${task.primaryTask.id}  ');
-              if (b.primaryTask == task.primaryTask) {
+              if (b.primaryTask.description == task.primaryTask.description) {
                 return b.copyWith(
+                  status: task.status,
                   primaryTask: b.primaryTask.copyWith(
                     scheduledStartTime: task.primaryTask.scheduledStartTime,
                   ),

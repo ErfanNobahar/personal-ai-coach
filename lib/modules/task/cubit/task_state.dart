@@ -1,10 +1,14 @@
 part of 'task_cubit.dart';
 
-class TaskState {
+class TaskState extends Equatable {
   final bool loading;
   final DayTask? task;
   final List<String> occupiedTimes;
-  TaskState({required this.loading, this.task, required this.occupiedTimes});
+  const TaskState({
+    required this.loading,
+    this.task,
+    required this.occupiedTimes,
+  });
   TaskState.init(this.task) : occupiedTimes = [], loading = false;
 
   TaskState copyWith({
@@ -18,4 +22,7 @@ class TaskState {
       occupiedTimes: occupiedTimes ?? this.occupiedTimes,
     );
   }
+
+  @override
+  List<Object?> get props => [loading, task, occupiedTimes];
 }

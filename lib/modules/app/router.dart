@@ -49,6 +49,7 @@ final router = GoRouter(
                 return TaskDetailPage(
                   milestoneTitle: extra['milestone'] as String?,
                   initialTask: extra['task'] as dynamic,
+                  scheduleCubit: extra['cubit'] as dynamic,
                 );
               },
             ),

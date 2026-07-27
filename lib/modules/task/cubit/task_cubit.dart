@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
@@ -33,17 +34,25 @@ class TaskCubit extends Cubit<TaskState> {
 
   //////// Methods
   void onInit() async {
+    // print('>>> onInit START (called from ${StackTrace.current})');
     emit(state.copyWith(loading: true));
     await getTimes();
     emit(state.copyWith(loading: false));
+    // print('>>> onInit END');
   }
 
   void onScheduleChanged(DayTask task) async {
-    print('task.primaryTask.scheduledStartTime');
-    print(task.primaryTask.scheduledStartTime);
+    // print('>>> onScheduleChanged START task=${task.hashCode}');
     emit(state.copyWith(loading: true, task: task));
     await _repo.updateTasks(task);
     await getTimes();
-    emit(state.copyWith(loading: true));
+    emit(state.copyWith(loading: false));
+    // print('>>> onScheduleChanged END');
+  }
+
+  void onStatusChanged(DayTask task) async {
+    emit(state.copyWith(loading: true, task: task));
+    await _repo.updateTasks(task);
+    emit(state.copyWith(loading: false));
   }
 }

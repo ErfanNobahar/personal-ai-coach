@@ -141,8 +141,12 @@ class DayTask extends Equatable {
   }
 
   @override
-  List<Object?> get props => [date, status,
-  scheduledTimeLabel,scheduledTimeSlot,];
+  List<Object?> get props => [
+    date,
+    scheduledTimeLabel,
+    scheduledTimeSlot,
+    primaryTask,
+  ];
 }
 
 class PrimaryTask extends Equatable {
@@ -302,7 +306,13 @@ class PrimaryTask extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, type, whyItMatters,  title];
+  List<Object?> get props => [
+    id,
+    type,
+    whyItMatters,
+    title,
+    scheduledStartTime,
+  ];
 }
 
 extension Primary on List<DayTask> {
