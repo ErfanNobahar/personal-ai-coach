@@ -74,9 +74,24 @@ class MilestoneContext {
   }
 }
 
+enum DayTaskStatus { skipped, completed, pending }
+
+extension Status on DayTaskStatus {
+  String get get {
+    switch (this) {
+      case DayTaskStatus.skipped:
+        return 'skipped';
+      case DayTaskStatus.completed:
+        return 'completed';
+      case DayTaskStatus.pending:
+        return 'pending';
+    }
+  }
+}
+
 class DayTask extends Equatable {
   final String date;
-  final String status;
+  final DayTaskStatus status;
   final String scheduledTimeSlot;
   final String scheduledTimeLabel;
   final PrimaryTask primaryTask;
@@ -91,10 +106,23 @@ class DayTask extends Equatable {
     required this.supportingTasks,
   });
 
+  static DayTaskStatus fromString(String? value) {
+    switch (value) {
+      case 'skipped':
+        return DayTaskStatus.skipped;
+      case 'completed':
+        return DayTaskStatus.completed;
+      case 'pending':
+        return DayTaskStatus.pending;
+      default:
+        return DayTaskStatus.pending; // fallback for unknown/null values
+    }
+  }
+
   factory DayTask.fromMap(Map<String, dynamic> map) {
     return DayTask(
       date: map['date'] ?? '',
-      status: map['status'] ?? 'pending',
+      status: fromString(map['status'] ?? 'pending'),
       scheduledTimeSlot: map['scheduledTimeSlot'] ?? '',
       scheduledTimeLabel: map['scheduledTimeLabel'] ?? '',
       primaryTask: PrimaryTask.fromMap(
@@ -111,7 +139,7 @@ class DayTask extends Equatable {
   }
   DayTask copyWith({
     String? date,
-    String? status,
+    DayTaskStatus? status,
     String? scheduledTimeSlot,
     String? scheduledTimeLabel,
     PrimaryTask? primaryTask,
@@ -130,7 +158,7 @@ class DayTask extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'date': date,
-      'status': status,
+      'status': status.get,
       'scheduledTimeSlot': scheduledTimeSlot,
       'scheduledTimeLabel': scheduledTimeLabel,
       'primaryTask': primaryTask.toMap(),

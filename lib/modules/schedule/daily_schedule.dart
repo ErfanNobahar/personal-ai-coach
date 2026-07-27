@@ -111,7 +111,7 @@ class TaskCard extends StatelessWidget {
                             SizedBox(width: 22),
                             // Spacer(),
                             U.Text(
-                              text: task.status,
+                              text: task.status.get,
                               textWeight: U.TextWeight.semiBold,
                               textSize: U.TextSize.s12,
                             ),

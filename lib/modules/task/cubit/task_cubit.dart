@@ -27,8 +27,6 @@ class TaskCubit extends Cubit<TaskState> {
         .map((e) => e.primaryTask.scheduledStartTime)
         .toList();
     emit(state.copyWith(occupiedTimes: temp));
-    print('tempssssssssssssssssss');
-    print(temp);
     return temp;
   }
 

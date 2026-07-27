@@ -8,6 +8,7 @@ enum ButtonText { primary, secondary }
 // enum weight { bold, semiBold, medium }
 
 class Button extends StatelessWidget {
+  final bool disabled;
   final String title;
   final Function() onTap;
   final ButtonColor buttonColor;
@@ -20,6 +21,7 @@ class Button extends StatelessWidget {
     super.key,
     required this.title,
     required this.onTap,
+    this.disabled = false,
     this.buttonColor = ButtonColor.primary,
     this.buttonText = ButtonText.primary,
     // this.fontWeight,
@@ -63,13 +65,13 @@ class Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: disabled ? null : onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         height: 40,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(U.Theme.radius),
-          color: buttonInfo,
+          color: disabled ? buttonInfo.withValues(alpha: 0.5) : buttonInfo,
         ),
         child: Center(
           child: Row(

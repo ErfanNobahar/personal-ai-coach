@@ -42,16 +42,9 @@ class TaskDetailPage extends StatelessWidget {
       ],
       child: BlocListener<TaskCubit, TaskState>(
         listenWhen: (previous, current) {
-          print('listniiiiiiiiingggggggg');
-          print(
-            '${previous.task} vssss ${current.task} vs ${previous.task!.primaryTask.scheduledStartTime != current.task!.primaryTask.scheduledStartTime} ',
-          );
-          print(previous.task.hashCode);
-          print(current.task.hashCode);
-          return ((previous.task != current.task) && current.loading == false );
+          return ((previous.task != current.task) && current.loading == false);
         },
         listener: (context, state) {
-          print('listnedddd');
           context.read<ScheduleCubit>().onRefresh();
           // context.read<TaskCubit>().onInit();
         },
@@ -59,19 +52,6 @@ class TaskDetailPage extends StatelessWidget {
           builder: (context, state) {
             return Scaffold(
               backgroundColor: U.Theme.background,
-              // appBar: AppBar(
-              //   backgroundColor: U.Theme.background,
-              //   elevation: 0,
-              //   iconTheme: IconThemeData(color: U.Theme.primaryText),
-              //   title: Text(
-              //     'Today\'s Task',
-              //     style: TextStyle(
-              //       color: U.Theme.primaryText,
-              //       fontWeight: FontWeight.bold,
-              //       fontSize: 18,
-              //     ),
-              //   ),
-              // ),
               body: SafeArea(
                 child: Stack(
                   children: [
@@ -87,7 +67,7 @@ class TaskDetailPage extends StatelessWidget {
                                 )
                               : SizedBox(),
                           const SizedBox(height: 16),
-                          _StatusBadge(status: state.task!.status),
+                          _StatusBadge(status: state.task!.status.get),
                           const SizedBox(height: 12),
                           Text(
                             state.task!.date,
@@ -177,9 +157,12 @@ class TaskDetailPage extends StatelessWidget {
 
                           const SizedBox(height: 32),
                           _ActionButtons(
+                            skipped: state.task!.status == DayTaskStatus.skipped,
                             onComplete: () {
                               context.read<TaskCubit>().onStatusChanged(
-                                state.task!.copyWith(status: 'completed'),
+                                state.task!.copyWith(
+                                  status: DayTaskStatus.completed,
+                                ),
                               );
                             },
                             onSkip: () {},
@@ -513,11 +496,13 @@ class _SupportingTaskTile extends StatelessWidget {
 }
 
 class _ActionButtons extends StatelessWidget {
+  final bool skipped;
   final VoidCallback onComplete;
   final VoidCallback onSkip;
   final VoidCallback onReschedule;
 
   const _ActionButtons({
+    required this.skipped,
     required this.onComplete,
     required this.onSkip,
     required this.onReschedule,
@@ -528,6 +513,7 @@ class _ActionButtons extends StatelessWidget {
     return Column(
       children: [
         U.Button(
+          disabled: skipped,
           title: 'Mark as compelete',
           onTap: onComplete,
           buttonColor: U.ButtonColor.primary,
@@ -537,6 +523,7 @@ class _ActionButtons extends StatelessWidget {
           children: [
             Expanded(
               child: U.OutlineButton(
+                disabled: skipped,
                 title: 'reschedule',
                 onTap: onReschedule,
                 color: U.OutLineButtonColor.secondary,
@@ -546,6 +533,7 @@ class _ActionButtons extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: U.OutlineButton(
+                disabled: skipped,
                 title: 'skip',
                 onTap: onSkip,
                 color: U.OutLineButtonColor.secondary,

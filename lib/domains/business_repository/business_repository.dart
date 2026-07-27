@@ -138,6 +138,10 @@ class BusinessRepository {
     await BusinessBox.updateTasks(task);
   }
 
+  Future<void> updateDays(List<SpecificTasks> tasks) async {
+    await BusinessBox.setWeeklyTasks(tasks, conflictCheck: false);
+  }
+
   Future<SpecificTasks> readTask(DayTask task) async {
     final res = await BusinessBox.readSpecificTask(task);
     return res;

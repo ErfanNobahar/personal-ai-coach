@@ -2,7 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
-
+import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 part 'schedule_state.dart';
 
 class ScheduleCubit extends Cubit<ScheduleState> {
@@ -20,8 +21,31 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
   Future<void> getData() async {
     final res = await _repo.readSchedule();
-    // print('res[0].toMap()');
-    // print(res[0].toMap());
+    print('res[0].toMap()');
+    print(res[0].toMap());
+    final temp = res
+        .where((e) => e.day == T.DateFormater.formater(DateTime.now()))
+        .first;
+    final updatedSpecificTasks = temp.copyWith(
+      tasks: temp.tasks
+          .map(
+            (e) => e.copyWith(
+              status:
+                  (e.status != DayTaskStatus.completed &&
+                      DateTime.now().hour >
+                          int.parse(
+                            e.primaryTask.scheduledStartTime.split(':')[0],
+                          ))
+                  ? DayTaskStatus.skipped
+                  : e.status,
+            ),
+          )
+          .toList(),
+    );
+    final int index = res.indexWhere((element) => element.day == temp.day);
+    res.removeAt(index);
+    res.insert(index, updatedSpecificTasks);
+    await _repo.updateDays(res);
     emit(state.copyWith(dailyTasks: res, selectedDay: res[0]));
   }
 
@@ -43,6 +67,10 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     // print('state.selectedDay');
     // print(count);
   }
+
+  // Future<void> setTodaysStatus(){
+
+  // }
 
   void selectDay(String day) {
     emit(state.copyWith(selectedDayIndex: day));

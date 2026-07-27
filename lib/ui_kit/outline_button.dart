@@ -88,8 +88,15 @@ class OutlineButton extends StatelessWidget {
           //TODO:
           height: _size,
           decoration: BoxDecoration(
-            border: Border.all(width: 1, color: _color.border),
-            color: _foregroundColor,
+            border: Border.all(
+              width: 1,
+              color: disabled
+                  ? _color.border.withValues(alpha: 0.5)
+                  : _color.border,
+            ),
+            color: disabled
+                ? _foregroundColor.withValues(alpha: 0.5)
+                : _foregroundColor,
             borderRadius: BorderRadius.circular(50),
           ),
           child: Center(
@@ -105,7 +112,9 @@ class OutlineButton extends StatelessWidget {
                       softWrap: true,
                       isCentered: true,
                       text: title,
-                      color: _color.text,
+                      color: disabled
+                          ? _color.text.withValues(alpha: 0.5)
+                          : _color.text,
                       textSize: _color.size,
                       textWeight: _color.weight,
                     ),
