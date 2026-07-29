@@ -11,18 +11,18 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   final List<SpecificTasks>? initialTasks;
   final ScrollController tabCtril = ScrollController();
   final PageController pageCtrl = PageController();
-
   ScheduleCubit({required BusinessRepository repo, this.initialTasks})
     : _repo = repo,
       super(ScheduleState.init(initialTasks ?? [])) {
     onInit();
   }
+
+  final taskDescriptionCtrl = TextEditingController();
+  final taskTitleCtrl = TextEditingController();
   /////////// Functions
 
   Future<void> getData() async {
     final res = await _repo.readSchedule();
-    print('res[0].toMap()');
-    print(res[0].toMap());
     final temp = res
         .where((e) => e.day == T.DateFormater.formater(DateTime.now()))
         .first;

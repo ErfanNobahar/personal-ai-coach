@@ -171,7 +171,7 @@ class DailyBanner extends StatelessWidget {
           U.Text(text: day, textSize: U.TextSize.s18, color: U.Theme.white),
           SizedBox(height: 45),
           // const Spacer(flex: 20),
-          TaskProgressCard(progress: 0.5),
+          TaskProgressCard(progress: done / 100),
 
           // const Spacer(flex: 20),
         ],

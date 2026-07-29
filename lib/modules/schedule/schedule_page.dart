@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/modules/schedule/daily_schedule.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
@@ -48,6 +49,13 @@ class _SchedulePageState extends State<SchedulePage> {
     }
   }
 
+  int getPercent(List<DayTask> tasks) {
+    var temp = tasks.where((e) {
+      return e.status == DayTaskStatus.completed;
+    }).toList();
+    return (((temp.length / tasks.length) * 100).floor());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -70,6 +78,7 @@ class _SchedulePageState extends State<SchedulePage> {
           );
           WidgetsBinding.instance.addPostFrameCallback((_) => _measurePages());
         },
+
         builder: (context, state) {
           final cubit = context.read<ScheduleCubit>();
           return state.loading
@@ -97,7 +106,10 @@ class _SchedulePageState extends State<SchedulePage> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: SizedBox(
                                     width: 251,
-                                    child: DailyBanner(day: e.day, done: 11),
+                                    child: DailyBanner(
+                                      day: e.day,
+                                      done: getPercent(e.tasks),
+                                    ),
                                   ),
                                 ),
                               ),
