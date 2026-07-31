@@ -158,13 +158,13 @@ class DayTask extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'date': date,
-      'status': status.get,
+      'status': 'fuccck',
       'scheduledTimeSlot': scheduledTimeSlot,
       'scheduledTimeLabel': scheduledTimeLabel,
       'primaryTask': primaryTask.toMap(),
       'supportingTasks': List.from(
-        supportingTasks,
-      ).map((e) => e.toMap()).toList(),
+        supportingTasks.map((e) => e.toMap()).toList(),
+      ),
     };
   }
 
@@ -201,6 +201,11 @@ class PrimaryTask extends Equatable {
   });
 
   static List<String> dayTimes = [
+    '01:00',
+    '02:00',
+    '03:00',
+    '04:00',
+    '05:00',
     '06:00',
     '07:00',
     '08:00',
@@ -225,13 +230,12 @@ class PrimaryTask extends Equatable {
     required List<String> occupiedTimes,
     required String conflictingTime,
   }) {
-    print('conflictiiiiijkng');
-    print(conflictingTime);
     final currentTime = dayTimes.indexWhere((e) => e == conflictingTime);
     if (occupiedTimes.contains(conflictingTime)) {
       return findSlot(
         occupiedTimes: occupiedTimes,
-        conflictingTime: dayTimes[currentTime + 1],
+        conflictingTime:
+            dayTimes[currentTime == dayTimes.length - 1 ? 0 : currentTime + 1],
       );
     } else {
       return conflictingTime;
@@ -323,7 +327,7 @@ class PrimaryTask extends Equatable {
       'scheduledEndTime': scheduledEndTime,
       'type': type,
       'whyItMatters': whyItMatters,
-      'suggestedSearches': suggestedSearches.map((e) => e.toMap()).toList(),
+      'suggestedSearches': List.from(suggestedSearches.map((e) => e.toMap())),
     };
   }
 

@@ -16,7 +16,7 @@ class SpecificTasks extends Equatable {
     return SpecificTasks(day: day ?? this.day, tasks: tasks ?? this.tasks);
   }
 
-factory SpecificTasks.fromMap(Map<String, dynamic> map) {
+  factory SpecificTasks.fromMap(Map<String, dynamic> map) {
     return SpecificTasks(
       day: map['day'],
       tasks: List.from(map['tasks'] ?? [])
@@ -26,12 +26,9 @@ factory SpecificTasks.fromMap(Map<String, dynamic> map) {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'day': day,
-      'tasks': List.from(tasks).map((e) => e.toMap()).toList(),
-    };
+    return {'day': day, 'tasks': List.from(tasks.map((e) => e.toMap()))};
   }
-  
+
   @override
-  List<Object?> get props => [day,tasks];
+  List<Object?> get props => [day, tasks];
 }

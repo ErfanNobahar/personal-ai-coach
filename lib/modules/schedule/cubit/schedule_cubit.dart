@@ -23,9 +23,11 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
   Future<void> getData() async {
     final res = await _repo.readSchedule();
-    final temp = res
-        .where((e) => e.day == T.DateFormater.formater(DateTime.now()))
-        .first;
+    final temp = res.where((e) {
+      // print('${e.day} vssssss ${T.DateFormater.formater(DateTime.now())}');
+      return e.day == T.DateFormater.formater(DateTime.now());
+    }).first;
+
     final updatedSpecificTasks = temp.copyWith(
       tasks: temp.tasks
           .map(

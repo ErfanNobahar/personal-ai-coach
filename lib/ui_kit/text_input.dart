@@ -37,7 +37,8 @@ class _TextInputState extends State<TextInput> {
       focusNode.requestFocus();
     }
     focusNode.addListener(() {
-      isFocused == focusNode.hasFocus;
+      isFocused = focusNode.hasFocus;
+      print(isFocused);
       setState(() {});
     });
     super.initState();
@@ -50,6 +51,8 @@ class _TextInputState extends State<TextInput> {
         focusNode.requestFocus();
       },
       child: Container(
+        height: 55,
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
             color: isFocused ? U.Theme.primaryBorder : widget.color,

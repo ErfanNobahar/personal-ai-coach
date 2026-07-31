@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/modules/chat/chat_page.dart';
+import 'package:personal_ai_coach/modules/schedule/task_creation_btms.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class HomeSell extends StatelessWidget {
@@ -26,7 +27,9 @@ class HomeSell extends StatelessWidget {
                   isPrimary: true,
                   title: 'title',
                   path: U.Icons.menu,
-                  onTap: () {},
+                  onTap: () {
+                    TaskCreationBtms.show(context);
+                  },
                 ),
                 U.NavBarItem(
                   isPrimary: true,

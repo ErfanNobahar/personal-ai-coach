@@ -10,7 +10,7 @@ class BottomSheet extends StatelessWidget {
   static Future<T?> show<T>(
     BuildContext context, {
     required Widget child,
-    double maxHeight = 450,
+    double maxHeight =  double.infinity,
     double maxwidth = 250,
     EdgeInsets pading = const EdgeInsets.all(15),
     bool useRootNavigator = false,
@@ -30,7 +30,7 @@ class BottomSheet extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: U.Theme.onBackground,
+        color: U.Theme.onBackground.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20),
       ),
       child: child,

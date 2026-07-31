@@ -23,7 +23,6 @@ class ChatCubit extends Cubit<ChatState> {
   Future<void> onInit() async {}
 
   Future<void> onGoalCreated({required Message message}) async {
-    // print('heyyyy');
     emit(state.copyWith(loading: true));
     final messagesList = [...state.messages];
     messagesList.add(message);
@@ -99,8 +98,6 @@ class ChatCubit extends Cubit<ChatState> {
           )),
         )
         .toList();
-print('specificTasksssssssssss');
-print(specificTasks);
     await _repo.createSchedule(specificTasks);
     emit(state.copyWith(loading: false));
     return (roadmap: roadmap, tasks: weeklyTasks);

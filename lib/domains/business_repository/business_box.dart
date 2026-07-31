@@ -31,6 +31,8 @@ abstract class BusinessBox {
     for (var element in temp) {
       element.tasks.sortByHour();
     }
+    print('temp.length');
+    print(temp.length);
     return temp;
   }
 
@@ -38,7 +40,7 @@ abstract class BusinessBox {
     List<SpecificTasks> tasks, {
     bool conflictCheck = true,
   }) async {
-    List<SpecificTasks> newTasks = List.from(tasks);
+    List<SpecificTasks> newTasks = [...tasks];
     final existingTasks = await getWeeklyTasks();
 
     List<SpecificTasks> rescheduledTasks = [];
@@ -80,10 +82,13 @@ abstract class BusinessBox {
         rescheduledTasks = [...newTasks];
       }
     }
+    final temp = List<SpecificTasks>.from(
+      !conflictCheck ? rescheduledTasks : newTasks,
+    ).map((e) => e.toMap()).toList();
     HiveDB.set(
       boxName: boxName,
       key: Keys.weeklyTasks.index.toString(),
-      value: List.from(
+      value: List<SpecificTasks>.from(
         conflictCheck ? rescheduledTasks : newTasks,
       ).map((e) => e.toMap()).toList(),
     );
@@ -91,7 +96,13 @@ abstract class BusinessBox {
 
   static Future<SpecificTasks> readSpecificTask(DayTask task) async {
     final res = await getWeeklyTasks();
-  final temp =  res.where((e)=> e.tasks.any((b)=>b.primaryTask.description == task.primaryTask.description)).first;
+    final temp = res
+        .where(
+          (e) => e.tasks.any(
+            (b) => b.primaryTask.description == task.primaryTask.description,
+          ),
+        )
+        .first;
     // final temp = res.where((e) => e.tasks.contains(task)).toList().first;
     return temp;
   }
@@ -102,8 +113,6 @@ abstract class BusinessBox {
         .map(
           (weekEntry) => weekEntry.copyWith(
             tasks: weekEntry.tasks.map((b) {
-              // print('b.primaryTask == task.primaryTask');
-              // print('${b.primaryTask == task.primaryTask} vs ${b.primaryTask.id} ${task.primaryTask.id}  ');
               if (b.primaryTask.description == task.primaryTask.description) {
                 return b.copyWith(
                   status: task.status,
