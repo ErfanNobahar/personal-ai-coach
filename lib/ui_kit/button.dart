@@ -64,17 +64,21 @@ class Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: disabled ? null : onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        height: 40,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(U.Theme.radius),
-          color: disabled ? buttonInfo.withValues(alpha: 0.5) : buttonInfo,
-        ),
-        child: Center(
+    return Material(
+      borderRadius: BorderRadius.circular(U.Theme.radius),
+      color: disabled ? buttonInfo.withValues(alpha: 0.5) : buttonInfo,
+      child: InkWell(
+      borderRadius: BorderRadius.circular(U.Theme.radius),
+        onTap: disabled ? null : onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 11),
+          // height: 40,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(U.Theme.radius),
+            color: disabled ? buttonInfo.withValues(alpha: 0.5) : buttonInfo,
+          ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (leading != null) ...[SizedBox(width: 9.2), leading!],
@@ -86,7 +90,7 @@ class Button extends StatelessWidget {
                     ? U.TextWeight.md
                     : U.TextWeight.bold,
               ),
-              if (trailing != null) ...[SizedBox(width: 26), trailing!],
+              if (trailing != null) ...[SizedBox(width: 23), trailing!],
             ],
           ),
         ),

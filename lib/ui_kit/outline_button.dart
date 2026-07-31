@@ -15,6 +15,7 @@ class OutlineButton extends StatelessWidget {
   final OutLineButtonForeground foregroundColor;
   final OutlineButtonSize size;
   final Widget? leading;
+  final MainAxisAlignment align;
 
   const OutlineButton({
     super.key,
@@ -25,6 +26,7 @@ class OutlineButton extends StatelessWidget {
     this.size = OutlineButtonSize.medium,
     this.foregroundColor = OutLineButtonForeground.secondary,
     this.leading,
+    this.align = MainAxisAlignment.center,
   });
 
   double get _size {
@@ -101,7 +103,8 @@ class OutlineButton extends StatelessWidget {
           ),
           child: Center(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: align,
               children: [
                 if (leading != null) ...[SizedBox(width: 15), leading!],
                 Flexible(
