@@ -50,7 +50,7 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 10),
+        // SizedBox(height: 10),
         const U.Text(
           text: 'Select Hour',
           textWeight: U.TextWeight.semiBold,

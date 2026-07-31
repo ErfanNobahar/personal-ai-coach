@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 class Image extends M.StatelessWidget {
   final String path;
   final BoxFit fit;
+  final Color? color;
   final double? width;
   final double? height;
 
@@ -13,19 +14,27 @@ class Image extends M.StatelessWidget {
     this.fit = BoxFit.contain,
     this.width,
     this.height,
+    this.color,
   });
 
-  const Image.icon({super.key, 
+  const Image.icon({
+    super.key,
+    this.color,
     required this.path,
     this.fit = BoxFit.contain,
     required double size,
-    }) : width = size, height = size;
-    
-  
+  }) : width = size,
+       height = size;
 
   @override
   M.Widget build(M.BuildContext context) {
-    return M.Image.asset(path, fit: fit, height: height, width: width);
+    return M.Image.asset(
+      path,
+      color: color,
+      fit: fit,
+      height: height,
+      width: width,
+    );
   }
 }
 
@@ -41,6 +50,8 @@ class Icons {
   static const String create = 'assets/icons/create.png';
   static const String progression = 'assets/icons/progression.png';
   static const String journey = 'assets/icons/journey.png';
+  static const String down = 'assets/icons/down.png';
+  static const String calendar = 'assets/icons/calendar.png';
 }
 
 class Images {
