@@ -15,6 +15,7 @@ class OutlineButton extends StatelessWidget {
   final OutLineButtonForeground foregroundColor;
   final OutlineButtonSize size;
   final Widget? leading;
+  final Widget? trailing;
   final MainAxisAlignment align;
 
   const OutlineButton({
@@ -26,6 +27,7 @@ class OutlineButton extends StatelessWidget {
     this.size = OutlineButtonSize.medium,
     this.foregroundColor = OutLineButtonForeground.secondary,
     this.leading,
+    this.trailing,
     this.align = MainAxisAlignment.center,
   });
 
@@ -123,6 +125,7 @@ class OutlineButton extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (trailing != null) ...[SizedBox(width: 10), trailing!],
               ],
             ),
           ),

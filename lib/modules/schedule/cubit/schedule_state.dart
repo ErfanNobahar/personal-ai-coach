@@ -4,12 +4,14 @@ enum ScheduleStatus { empty, filled }
 
 class ScheduleState {
   final bool loading;
+  final DayTask? task;
   final ScheduleStatus status;
   final List<SpecificTasks> dailyTasks;
   final SpecificTasks? selectedDay;
   final String selectedDayIndex;
   ScheduleState({
     required this.loading,
+    required this.task,
     required this.status,
     required this.dailyTasks,
     required this.selectedDay,
@@ -18,12 +20,14 @@ class ScheduleState {
 
   ScheduleState.init(this.dailyTasks)
     : loading = false,
+      task = null,
       status = ScheduleStatus.empty,
       selectedDay = null,
       selectedDayIndex = '';
 
   ScheduleState copyWith({
     bool? loading,
+    DayTask? task,
     ScheduleStatus? status,
     List<SpecificTasks>? dailyTasks,
     String? selectedDayIndex,
@@ -32,6 +36,7 @@ class ScheduleState {
     return ScheduleState(
       loading: loading ?? this.loading,
       status: status ?? this.status,
+      task: task ?? this.task,
       dailyTasks: dailyTasks ?? this.dailyTasks,
       selectedDayIndex: selectedDayIndex ?? this.selectedDayIndex,
       selectedDay: selectedDay ?? this.selectedDay,

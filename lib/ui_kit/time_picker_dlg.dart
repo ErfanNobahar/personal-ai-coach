@@ -5,10 +5,12 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 class TimePickerDialog extends StatefulWidget {
   final int currentTime;
   final List<int> occupiedTimes;
+  final Function(String)? onHourChanged;
   const TimePickerDialog({
     super.key,
     required this.currentTime,
     this.occupiedTimes = const [],
+    this.onHourChanged,
   });
 
   static Future<dynamic> show(
@@ -41,6 +43,16 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
   }
 
   @override
+  void didUpdateWidget(covariant TimePickerDialog oldWidget) {
+    if (oldWidget.currentTime != widget.currentTime) {
+      _selectedIndex = widget.currentTime;
+      _controller.jumpToItem(_selectedIndex);
+      setState(() {});
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -48,6 +60,8 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    print('currentTime');
+    print(widget.currentTime);
     return Column(
       children: [
         // SizedBox(height: 10),
@@ -142,11 +156,15 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                   title: 'OK',
                   onTap: () {
                     if (widget.occupiedTimes.contains(_selectedIndex)) {
-                      return ;
+                      return;
                     }
-                    GoRouter.of(
-                      context,
-                    ).pop('${_selectedIndex.toString().padLeft(2, '0')}:00');
+                    widget.onHourChanged != null
+                        ? widget.onHourChanged!(
+                            '${_selectedIndex.toString().padLeft(2, '0')}:00',
+                          )
+                        : GoRouter.of(context).pop(
+                            '${_selectedIndex.toString().padLeft(2, '0')}:00',
+                          );
                   },
                 ),
               ),

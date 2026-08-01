@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
+import 'package:personal_ai_coach/ui_kit/duration_picker_dlg.dart';
 part 'schedule_state.dart';
 
 class ScheduleCubit extends Cubit<ScheduleState> {
@@ -25,7 +27,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     final res = await _repo.readSchedule();
     final temp = res.where((e) {
       // print('${e.day} vssssss ${T.DateFormater.formater(DateTime.now())}');
-      return e.day == T.DateFormater.formater(DateTime.now());
+      return e.day == T.DateFormater.monthFormater(DateTime.now(), );
     }).first;
 
     final updatedSpecificTasks = temp.copyWith(
@@ -70,6 +72,84 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     // print(count);
   }
 
+  void onTaskCreated(DayTask task) {
+    if (task.date == '') {
+      toast('Pick a date!!');
+      return;
+    }
+    if (task.primaryTask.scheduledStartTime == '') {
+      toast('Pick a time!!');
+      return;
+    }
+    if (task.primaryTask.estimatedMinutes == 0) {
+      toast('Pick a date!!');
+      return;
+    }
+    emit(state.copyWith(task: task));
+  }
+
+  void onDateChanged(DateTime time) {
+    final temp = T.DateFormater.dayFormater(time);
+    print('tempppppppppppppppppppppp');
+    print(temp);
+    // final dateString = time.toString().split(' ')[0];
+    final dateString = T.DateFormater.monthFormater(time);
+    final currentTask = state.task;
+
+    final updatedTask = currentTask != null
+        ? currentTask.copyWith(date: dateString)
+        : DayTask(
+            date: dateString,
+            status: DayTaskStatus.pending,
+            scheduledTimeSlot: '',
+            scheduledTimeLabel: '',
+            primaryTask: PrimaryTask(
+              title: '',
+              description: '',
+              scheduledStartTime: '',
+              estimatedMinutes: 0,
+              id: '',
+              scheduledEndTime: '',
+              type: '',
+              whyItMatters: '',
+              suggestedSearches: [],
+            ),
+            supportingTasks: [],
+          );
+
+    emit(state.copyWith(task: updatedTask));
+    print(updatedTask);
+  }
+
+  void onHourChanged(String hour) {
+    emit(
+      state.copyWith(
+        task: state.task?.copyWith(
+          primaryTask: state.task?.primaryTask.copyWith(
+            scheduledStartTime: hour,
+          ),
+        ),
+      ),
+    );
+    print(hour);
+    print(state.task);
+  }
+
+  void onEstimatedTimeAssigned(TimeSlot slot) {
+    emit(
+      state.copyWith(
+        task: state.task!.copyWith(
+          primaryTask: state.task!.primaryTask.copyWith(
+            scheduledStartTime:
+                '${((slot.startMinutes ~/ 60).toString()).padLeft(2, '0')}:00',
+            estimatedMinutes: slot.endMinutes - slot.startMinutes,
+          ),
+        ),
+      ),
+    );
+    print('cukkkkkkkkkkkkkk;');
+    print(state.task?.primaryTask.scheduledStartTime);
+  }
   // Future<void> setTodaysStatus(){
 
   // }

@@ -13,6 +13,7 @@ class Button extends StatelessWidget {
   final Function() onTap;
   final ButtonColor buttonColor;
   final ButtonText? buttonText;
+  final MainAxisSize size;
   // final weight? fontWeight;
   final Widget? trailing;
   final Widget? leading;
@@ -20,6 +21,7 @@ class Button extends StatelessWidget {
   const Button({
     super.key,
     required this.title,
+    this.size = MainAxisSize.min,
     required this.onTap,
     this.disabled = false,
     this.buttonColor = ButtonColor.primary,
@@ -68,17 +70,17 @@ class Button extends StatelessWidget {
       borderRadius: BorderRadius.circular(U.Theme.radius),
       color: disabled ? buttonInfo.withValues(alpha: 0.5) : buttonInfo,
       child: InkWell(
-      borderRadius: BorderRadius.circular(U.Theme.radius),
+        borderRadius: BorderRadius.circular(U.Theme.radius),
         onTap: disabled ? null : onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 11),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 11),
           // height: 40,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(U.Theme.radius),
             color: disabled ? buttonInfo.withValues(alpha: 0.5) : buttonInfo,
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: size,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (leading != null) ...[SizedBox(width: 9.2), leading!],

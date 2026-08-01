@@ -89,7 +89,7 @@ class ChatCubit extends Cubit<ChatState> {
         .entries
         .map(
           ((e) => SpecificTasks(
-            day: T.DateFormater.formater(
+            day: T.DateFormater.monthFormater(
               e.key == 1
                   ? DateTime.now()
                   : DateTime.now().add(Duration(days: e.key - 1)),
