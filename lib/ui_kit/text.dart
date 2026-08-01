@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' as M;
 import 'package:flutter/widgets.dart';
+import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 enum TextWeight { sm, md, bold, semiBold }
 
@@ -75,4 +76,62 @@ class Text extends M.StatelessWidget {
       ),
     );
   }
+}
+
+class DurationText extends StatelessWidget {
+  final int minutes;
+  final TextStyle? style;
+  final bool showZeroMinutes;
+  final String hourSuffix;
+  final String minuteSuffix;
+  final String separator;
+
+  const DurationText(
+    this.minutes, {
+    super.key,
+    this.style,
+    this.showZeroMinutes = false,
+    this.hourSuffix = 'h',
+    this.minuteSuffix = 'm',
+    this.separator = ' ',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final text = formatDuration(
+      minutes,
+      showZeroMinutes: showZeroMinutes,
+      hourSuffix: hourSuffix,
+      minuteSuffix: minuteSuffix,
+      separator: separator,
+    );
+
+    return Text(text: text,textWeight: TextWeight.semiBold,
+    textSize: TextSize.s16,
+    color: U.Theme.primaryText,
+    );
+  }
+}
+
+String formatDuration(
+  int minutes, {
+  bool showZeroMinutes = false,
+  String hourSuffix = 'h',
+  String minuteSuffix = 'm',
+  String separator = ' ',
+}) {
+  if (minutes < 0) minutes = 0;
+
+  final hours = minutes ~/ 60;
+  final mins = minutes % 60;
+
+  if (hours == 0) {
+    return '$mins$minuteSuffix';
+  }
+
+  if (mins == 0 && !showZeroMinutes) {
+    return '$hours$hourSuffix';
+  }
+
+  return '$hours$hourSuffix$separator$mins$minuteSuffix';
 }
