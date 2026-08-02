@@ -22,12 +22,30 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   final taskDescriptionCtrl = TextEditingController();
   final taskTitleCtrl = TextEditingController();
   /////////// Functions
+  Future<void> getTimes(String day) async {
+    final res = await _repo.readByDay(day);
+    final temp = res?.tasks
+        .map(
+          (e) => TimeSlot(
+            startMinutes:
+                int.parse(e.primaryTask.scheduledStartTime.split(':')[0]) * 60,
+            endMinutes:
+                int.parse(e.primaryTask.scheduledStartTime.split(':')[0]) * 60 +
+                e.primaryTask.estimatedMinutes,
+          ),
+        )
+        .toList();
+    final ress = temp?.convertToInt;
+    print('resssssssssssssssssssssssssssss');
+    print(ress);
+    emit(state.copyWith(occupiedTimes: temp ?? [...?temp]));
+  }
 
   Future<void> getData() async {
     final res = await _repo.readSchedule();
     final temp = res.where((e) {
       // print('${e.day} vssssss ${T.DateFormater.formater(DateTime.now())}');
-      return e.day == T.DateFormater.monthFormater(DateTime.now(), );
+      return e.day == T.DateFormater.monthFormater(DateTime.now());
     }).first;
 
     final updatedSpecificTasks = temp.copyWith(
@@ -88,14 +106,12 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     emit(state.copyWith(task: task));
   }
 
-  void onDateChanged(DateTime time) {
+  Future<void> onDateChanged(DateTime time) async {
+    emit(state.copyWith(loading: true));
     final temp = T.DateFormater.dayFormater(time);
-    print('tempppppppppppppppppppppp');
-    print(temp);
-    // final dateString = time.toString().split(' ')[0];
     final dateString = T.DateFormater.monthFormater(time);
     final currentTask = state.task;
-
+    await getTimes(dateString);
     final updatedTask = currentTask != null
         ? currentTask.copyWith(date: dateString)
         : DayTask(
@@ -117,7 +133,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
             supportingTasks: [],
           );
 
-    emit(state.copyWith(task: updatedTask));
+    emit(state.copyWith(task: updatedTask, loading: false));
     print(updatedTask);
   }
 

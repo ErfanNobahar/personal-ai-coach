@@ -32,20 +32,16 @@ class TaskCubit extends Cubit<TaskState> {
 
   //////// Methods
   void onInit() async {
-    // print('>>> onInit START (called from ${StackTrace.current})');
     emit(state.copyWith(loading: true));
     await getTimes();
     emit(state.copyWith(loading: false));
-    // print('>>> onInit END');
   }
 
   void onScheduleChanged(DayTask task) async {
-    // print('>>> onScheduleChanged START task=${task.hashCode}');
     emit(state.copyWith(loading: true, task: task));
     await _repo.updateTasks(task);
     await getTimes();
     emit(state.copyWith(loading: false));
-    // print('>>> onScheduleChanged END');
   }
 
   void onStatusChanged(DayTask task) async {

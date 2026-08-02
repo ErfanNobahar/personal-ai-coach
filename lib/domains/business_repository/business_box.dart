@@ -94,6 +94,12 @@ abstract class BusinessBox {
     );
   }
 
+  static Future<SpecificTasks?> readByDay(String day) async {
+    final res = await getWeeklyTasks();
+    final temp = res.where((e) => e.day == day).firstOrNull;
+    return temp;
+  }
+
   static Future<SpecificTasks> readSpecificTask(DayTask task) async {
     final res = await getWeeklyTasks();
     final temp = res

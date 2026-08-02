@@ -152,6 +152,11 @@ class BusinessRepository {
     return res;
   }
 
+  Future<SpecificTasks?> readByDay(String date) async {
+    final res = await BusinessBox.readByDay(date);
+    return res;
+  }
+
   Future<List<Message>> readChatMessages() async {
     final res = [Message.ai(content: 'content')];
     Future.delayed(Duration(seconds: 2));

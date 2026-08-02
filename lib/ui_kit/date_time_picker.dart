@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
+import 'package:personal_ai_coach/ui_kit/duration_picker_dlg.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 
@@ -178,12 +179,36 @@ class _DateTimePickerState extends State<DateTimePicker> {
                       );
                     },
                     child: isTimeExpanded && !isHourExpanded
-                        ? CalendarDatePicker(
-                            key: const ValueKey('calendar'), // key is required!
-                            initialDate: widget.initialDate,
-                            firstDate: widget.firstDate,
-                            lastDate: widget.lastDate,
-                            onDateChanged: widget.onDateChanged,
+                        ? Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    color: U.Theme.secondaryButton.withValues(alpha: 0.3),
+                                  ),
+                                  child: CalendarDatePicker(
+                                    key: const ValueKey(
+                                      'calendar',
+                                    ), // key is required!
+                                    initialDate: widget.initialDate,
+                                    firstDate: widget.firstDate,
+                                    lastDate: widget.lastDate,
+                                    onDateChanged: widget.onDateChanged,
+                                  ),
+                                ),
+                              ),
+                              if (state.loading)
+                                Positioned.fill(
+                                  child: Container(
+                                    color: U.Theme.white.withValues(alpha: 0.4),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           )
                         : const SizedBox.shrink(
                             key: ValueKey('calendar-empty'),
@@ -259,6 +284,8 @@ class _DateTimePickerState extends State<DateTimePicker> {
                               child: U.DashedBox(
                                 showScissors: false,
                                 child: U.TimePickerDialog(
+                                  occupiedTimes:
+                                      state.occupiedTimes.convertToInt,
                                   currentTime:
                                       state
                                               .task

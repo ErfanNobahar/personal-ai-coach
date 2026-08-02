@@ -36,6 +36,23 @@ class TimeSlot {
   );
 }
 
+extension Slot on List<TimeSlot> {
+  List<int> get convertToInt {
+    List<int> temp = [];
+    for (var e in this) {
+      final res = List.generate(
+        ((e.endMinutes ~/ 60) + 1) - e.startMinutes ~/ 60,
+        (index) {
+          return e.startMinutes ~/ 60 + index ;
+        },
+        growable: true,
+      );
+      temp.addAll(res);
+    }
+    return temp;
+  }
+}
+
 /// Shows the circular duration/time picker as a dialog.
 ///
 /// [maxDurationMinutes] caps how long the selected range may be

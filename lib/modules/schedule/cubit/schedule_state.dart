@@ -7,6 +7,7 @@ class ScheduleState {
   final DayTask? task;
   final ScheduleStatus status;
   final List<SpecificTasks> dailyTasks;
+  final List<TimeSlot> occupiedTimes;
   final SpecificTasks? selectedDay;
   final String selectedDayIndex;
   ScheduleState({
@@ -16,11 +17,13 @@ class ScheduleState {
     required this.dailyTasks,
     required this.selectedDay,
     required this.selectedDayIndex,
+    required this.occupiedTimes,
   });
 
   ScheduleState.init(this.dailyTasks)
     : loading = false,
       task = null,
+      occupiedTimes = [],
       status = ScheduleStatus.empty,
       selectedDay = null,
       selectedDayIndex = '';
@@ -30,6 +33,7 @@ class ScheduleState {
     DayTask? task,
     ScheduleStatus? status,
     List<SpecificTasks>? dailyTasks,
+    List<TimeSlot>? occupiedTimes,
     String? selectedDayIndex,
     SpecificTasks? selectedDay,
   }) {
@@ -39,6 +43,7 @@ class ScheduleState {
       task: task ?? this.task,
       dailyTasks: dailyTasks ?? this.dailyTasks,
       selectedDayIndex: selectedDayIndex ?? this.selectedDayIndex,
+      occupiedTimes: occupiedTimes ?? this.occupiedTimes,
       selectedDay: selectedDay ?? this.selectedDay,
     );
   }
