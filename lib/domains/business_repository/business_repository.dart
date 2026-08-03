@@ -134,8 +134,8 @@ class BusinessRepository {
     await BusinessBox.setWeeklyTasks(tasks);
   }
 
-  Future<void> updateTasks(DayTask task) async {
-    await BusinessBox.updateTasks(task);
+  Future<void> updateTasks(DayTask task, {bool isNew = false}) async {
+    await BusinessBox.updateTasks(task, isNew: isNew);
   }
 
   Future<void> updateDays(List<SpecificTasks> tasks) async {

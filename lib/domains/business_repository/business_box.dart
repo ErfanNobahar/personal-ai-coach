@@ -113,26 +113,39 @@ abstract class BusinessBox {
     return temp;
   }
 
-  static Future<void> updateTasks(DayTask task) async {
+  static Future<void> updateTasks(DayTask task, {bool isNew = false}) async {
     final res = await getWeeklyTasks();
-    final temp = res
-        .map(
-          (weekEntry) => weekEntry.copyWith(
-            tasks: weekEntry.tasks.map((b) {
-              if (b.primaryTask.description == task.primaryTask.description) {
-                return b.copyWith(
-                  status: task.status,
-                  primaryTask: b.primaryTask.copyWith(
-                    scheduledStartTime: task.primaryTask.scheduledStartTime,
-                  ),
-                );
-              } else {
-                return b;
-              }
-            }).toList(),
-          ),
-        )
-        .toList();
+    List<SpecificTasks> temp;
+    if (isNew) {
+      temp = res.map((e) {
+        if (e.day == task.date) {
+          e.tasks.add(task);
+          final temp = e.tasks;
+          return e.copyWith(tasks: temp);
+        } else {
+          return e;
+        }
+      }).toList();
+    } else {
+      temp = res
+          .map(
+            (weekEntry) => weekEntry.copyWith(
+              tasks: weekEntry.tasks.map((b) {
+                if (b.primaryTask.description == task.primaryTask.description) {
+                  return b.copyWith(
+                    status: task.status,
+                    primaryTask: b.primaryTask.copyWith(
+                      scheduledStartTime: task.primaryTask.scheduledStartTime,
+                    ),
+                  );
+                } else {
+                  return b;
+                }
+              }).toList(),
+            ),
+          )
+          .toList();
+    }
     await setWeeklyTasks(temp, conflictCheck: false);
   }
 }

@@ -78,7 +78,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     emit(state.copyWith(loading: false));
   }
 
-  void onRefresh() async {
+  Future<void> onRefresh() async {
     emit(state.copyWith(loading: true));
     await getData();
     emit(state.copyWith(loading: false));
@@ -89,21 +89,44 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     // print('state.selectedDay');
     // print(count);
   }
+  String? _validate() {
+    final t = state.task?.primaryTask;
+    if (state.task == null) return 'please fill the required forms';
+    if ((t?.title.trim().isEmpty ?? true)) return 'Title is required!';
+    if ((t?.description.trim().isEmpty ?? true))
+      return 'Description is required!';
+    if (state.task?.date == null || state.task?.date == '')
+      return 'Pick a date!';
+    if (t?.scheduledStartTime == '') return 'Pick a time!';
+    if (t?.estimatedMinutes == 0) return 'Pick an estimation!';
+    return null;
+  }
 
-  void onTaskCreated(DayTask task) {
-    if (task.date == '') {
-      toast('Pick a date!!');
-      return;
+  Future<bool> onTaskCreated() async {
+    emit(
+      state.copyWith(
+        loading: true,
+        task: state.task?.copyWith(
+          primaryTask: state.task?.primaryTask.copyWith(
+            description: taskDescriptionCtrl.text,
+            title: taskTitleCtrl.text,
+          ),
+        ),
+      ),
+    );
+
+    final error = _validate();
+    if (error != null) {
+      toast(error);
+      emit(state.copyWith(loading: false));
+      return false;
     }
-    if (task.primaryTask.scheduledStartTime == '') {
-      toast('Pick a time!!');
-      return;
-    }
-    if (task.primaryTask.estimatedMinutes == 0) {
-      toast('Pick a date!!');
-      return;
-    }
-    emit(state.copyWith(task: task));
+
+    await _repo.updateTasks(state.task!, isNew: true);
+    await onRefresh();
+    toast('task created successfuly');
+    emit(state.copyWith(loading: false));
+    return true;
   }
 
   Future<void> onDateChanged(DateTime time) async {
@@ -113,7 +136,20 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     final currentTask = state.task;
     await getTimes(dateString);
     final updatedTask = currentTask != null
-        ? currentTask.copyWith(date: dateString)
+        ? currentTask.copyWith(
+            date: dateString,
+            primaryTask: PrimaryTask(
+              title: '',
+              description: '',
+              scheduledStartTime: '',
+              estimatedMinutes: 0,
+              id: '',
+              scheduledEndTime: '',
+              type: '',
+              whyItMatters: '',
+              suggestedSearches: [],
+            ),
+          )
         : DayTask(
             date: dateString,
             status: DayTaskStatus.pending,
