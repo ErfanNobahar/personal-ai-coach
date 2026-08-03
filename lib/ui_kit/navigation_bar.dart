@@ -3,8 +3,14 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class NavigationBar extends StatefulWidget {
   final List<NavBarItem> navItems;
-
-  const NavigationBar({super.key, required this.navItems});
+  final int selectedIndex;
+  final Function(int index) onIndexChanged;
+  const NavigationBar({
+    super.key,
+    required this.navItems,
+    required this.onIndexChanged,
+    required this.selectedIndex,
+  });
 
   @override
   State<NavigationBar> createState() => _NavigationBarState();
@@ -42,7 +48,9 @@ class _NavigationBarState extends State<NavigationBar> {
           snap: true,
           snapSizes: [minChildSize, _maxChildSize],
           builder: (context, scrollController) {
-            final primaryList = widget.navItems.where((e) => e.isPrimary);
+            final primaryList = widget.navItems
+                .where((e) => e.isPrimary)
+                .toList();
             final secondaryyList = widget.navItems
                 .where((e) => !e.isPrimary)
                 .toList();
@@ -111,9 +119,19 @@ class _NavigationBarState extends State<NavigationBar> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const SizedBox(width: 50),
-                                  ...primaryList.map(
-                                    (e) => PrimaryItem(path: e.path,onTap: e.onTap,),
-                                  ),
+                                  ...primaryList
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                        (e) => PrimaryItem(
+                                          isSelected:
+                                              widget.selectedIndex == e.key,
+                                          path: e.value.path,
+                                          onTap: () =>
+                                              widget.onIndexChanged(e.key),
+                                        ),
+                                      )
+                                      .toList(),
                                   const SizedBox(width: 50),
                                 ],
                               ),
@@ -152,27 +170,34 @@ class NavBarItem {
   final bool isPrimary;
   final String title;
   final String path;
-  final Function() onTap;
 
   NavBarItem({
     required this.isPrimary,
     required this.title,
     required this.path,
-    required this.onTap,
   });
 }
 
 class PrimaryItem extends StatelessWidget {
   final String path;
   final Function() onTap;
-
-  const PrimaryItem({super.key, required this.path, required this.onTap});
+  final bool isSelected;
+  const PrimaryItem({
+    super.key,
+    required this.path,
+    required this.onTap,
+    required this.isSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: U.Image.icon(path: path, size: 36));
+    return Material(
+      color: isSelected ? U.Theme.outlineHigh : null,
+      child: GestureDetector(
+        onTap: onTap,
+        child: U.Image.icon(path: path, size: 36),
+      ),
+    );
   }
 }
 

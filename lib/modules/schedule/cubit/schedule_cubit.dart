@@ -35,9 +35,6 @@ class ScheduleCubit extends Cubit<ScheduleState> {
           ),
         )
         .toList();
-    final ress = temp?.convertToInt;
-    print('resssssssssssssssssssssssssssss');
-    print(ress);
     emit(state.copyWith(occupiedTimes: temp ?? [...?temp]));
   }
 
@@ -53,11 +50,12 @@ class ScheduleCubit extends Cubit<ScheduleState> {
           .map(
             (e) => e.copyWith(
               status:
-                  (e.status != DayTaskStatus.completed &&
-                      DateTime.now().hour >
-                          int.parse(
-                            e.primaryTask.scheduledStartTime.split(':')[0],
-                          ))
+                  ((e.status != DayTaskStatus.completed &&
+                          DateTime.now().hour >
+                              int.parse(
+                                e.primaryTask.scheduledStartTime.split(':')[0],
+                              )) ||
+                      e.status == DayTaskStatus.skipped)
                   ? DayTaskStatus.skipped
                   : e.status,
             ),

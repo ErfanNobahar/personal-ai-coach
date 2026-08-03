@@ -1,0 +1,12 @@
+// import 'package:bloc/bloc.dart';
+// import 'package:equatable/equatable.dart';
+
+// part 'app_state.dart';
+
+// class AppCubit extends Cubit<AppState> {
+//   AppCubit() : super(AppState.init());
+
+//   void onIndexChanged(int index) {
+//     emit(state.copyWith(currentIndex: index));
+//   }
+// }

@@ -18,31 +18,18 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
-  List<GlobalKey> _pageKeys = [];
+  final Map<int, GlobalKey> _pageKeys = {};
   double _maxPageHeight = 0;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // _pageKeys = List.generate(
-  //   //   7,
-  //   //   // widget.initialTasks[0].tasks.length,
-  //   //   (_) => GlobalKey(),
-  //   // );
-  //   // Measure after first frame
-  //   WidgetsBinding.instance.addPostFrameCallback((_) => _measurePages());
-  // }
+  GlobalKey _keyFor(int index) =>
+      _pageKeys.putIfAbsent(index, () => GlobalKey());
 
-  void _measurePages() {
+  void _measurePages(int pageCount) {
     double maxHeight = 0;
-    for (final key in _pageKeys) {
-      final context = key.currentContext;
-      if (context != null) {
-        final box = context.findRenderObject() as RenderBox?;
-        if (box != null) {
-          maxHeight = math.max(maxHeight, box.size.height);
-        }
-      }
+    for (var i = 0; i < pageCount; i++) {
+      final context = _pageKeys[i]?.currentContext;
+      final box = context?.findRenderObject() as RenderBox?;
+      if (box != null) maxHeight = math.max(maxHeight, box.size.height);
     }
     if (maxHeight != _maxPageHeight && mounted) {
       setState(() => _maxPageHeight = maxHeight);
@@ -69,14 +56,11 @@ class _SchedulePageState extends State<SchedulePage> {
               (previous.dailyTasks.length != current.dailyTasks.length));
         },
         listener: (BuildContext context, ScheduleState state) {
-          final cubit = context.read<ScheduleCubit>();
-          // print('state.dailyTasks.lengthhhhhhhhhhhhhhh');
-          _pageKeys = List.generate(
-            state.dailyTasks.length,
-            // widget.initialTasks[0].tasks.length,
-            (_) => GlobalKey(),
+          final count = state.dailyTasks.length;
+          _pageKeys.removeWhere((index, _) => index >= count);
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _measurePages(count),
           );
-          WidgetsBinding.instance.addPostFrameCallback((_) => _measurePages());
         },
 
         builder: (context, state) {
@@ -119,7 +103,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                 final index = entry.key;
                                 final e = entry.value;
                                 return Container(
-                                  key: _pageKeys[index],
+                                  key: _keyFor(index),
                                   child: DailySchedule(tasks: e.tasks),
                                 );
                               }),
