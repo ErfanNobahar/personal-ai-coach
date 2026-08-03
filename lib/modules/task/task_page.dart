@@ -42,7 +42,15 @@ class TaskDetailPage extends StatelessWidget {
       ],
       child: BlocListener<TaskCubit, TaskState>(
         listenWhen: (previous, current) {
-          return ((previous.task != current.task) && current.loading == false);
+          print(';ffffffffffffffffffffffffuck');
+          print('${previous.task!.toMap()} vssss ${current.task!.toMap()} ');
+          print(
+            '${previous.task != current.task} vsss ${current.loading == false} and ',
+          );
+          return (((previous.task!.primaryTask.scheduledStartTime !=
+                      current.task!.primaryTask.scheduledStartTime) ||
+                  previous.task!.status != current.task!.status) &&
+              current.loading == false);
         },
         listener: (context, state) {
           context.read<ScheduleCubit>().onRefresh();
@@ -157,7 +165,8 @@ class TaskDetailPage extends StatelessWidget {
 
                           const SizedBox(height: 32),
                           _ActionButtons(
-                            skipped: state.task!.status == DayTaskStatus.skipped,
+                            skipped:
+                                state.task!.status == DayTaskStatus.skipped,
                             onComplete: () {
                               context.read<TaskCubit>().onStatusChanged(
                                 state.task!.copyWith(

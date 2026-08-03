@@ -158,7 +158,7 @@ class DayTask extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'date': date,
-      'status': 'fuccck',
+      'status': status.get,
       'scheduledTimeSlot': scheduledTimeSlot,
       'scheduledTimeLabel': scheduledTimeLabel,
       'primaryTask': primaryTask.toMap(),

@@ -18,7 +18,7 @@ class Text extends M.StatelessWidget {
   const Text({
     super.key,
     required this.text,
-    this.color,
+    this.color = U.Theme.primaryText,
     this.textSize = TextSize.s12,
     this.textWeight = TextWeight.md,
     this.isCentered = false,

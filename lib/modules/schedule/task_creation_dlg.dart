@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/ui_kit/duration_picker_dlg.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
@@ -10,11 +11,13 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 class TaskCreationDialolg extends StatelessWidget {
   static Future<dynamic> show(
     BuildContext context, {
+    DayTask? initialTask,
     ScheduleCubit? scheduleCubit,
   }) {
     return U.Dialog.show(
       radius: 15,
       isFullScreen: true,
+      useRootNavigator: true,
       pading: EdgeInsets.all(18),
       BlocProvider.value(
         value:

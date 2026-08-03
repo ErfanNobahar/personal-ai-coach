@@ -83,14 +83,16 @@ class Button extends StatelessWidget {
             mainAxisSize: size,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (leading != null) ...[SizedBox(width: 9.2), leading!],
-              U.Text(
-                text: title,
-                color: U.Theme.white,
-                textSize: getSize,
-                textWeight: leading != null || trailing != null
-                    ? U.TextWeight.md
-                    : U.TextWeight.bold,
+              if (leading != null) ...[leading!, SizedBox(width: 9.2)],
+              Flexible(
+                child: U.Text(
+                  text: title,
+                  color: U.Theme.white,
+                  textSize: getSize,
+                  textWeight: leading != null || trailing != null
+                      ? U.TextWeight.md
+                      : U.TextWeight.bold,
+                ),
               ),
               if (trailing != null) ...[SizedBox(width: 23), trailing!],
             ],

@@ -36,26 +36,26 @@ class HomeSell extends StatelessWidget {
                         title: 'title',
                         path: U.Icons.menu,
                       ),
-                      // U.NavBarItem(
-                      //   isPrimary: true,
-                      //   title: 'title',
-                      //   path: U.Icons.chat,
-                      // ),
-                      // U.NavBarItem(
-                      //   isPrimary: false,
-                      //   title: 'title',
-                      //   path: U.Icons.create,
-                      // ),
-                      // U.NavBarItem(
-                      //   isPrimary: false,
-                      //   title: 'tasks',
-                      //   path: U.Icons.progression,
-                      // ),
-                      // U.NavBarItem(
-                      //   isPrimary: false,
-                      //   title: 'journey',
-                      //   path: U.Icons.journey,
-                      // ),
+                      U.NavBarItem(
+                        isPrimary: true,
+                        title: 'title',
+                        path: U.Icons.chat,
+                      ),
+                      U.NavBarItem(
+                        isPrimary: false,
+                        title: 'title',
+                        path: U.Icons.create,
+                      ),
+                      U.NavBarItem(
+                        isPrimary: false,
+                        title: 'tasks',
+                        path: U.Icons.progression,
+                      ),
+                      U.NavBarItem(
+                        isPrimary: false,
+                        title: 'journey',
+                        path: U.Icons.journey,
+                      ),
                     ],
                   ),
                 ),

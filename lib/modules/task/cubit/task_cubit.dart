@@ -30,7 +30,7 @@ class TaskCubit extends Cubit<TaskState> {
     return temp;
   }
 
-  //////// Methods
+  //////// Events
   void onInit() async {
     emit(state.copyWith(loading: true));
     await getTimes();
@@ -45,8 +45,8 @@ class TaskCubit extends Cubit<TaskState> {
   }
 
   void onStatusChanged(DayTask task) async {
-    emit(state.copyWith(loading: true, task: task));
+    emit(state.copyWith(loading: true));
     await _repo.updateTasks(task);
-    emit(state.copyWith(loading: false));
+    emit(state.copyWith(loading: false, task: task));
   }
 }

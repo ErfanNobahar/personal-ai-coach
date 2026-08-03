@@ -52,10 +52,17 @@ class _SchedulePageState extends State<SchedulePage> {
       ),
       child: BlocConsumer<ScheduleCubit, ScheduleState>(
         listenWhen: (previous, current) {
-          return ((previous.loading != current.loading) ||
-              (previous.dailyTasks.length != current.dailyTasks.length));
+          print('previous.dailyTasks.length != current.dailyTasks.length');
+          print(previous.dailyTasks.length != current.dailyTasks.length);
+          return
+          // ((previous.loading != current.loading) ||
+          (previous.dailyTasks.length != current.dailyTasks.length
+          // )
+          );
         },
         listener: (BuildContext context, ScheduleState state) {
+          final cubit = context.read<ScheduleCubit>();
+          cubit.onRefresh();
           final count = state.dailyTasks.length;
           _pageKeys.removeWhere((index, _) => index >= count);
           WidgetsBinding.instance.addPostFrameCallback(
