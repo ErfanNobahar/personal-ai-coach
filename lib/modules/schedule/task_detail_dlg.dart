@@ -182,6 +182,18 @@ class TaskDetailDialog extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 15),
+              U.OutlineButton(
+                disabled:
+                    (state.task!.status == DayTaskStatus.completed ||
+                    state.task!.status == DayTaskStatus.completed),
+                leading: Icon(Icons.delete, color: U.Theme.primaryText),
+                title: 'Delete Task!',
+                onTap: () async {
+                  await context.read<TaskCubit>().onTaskDeleted();
+                  GoRouter.of(context).pop(true);
+                },
+              ),
             ],
           );
         },

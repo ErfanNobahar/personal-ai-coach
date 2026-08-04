@@ -82,51 +82,60 @@ class OutlineButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: _foregroundColor,
-      borderRadius: BorderRadiusGeometry.all(Radius.circular(50)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(50),
-        onTap: disabled ? null : onTap,
-        child: Container(
-          //TODO:
-          height: _size,
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 1,
-              color: disabled
-                  ? _color.border.withValues(alpha: 0.5)
-                  : _color.border,
+    return Opacity(
+      opacity: disabled ? 0.5 : 1.0,
+      child: Material(
+        color: _foregroundColor,
+        borderRadius: BorderRadiusGeometry.all(Radius.circular(50)),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(50),
+          onTap: disabled ? null : onTap,
+          child: Container(
+            //TODO:
+            height: _size,
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1,
+                color:
+                    //  disabled
+                    //     ? _color.border.withValues(alpha: 0.5)
+                    //     :
+                    _color.border,
+              ),
+              color:
+                  //  disabled
+                  //     ? _foregroundColor.withValues(alpha: 0.5)
+                  //     :
+                  _foregroundColor,
+              borderRadius: BorderRadius.circular(50),
             ),
-            color: disabled
-                ? _foregroundColor.withValues(alpha: 0.5)
-                : _foregroundColor,
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: align,
-              children: [
-                if (leading != null) ...[SizedBox(width: 15), leading!],
-                Flexible(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: U.Text(
-                      // maxLines: 5,
-                      softWrap: true,
-                      isCentered: true,
-                      text: title,
-                      color: disabled
-                          ? _color.text.withValues(alpha: 0.5)
-                          : _color.text,
-                      textSize: _color.size,
-                      textWeight: _color.weight,
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: align,
+                children: [
+                  if (leading != null) ...[SizedBox(width: 15), leading!],
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: U.Text(
+                        // maxLines: 5,
+                        softWrap: true,
+                        isCentered: true,
+                        text: title,
+                        color:
+                            //  disabled
+                            //     ? _color.text.withValues(alpha: 0.5)
+                            //     :
+                            _color.text,
+                        textSize: _color.size,
+                        textWeight: _color.weight,
+                      ),
                     ),
                   ),
-                ),
-                if (trailing != null) ...[SizedBox(width: 10), trailing!],
-              ],
+                  if (trailing != null) ...[SizedBox(width: 10), trailing!],
+                ],
+              ),
             ),
           ),
         ),

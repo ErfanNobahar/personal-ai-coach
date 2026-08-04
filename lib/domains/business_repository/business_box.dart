@@ -113,6 +113,27 @@ abstract class BusinessBox {
     return temp;
   }
 
+  static Future<void> deleteTask(DayTask task) async {
+    final weeklyTasks = await getWeeklyTasks();
+
+    final updated = weeklyTasks.map((day) {
+      if (day.day != task.date) return day;
+
+      final filtered = day.tasks
+          .where(
+            (t) => t.primaryTask.description != task.primaryTask.description,
+          )
+          .toList();
+      return day.copyWith(tasks: filtered);
+    }).toList();
+
+    await HiveDB.set(
+      boxName: boxName,
+      key: Keys.weeklyTasks.index.toString(),
+      value: updated.map((e) => e.toMap()).toList(),
+    );
+  }
+
   static Future<void> updateTasks(DayTask task, {bool isNew = false}) async {
     final res = await getWeeklyTasks();
     List<SpecificTasks> temp;

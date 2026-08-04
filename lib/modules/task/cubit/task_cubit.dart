@@ -37,6 +37,12 @@ class TaskCubit extends Cubit<TaskState> {
     emit(state.copyWith(loading: false));
   }
 
+  Future<void> onTaskDeleted() async {
+    emit(state.copyWith(loading: true));
+    await _repo.deleteTask(state.task!);
+    emit(state.copyWith(loading: false, task: null));
+  }
+
   void onScheduleChanged(DayTask task) async {
     emit(state.copyWith(loading: true, task: task));
     await _repo.updateTasks(task);

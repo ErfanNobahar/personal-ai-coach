@@ -225,30 +225,47 @@ class TaskCreationPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 0),
+               Container(
+                      padding: const EdgeInsets.all(10),
+                      color: U.Theme.onBackground,
+                      child: U.Button(
+                        title: 'Create Task',
+                        onTap: () async {
+                          final res = await context
+                              .read<ScheduleCubit>()
+                              .onTaskCreated();
+                          if (res && context.mounted) {
+                            context.read<HomeCubit>().onItemsRefreshed();
+                            GoRouter.of(context).pop();
+                          }
+                        },
+                      ),
+                    ),
                     const SizedBox(height: 125),
                   ],
                 ),
-                Positioned(
-                  bottom: 80,
-                  right: 0,
-                  left: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    color: U.Theme.onBackground,
-                    child: U.Button(
-                      title: 'Create Task',
-                      onTap: () async {
-                        final res = await context
-                            .read<ScheduleCubit>()
-                            .onTaskCreated();
-                        if (res && context.mounted) {
-                          context.read<HomeCubit>().onItemsRefreshed();
-                          GoRouter.of(context).pop();
-                        }
-                      },
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   bottom: 80,
+                //   right: 0,
+                //   left: 0,
+                //   child: Container(
+                //     padding: const EdgeInsets.all(10),
+                //     color: U.Theme.onBackground,
+                //     child: U.Button(
+                //       title: 'Create Task',
+                //       onTap: () async {
+                //         final res = await context
+                //             .read<ScheduleCubit>()
+                //             .onTaskCreated();
+                //         if (res && context.mounted) {
+                //           context.read<HomeCubit>().onItemsRefreshed();
+                //           GoRouter.of(context).pop();
+                //         }
+                //       },
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           );

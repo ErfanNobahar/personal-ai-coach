@@ -19,7 +19,30 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     this.initialTasks,
     this.initialTask,
   }) : _repo = repo,
-       super(ScheduleState.init(initialTasks ?? [], initialTask)) {
+       super(
+         ScheduleState.init(
+           initialTasks ?? [],
+           initialTask ??
+               DayTask(
+                 date: T.DateFormater.monthFormater(DateTime.now()),
+                 status: DayTaskStatus.pending,
+                 scheduledTimeSlot: '',
+                 scheduledTimeLabel: '',
+                 primaryTask: PrimaryTask(
+                   id: 'id',
+                   title: '',
+                   description: '',
+                   estimatedMinutes: 0,
+                   scheduledStartTime: '',
+                   scheduledEndTime: '',
+                   type: '',
+                   whyItMatters: '',
+                   suggestedSearches: [],
+                 ),
+                 supportingTasks: [],
+               ),
+         ),
+       ) {
     if (initialTask != null) {
       taskDescriptionCtrl.text = initialTask!.primaryTask.description;
       taskTitleCtrl.text = initialTask!.primaryTask.title;
@@ -88,6 +111,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   Future<void> onRefresh() async {
     emit(state.copyWith(loading: true));
     await getData();
+    if (state.task != null) await getTimes(state.task!.date);
     emit(state.copyWith(loading: false));
   }
 
@@ -129,11 +153,20 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       return false;
     }
 
+    // if()
     await _repo.updateTasks(state.task!, isNew: initialTask == null);
     await onRefresh();
     toast('task created successfuly');
     emit(state.copyWith(loading: false));
+    print('state.task.hashCodesssssssssssssssssssssssss');
+    print(state.task.toString());
     return true;
+  }
+
+  Future<void> onTaskDeleted() async {
+    emit(state.copyWith(loading: true));
+    await _repo.deleteTask(state.task!);
+    emit(state.copyWith(loading: false, task: null));
   }
 
   Future<void> onDateChanged(DateTime time) async {
@@ -143,39 +176,20 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     final dateString = T.DateFormater.monthFormater(time);
     final currentTask = state.task;
     await getTimes(dateString);
-    final updatedTask = currentTask != null
-        ? currentTask.copyWith(
-            date: dateString,
-            primaryTask: PrimaryTask(
-              title: taskTitleCtrl.text,
-              description: taskDescriptionCtrl.text,
-              scheduledStartTime: '',
-              estimatedMinutes: 0,
-              id: '',
-              scheduledEndTime: '',
-              type: '',
-              whyItMatters: '',
-              suggestedSearches: [],
-            ),
-          )
-        : DayTask(
-            date: dateString,
-            status: DayTaskStatus.pending,
-            scheduledTimeSlot: '',
-            scheduledTimeLabel: '',
-            primaryTask: PrimaryTask(
-              title: '',
-              description: '',
-              scheduledStartTime: '',
-              estimatedMinutes: 0,
-              id: '',
-              scheduledEndTime: '',
-              type: '',
-              whyItMatters: '',
-              suggestedSearches: [],
-            ),
-            supportingTasks: [],
-          );
+    final updatedTask = currentTask!.copyWith(
+      date: dateString,
+      primaryTask: PrimaryTask(
+        title: taskTitleCtrl.text,
+        description: taskDescriptionCtrl.text,
+        scheduledStartTime: '',
+        estimatedMinutes: 0,
+        id: '',
+        scheduledEndTime: '',
+        type: '',
+        whyItMatters: '',
+        suggestedSearches: [],
+      ),
+    );
 
     emit(state.copyWith(task: updatedTask, loading: false));
     print(updatedTask);

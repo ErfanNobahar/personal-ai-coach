@@ -161,7 +161,7 @@ class TaskDetailPage extends StatelessWidget {
                           const SizedBox(height: 32),
                           _ActionButtons(
                             skipped:
-                                state.task!.status == DayTaskStatus.skipped,
+                                state.task!.status != DayTaskStatus.pending,
                             onComplete: () {
                               context.read<TaskCubit>().onStatusChanged(
                                 state.task!.copyWith(
@@ -516,11 +516,31 @@ class _ActionButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        U.Button(
-          disabled: skipped,
-          title: 'Mark as compelete',
-          onTap: onComplete,
-          buttonColor: U.ButtonColor.primary,
+        Row(
+          children: [
+            Expanded(
+              flex: 70,
+              child: U.Button(
+                disabled: skipped,
+                title: 'Mark as compelete',
+                onTap: onComplete,
+                buttonColor: U.ButtonColor.primary,
+              ),
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              flex: 30,
+              child: U.OutlineButton(
+                disabled: skipped,
+                title: 'Delete',
+                trailing: Icon(Icons.delete, color: U.Theme.primaryText),
+                onTap: () async {
+                  await context.read<ScheduleCubit>().onTaskDeleted();
+                  GoRouter.of(context).pop();
+                },
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 10),
         Row(

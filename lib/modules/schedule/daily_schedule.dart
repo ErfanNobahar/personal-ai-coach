@@ -74,7 +74,11 @@ class TaskCard extends StatelessWidget {
                   // context,
                   // ).pushNamed(TaskCreationPage.route, extra: task);
                   if (task.primaryTask.suggestedSearches.isEmpty) {
-                    TaskDetailDialog.show(context, task: task);
+                    final temp = await TaskDetailDialog.show(
+                      context,
+                      task: task,
+                    );
+                    if (temp) context.read<ScheduleCubit>().onRefresh();
                   } else {
                     GoRouter.of(context).pushNamed(
                       TaskDetailPage.route,

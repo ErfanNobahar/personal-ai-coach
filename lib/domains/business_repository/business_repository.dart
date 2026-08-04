@@ -138,6 +138,10 @@ class BusinessRepository {
     await BusinessBox.updateTasks(task, isNew: isNew);
   }
 
+  Future<void> deleteTask(DayTask task) async {
+   await BusinessBox.deleteTask(task);
+  }
+
   Future<void> updateDays(List<SpecificTasks> tasks) async {
     await BusinessBox.setWeeklyTasks(tasks, conflictCheck: false);
   }

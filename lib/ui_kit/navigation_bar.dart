@@ -192,10 +192,14 @@ class PrimaryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: isSelected ? U.Theme.outlineHigh : null,
-      child: GestureDetector(
-        onTap: onTap,
-        child: U.Image.icon(path: path, size: 36),
+      borderRadius: BorderRadius.circular(12),
+      color: isSelected ? U.Theme.outlineHigh.withValues(alpha: 0.4) : null,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GestureDetector(
+          onTap: onTap,
+          child: U.Image.icon(path: path, size: 36),
+        ),
       ),
     );
   }
