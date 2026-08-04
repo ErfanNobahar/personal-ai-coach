@@ -20,9 +20,8 @@ class ScheduleState {
     required this.occupiedTimes,
   });
 
-  ScheduleState.init(this.dailyTasks)
+  ScheduleState.init(this.dailyTasks, this.task)
     : loading = false,
-      task = null,
       occupiedTimes = [],
       status = ScheduleStatus.empty,
       selectedDay = null,

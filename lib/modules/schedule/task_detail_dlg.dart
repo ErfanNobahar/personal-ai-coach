@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
@@ -175,7 +174,9 @@ class TaskDetailDialog extends StatelessWidget {
                       title: 'Edit',
                       onTap: () {
                         GoRouter.of(context).pop();
-                        TaskCreationDialolg.show(context);
+                        GoRouter.of(
+                          context,
+                        ).pushNamed(TaskCreationPage.route, extra: state.task);
                       },
                     ),
                   ),

@@ -8,4 +8,8 @@ class HomeCubit extends Cubit<HomeState> {
   void onIndexChanged(int index) {
     emit(state.copyWith(selectedIndex: index));
   }
+
+  void onItemsRefreshed() {
+    emit(state.copyWith(itemsRefreshed: state.itemsRefreshed + 1));
+  }
 }

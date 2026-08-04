@@ -42,11 +42,6 @@ class TaskDetailPage extends StatelessWidget {
       ],
       child: BlocListener<TaskCubit, TaskState>(
         listenWhen: (previous, current) {
-          print(';ffffffffffffffffffffffffuck');
-          print('${previous.task!.toMap()} vssss ${current.task!.toMap()} ');
-          print(
-            '${previous.task != current.task} vsss ${current.loading == false} and ',
-          );
           return (((previous.task!.primaryTask.scheduledStartTime !=
                       current.task!.primaryTask.scheduledStartTime) ||
                   previous.task!.status != current.task!.status) &&

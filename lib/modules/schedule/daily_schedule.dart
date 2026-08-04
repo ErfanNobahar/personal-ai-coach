@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/modules/schedule/task_creation_dlg.dart';
+import 'package:personal_ai_coach/modules/schedule/task_detail_dlg.dart';
+import 'package:personal_ai_coach/modules/task/task_page.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class DailySchedule extends StatelessWidget {
@@ -68,25 +70,23 @@ class TaskCard extends StatelessWidget {
               flex: 70,
               child: InkWell(
                 onTap: () async {
-                  TaskCreationDialolg.show(
-                    
-                    context,
-                    scheduleCubit: context.read<ScheduleCubit>(),
-                  );
-                  // if (task.primaryTask.suggestedSearches.isEmpty) {
-                  // TaskDetailDialog.show(context, task: task);
-                  // } else {
-                  // final temp = await GoRouter.of(context).pushNamed(
-                  // TaskDetailPage.route,
-                  // extra: {
-                  // 'task': task,
-                  // 'cubit': context.read<ScheduleCubit>(),
-                  // },
-                  // );
-                  // if (temp == true) {
-                  // context.read<ScheduleCubit>().onRefresh();
-                  // }
-                  // }
+                  // GoRouter.of(
+                  // context,
+                  // ).pushNamed(TaskCreationPage.route, extra: task);
+                  if (task.primaryTask.suggestedSearches.isEmpty) {
+                    TaskDetailDialog.show(context, task: task);
+                  } else {
+                    GoRouter.of(context).pushNamed(
+                      TaskDetailPage.route,
+                      extra: {
+                        'task': task,
+                        'cubit': context.read<ScheduleCubit>(),
+                      },
+                    );
+                    // if (temp == true) {
+                    //   context.read<ScheduleCubit>().onRefresh();
+                    // }
+                  }
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16),

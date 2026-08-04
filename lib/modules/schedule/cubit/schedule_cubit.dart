@@ -11,11 +11,19 @@ part 'schedule_state.dart';
 class ScheduleCubit extends Cubit<ScheduleState> {
   final BusinessRepository _repo;
   final List<SpecificTasks>? initialTasks;
+  final DayTask? initialTask;
   final ScrollController tabCtril = ScrollController();
   final PageController pageCtrl = PageController();
-  ScheduleCubit({required BusinessRepository repo, this.initialTasks})
-    : _repo = repo,
-      super(ScheduleState.init(initialTasks ?? [])) {
+  ScheduleCubit({
+    required BusinessRepository repo,
+    this.initialTasks,
+    this.initialTask,
+  }) : _repo = repo,
+       super(ScheduleState.init(initialTasks ?? [], initialTask)) {
+    if (initialTask != null) {
+      taskDescriptionCtrl.text = initialTask!.primaryTask.description;
+      taskTitleCtrl.text = initialTask!.primaryTask.title;
+    }
     onInit();
   }
 
@@ -73,6 +81,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   void onInit() async {
     emit(state.copyWith(loading: true));
     await getData();
+    if (state.task != null) await getTimes(state.task!.date);
     emit(state.copyWith(loading: false));
   }
 
@@ -120,7 +129,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       return false;
     }
 
-    await _repo.updateTasks(state.task!, isNew: true);
+    await _repo.updateTasks(state.task!, isNew: initialTask == null);
     await onRefresh();
     toast('task created successfuly');
     emit(state.copyWith(loading: false));
@@ -129,7 +138,8 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
   Future<void> onDateChanged(DateTime time) async {
     emit(state.copyWith(loading: true));
-    final temp = T.DateFormater.dayFormater(time);
+    // final temp = T.DateFormater.dayFormater(time);
+
     final dateString = T.DateFormater.monthFormater(time);
     final currentTask = state.task;
     await getTimes(dateString);
@@ -137,8 +147,8 @@ class ScheduleCubit extends Cubit<ScheduleState> {
         ? currentTask.copyWith(
             date: dateString,
             primaryTask: PrimaryTask(
-              title: '',
-              description: '',
+              title: taskTitleCtrl.text,
+              description: taskDescriptionCtrl.text,
               scheduledStartTime: '',
               estimatedMinutes: 0,
               id: '',
