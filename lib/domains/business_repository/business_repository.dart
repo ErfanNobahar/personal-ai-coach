@@ -138,8 +138,14 @@ class BusinessRepository {
     await BusinessBox.updateTasks(task, isNew: isNew);
   }
 
+  Future<bool> checkIfTaskExists(DayTask task) async {
+    final res = await BusinessBox.checkIfTaskExists(task);
+    print('checkIfTaskExists: $res');
+    return res;
+  }
+
   Future<void> deleteTask(DayTask task) async {
-   await BusinessBox.deleteTask(task);
+    await BusinessBox.deleteTask(task);
   }
 
   Future<void> updateDays(List<SpecificTasks> tasks) async {

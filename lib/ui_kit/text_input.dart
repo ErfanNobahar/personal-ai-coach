@@ -38,7 +38,6 @@ class _TextInputState extends State<TextInput> {
     }
     focusNode.addListener(() {
       isFocused = focusNode.hasFocus;
-      print(isFocused);
       setState(() {});
     });
     super.initState();

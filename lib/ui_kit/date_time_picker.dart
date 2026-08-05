@@ -33,14 +33,10 @@ class _DateTimePickerState extends State<DateTimePicker> {
         return BlocListener<ScheduleCubit, ScheduleState>(
           listenWhen: (previous, current) => previous != current,
           listener: (context, state) {
-            print('state.tasksjpoijpoijpoikjnpoikjp\n');
-            print('${state.task?.toMap()}\n');
             // TODO: implement listener
           },
           child: BlocBuilder<ScheduleCubit, ScheduleState>(
             builder: (context, state) {
-              print('==================================');
-              print('${state.task?.primaryTask.scheduledStartTime == ''} vs  ');
               // print(state.task?.primaryTask.scheduledStartTime);
               return Column(
                 mainAxisSize: MainAxisSize.min,

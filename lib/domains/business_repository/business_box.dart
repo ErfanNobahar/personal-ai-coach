@@ -36,6 +36,26 @@ abstract class BusinessBox {
     return temp;
   }
 
+  static Future<bool> checkIfTaskExists(DayTask task) async {
+    print('checkIfTaskExists: ${task.primaryTask.description}');
+    print('===============================================');
+    final res = await getWeeklyTasks();
+    final temp = res
+        .where(
+          (e) => e.tasks.any((b) {
+            print('b.primaryTask: ${b.primaryTask}');
+            print('task.primaryTask: ${task.primaryTask}\n');
+            return b.primaryTask == task.primaryTask;
+          }),
+        )
+        .toList()
+        .firstOrNull;
+    if (temp != null) {
+      return true;
+    }
+    return false;
+  }
+
   static Future<void> setWeeklyTasks(
     List<SpecificTasks> tasks, {
     bool conflictCheck = true,
@@ -102,12 +122,15 @@ abstract class BusinessBox {
 
   static Future<SpecificTasks> readSpecificTask(DayTask task) async {
     final res = await getWeeklyTasks();
+    // print('boooooooooooxtask');
+    // print(task);
     final temp = res
         .where(
-          (e) => e.tasks.any(
-            (b) => b.primaryTask.description == task.primaryTask.description,
-          ),
+          (e) => e.tasks.any((elements) {
+            return elements.primaryTask == task.primaryTask;
+          }),
         )
+        .toList()
         .first;
     // final temp = res.where((e) => e.tasks.contains(task)).toList().first;
     return temp;

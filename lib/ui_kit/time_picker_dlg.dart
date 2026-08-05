@@ -18,8 +18,6 @@ class TimePickerDialog extends StatefulWidget {
     List<int> occupiedTimes = const [],
     required BuildContext context,
   }) {
-    print('occupiedTimessssss');
-    print(occupiedTimes);
     return U.Dialog.show(
       TimePickerDialog(currentTime: currentTime, occupiedTimes: occupiedTimes),
       context: context,
@@ -60,12 +58,10 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print('currentTime');
-    print(widget.currentTime);
     return Container(
       decoration: BoxDecoration(
-              color: U.Theme.white.withValues(alpha: 0.5),
-borderRadius: BorderRadius.circular(15) 
+        color: U.Theme.white.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
@@ -95,7 +91,7 @@ borderRadius: BorderRadius.circular(15)
                     ),
                   ),
                 ),
-      
+
                 // The scroll wheel
                 ListWheelScrollView.useDelegate(
                   controller: _controller,
@@ -155,6 +151,7 @@ borderRadius: BorderRadius.circular(15)
                 SizedBox(width: 12),
                 Flexible(
                   child: U.OutlineButton(
+                    disabled: widget.occupiedTimes.contains(_selectedIndex),
                     color: U.OutLineButtonColor.secondary,
                     foregroundColor: U.OutLineButtonForeground.secondary,
                     // size: U.OutlineButtonSize.large,

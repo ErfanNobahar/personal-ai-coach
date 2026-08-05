@@ -46,6 +46,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     if (initialTask != null) {
       taskDescriptionCtrl.text = initialTask!.primaryTask.description;
       taskTitleCtrl.text = initialTask!.primaryTask.title;
+      print('shhhhit');
     }
     onInit();
   }
@@ -137,29 +138,41 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     emit(
       state.copyWith(
         loading: true,
-        task: state.task?.copyWith(
-          primaryTask: state.task?.primaryTask.copyWith(
+        task: state.task!.copyWith(
+          primaryTask: state.task!.primaryTask.copyWith(
             description: taskDescriptionCtrl.text,
             title: taskTitleCtrl.text,
           ),
         ),
       ),
     );
+    final ress = await _repo.checkIfTaskExists(state.task!);
+    if (ress) {
+      toast('Task already exists!');
+      return false;
+    }
 
+    final ints = state.occupiedTimes.convertToInt;
+    if (ints.contains(
+      int.parse(state.task!.primaryTask.scheduledStartTime.split(':')[0]),
+    )) {
+      toast('task time conflicts!! please change the time');
+      return false;
+    }
     final error = _validate();
     if (error != null) {
       toast(error);
       emit(state.copyWith(loading: false));
+
       return false;
     }
 
-    // if()
     await _repo.updateTasks(state.task!, isNew: initialTask == null);
+    print('1111111111111111111');
     await onRefresh();
+    print('2222222222222222222');
     toast('task created successfuly');
     emit(state.copyWith(loading: false));
-    print('state.task.hashCodesssssssssssssssssssssssss');
-    print(state.task.toString());
     return true;
   }
 
@@ -214,6 +227,8 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       state.copyWith(
         task: state.task!.copyWith(
           primaryTask: state.task!.primaryTask.copyWith(
+            description: taskDescriptionCtrl.text,
+            title: taskTitleCtrl.text,
             scheduledStartTime:
                 '${((slot.startMinutes ~/ 60).toString()).padLeft(2, '0')}:00',
             estimatedMinutes: slot.endMinutes - slot.startMinutes,

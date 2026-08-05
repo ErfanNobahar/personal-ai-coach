@@ -30,8 +30,6 @@ class TaskDetailDialog extends StatelessWidget {
       padding: const EdgeInsets.all(11.0),
       child: BlocBuilder<TaskCubit, TaskState>(
         builder: (context, state) {
-          print('object');
-          print(state.task!.status.get);
           return ListView(
             // crossAxisAlignment: CrossAxisAlignment.start,
             children: [

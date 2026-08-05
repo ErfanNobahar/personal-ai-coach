@@ -337,14 +337,18 @@ class PrimaryTask extends Equatable {
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 
-  @override
-  List<Object?> get props => [
-    id,
-    type,
-    whyItMatters,
-    title,
-    scheduledStartTime,
-  ];
+@override
+List<Object?> get props => [
+  id,
+  type,
+  whyItMatters,
+  title,
+  description,          // add this
+  scheduledStartTime,
+  scheduledEndTime,      // recommend adding
+  estimatedMinutes,      // recommend adding
+  suggestedSearches,     // recommend adding
+];
 }
 
 extension Primary on List<DayTask> {
