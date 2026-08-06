@@ -147,12 +147,9 @@ class _NavigationBarState extends State<NavigationBar> {
                         final end = (start + 2 > secondaryyList.length)
                             ? secondaryyList.length
                             : start + 2;
-                        print('startssssssssssssssss');
-                        print(start);
                         return ChunkItems(
+                          selectedIndex: widget.selectedIndex - end,
                           onTap: (s) {
-                            print('the fucking sss');
-                            print(s);
                             widget.onIndexChanged(start + s + 2);
                           },
                           list: secondaryyList.sublist(start, end),
@@ -215,12 +212,14 @@ class PrimaryItem extends StatelessWidget {
 class SecondaryItem extends StatelessWidget {
   final String path;
   final String title;
+  final bool isSelected;
   final Function() onTap;
   const SecondaryItem({
     super.key,
     required this.path,
     required this.title,
     required this.onTap,
+    required this.isSelected,
   });
 
   @override
@@ -230,7 +229,9 @@ class SecondaryItem extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: const Color(0xFFF8FCFF),
+          color: isSelected
+              ? U.Theme.outlineHigh.withValues(alpha: 0.4)
+              : Color(0xFFF8FCFF),
         ),
         // margin: const EdgeInsets.all(24),
         child: Padding(
@@ -253,9 +254,15 @@ class SecondaryItem extends StatelessWidget {
 }
 
 class ChunkItems extends StatelessWidget {
+  final int selectedIndex;
   final List<NavBarItem> list;
   final Function(int index) onTap;
-  const ChunkItems({super.key, required this.list, required this.onTap});
+  const ChunkItems({
+    super.key,
+    required this.list,
+    required this.onTap,
+    required this.selectedIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +279,7 @@ class ChunkItems extends StatelessWidget {
           children: [
             ...list.asMap().entries.map(
               (e) => SecondaryItem(
+                isSelected: selectedIndex == e.key,
                 path: e.value.path,
                 title: e.value.title,
                 onTap: () {

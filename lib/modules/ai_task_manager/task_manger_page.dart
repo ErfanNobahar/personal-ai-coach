@@ -18,8 +18,7 @@ class TaskMangerPage extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: U.Theme.afternoonPallet.getColors,
-          ),
+            colors: U.Theme.afternoonPallet.getColors),
         ),
         child: Stack(
           children: [
