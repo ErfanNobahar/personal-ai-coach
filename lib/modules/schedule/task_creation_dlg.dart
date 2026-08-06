@@ -52,6 +52,7 @@ class TaskCreationPage extends StatelessWidget {
       child: BlocListener<HomeCubit, HomeState>(
         listenWhen: (previous, current) => current.selectedIndex == 1,
         listener: (context, state) {
+          print('objectsssssssssssss');
           context.read<ScheduleCubit>().onRefresh();
         },
         child: BlocBuilder<ScheduleCubit, ScheduleState>(

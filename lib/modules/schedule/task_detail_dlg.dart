@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/modules/home/cubit/home_cubit.dart';
 import 'package:personal_ai_coach/modules/schedule/task_creation_dlg.dart';
 import 'package:personal_ai_coach/modules/task/cubit/task_cubit.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
@@ -10,12 +11,21 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 class TaskDetailDialog extends StatelessWidget {
   const TaskDetailDialog({super.key});
 
-  static Future<dynamic> show(BuildContext context, {required DayTask task}) {
+  static Future<dynamic> show(
+    BuildContext context, {
+    required DayTask task,
+    HomeCubit? cubit,
+  }) {
     return U.Dialog.show(
       useRootNavigator: true,
-      BlocProvider(
-        create: (context) =>
-            TaskCubit(task: task, repo: context.read<BusinessRepository>()),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) =>
+                TaskCubit(task: task, repo: context.read<BusinessRepository>()),
+          ),
+          BlocProvider.value(value: cubit ?? HomeCubit()),
+        ],
         child: TaskDetailDialog(),
       ),
       maxHeight: 454,
@@ -158,10 +168,11 @@ class TaskDetailDialog extends StatelessWidget {
                           state.task!.status == DayTaskStatus.skipped),
                       leading: Icon(Icons.done, color: U.Theme.white),
                       title: 'Mark as Done',
-                      onTap: () {
-                        context.read<TaskCubit>().onStatusChanged(
+                      onTap: () async {
+                        await context.read<TaskCubit>().onStatusChanged(
                           state.task!.copyWith(status: DayTaskStatus.completed),
                         );
+                        context.read<HomeCubit>().onItemsRefreshed();
                       },
                     ),
                   ),
@@ -189,6 +200,7 @@ class TaskDetailDialog extends StatelessWidget {
                 title: 'Delete Task!',
                 onTap: () async {
                   await context.read<TaskCubit>().onTaskDeleted();
+                  context.read<HomeCubit>().onItemsRefreshed();
                   GoRouter.of(context).pop(true);
                 },
               ),

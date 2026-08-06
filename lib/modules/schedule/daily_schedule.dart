@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/modules/home/cubit/home_cubit.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/modules/schedule/task_creation_dlg.dart';
 import 'package:personal_ai_coach/modules/schedule/task_detail_dlg.dart';
@@ -77,8 +78,9 @@ class TaskCard extends StatelessWidget {
                     final temp = await TaskDetailDialog.show(
                       context,
                       task: task,
+                      cubit: context.read<HomeCubit>()
                     );
-                    if (temp) context.read<ScheduleCubit>().onRefresh();
+                    //  context.read<ScheduleCubit>().onRefresh();
                   } else {
                     GoRouter.of(context).pushNamed(
                       TaskDetailPage.route,

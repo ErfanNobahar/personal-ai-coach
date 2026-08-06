@@ -56,6 +56,11 @@ class HomeSell extends StatelessWidget {
                         title: 'journey',
                         path: U.Icons.journey,
                       ),
+                      U.NavBarItem(
+                        isPrimary: false,
+                        title: 'Ai masnager',
+                        path: U.Icons.journey,
+                      ),
                     ],
                   ),
                 ),

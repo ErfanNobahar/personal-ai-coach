@@ -50,7 +50,7 @@ class TaskCubit extends Cubit<TaskState> {
     emit(state.copyWith(loading: false));
   }
 
-  void onStatusChanged(DayTask task) async {
+  Future<void> onStatusChanged(DayTask task) async {
     emit(state.copyWith(loading: true));
     await _repo.updateTasks(task);
     emit(state.copyWith(loading: false, task: task));

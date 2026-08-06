@@ -147,7 +147,14 @@ class _NavigationBarState extends State<NavigationBar> {
                         final end = (start + 2 > secondaryyList.length)
                             ? secondaryyList.length
                             : start + 2;
+                        print('startssssssssssssssss');
+                        print(start);
                         return ChunkItems(
+                          onTap: (s) {
+                            print('the fucking sss');
+                            print(s);
+                            widget.onIndexChanged(start + s + 2);
+                          },
                           list: secondaryyList.sublist(start, end),
                         );
                       },
@@ -208,28 +215,37 @@ class PrimaryItem extends StatelessWidget {
 class SecondaryItem extends StatelessWidget {
   final String path;
   final String title;
-  const SecondaryItem({super.key, required this.path, required this.title});
+  final Function() onTap;
+  const SecondaryItem({
+    super.key,
+    required this.path,
+    required this.title,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: const Color(0xFFF8FCFF),
-      ),
-      // margin: const EdgeInsets.all(24),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 20),
-        child: Column(
-          children: [
-            U.Image.icon(path: path, size: 64),
-            const SizedBox(height: 18),
-            U.Text(
-              text: title,
-              textSize: U.TextSize.s18,
-              textWeight: U.TextWeight.bold,
-            ),
-          ],
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: const Color(0xFFF8FCFF),
+        ),
+        // margin: const EdgeInsets.all(24),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 20),
+          child: Column(
+            children: [
+              U.Image.icon(path: path, size: 64),
+              const SizedBox(height: 18),
+              U.Text(
+                text: title,
+                textSize: U.TextSize.s18,
+                textWeight: U.TextWeight.bold,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -238,7 +254,8 @@ class SecondaryItem extends StatelessWidget {
 
 class ChunkItems extends StatelessWidget {
   final List<NavBarItem> list;
-  const ChunkItems({super.key, required this.list});
+  final Function(int index) onTap;
+  const ChunkItems({super.key, required this.list, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -253,7 +270,15 @@ class ChunkItems extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ...list.map((e) => SecondaryItem(path: e.path, title: e.title)),
+            ...list.asMap().entries.map(
+              (e) => SecondaryItem(
+                path: e.value.path,
+                title: e.value.title,
+                onTap: () {
+                  onTap(e.key);
+                },
+              ),
+            ),
           ],
         ),
       ),

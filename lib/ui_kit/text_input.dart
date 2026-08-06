@@ -5,6 +5,7 @@ class TextInput extends StatefulWidget {
   final TextEditingController controller;
   final int? maxLines;
   final int? minLines;
+  final double borderRadius;
   final bool expands;
   final InputBorder inputBorder;
   final Color color;
@@ -16,6 +17,7 @@ class TextInput extends StatefulWidget {
     required this.controller,
     this.maxLines = 1,
     this.minLines,
+    this.borderRadius = 15.0,
     this.expands = false,
     this.color = U.Theme.divider,
     this.inputBorder = InputBorder.none,
@@ -56,7 +58,7 @@ class _TextInputState extends State<TextInput> {
           border: Border.all(
             color: isFocused ? U.Theme.primaryBorder : widget.color,
           ),
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
           color: widget.color,
         ),
         child: TextField(

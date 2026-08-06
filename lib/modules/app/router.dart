@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:personal_ai_coach/modules/ai_task_manager/task_manger_page.dart';
 import 'package:personal_ai_coach/modules/chat/chat_page.dart';
 import 'package:personal_ai_coach/modules/home/home.dart';
 import 'package:personal_ai_coach/modules/roadmap/roadmap_page.dart';
@@ -82,6 +83,17 @@ final router = GoRouter(
               path: ChatPge.route,
               name: ChatPge.route,
               builder: (context, state) => ChatPge(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: TaskMangerPage.route,
+              name: TaskMangerPage.route,
+              builder: (context, state) {
+                return TaskMangerPage();
+              },
             ),
           ],
         ),

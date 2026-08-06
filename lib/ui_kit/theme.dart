@@ -25,6 +25,7 @@ class Theme {
   static const surface = Color(0xFFCBFBF9);
   static const surfaceLight = Color(0xFFBAA9F6);
   static const surfaceHigh = Color(0xFF4E38B2);
+  static const field = Color(0xFFFAFBFC);
 
   // Divider
   static const divider = Color(0xFF9DCBEC);
