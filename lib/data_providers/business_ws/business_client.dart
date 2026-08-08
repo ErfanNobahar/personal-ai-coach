@@ -106,8 +106,8 @@ class BusinessClient {
         onRequest: (req, handler) {
           req.data = nullKiller(req.data);
           req.queryParameters = qpNullKiller(req.queryParameters);
-          print('requersssssssssssssssssssssssss');
-          print(req.data);
+          // print('requersssssssssssssssssssssssss');
+          // print(req.data);
           handler.next(req);
         },
       ),
@@ -118,8 +118,8 @@ class BusinessClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onResponse: (response, handler) {
-          print('response');
-          print(response);
+          // print('response');
+          // print(response);
           print('response.dataaaa');
           print(response.data);
           response.data = BusinessResponse.fromMap(response.data);

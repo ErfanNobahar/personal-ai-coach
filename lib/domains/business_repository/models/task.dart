@@ -121,7 +121,7 @@ class DayTask extends Equatable {
 
   factory DayTask.fromMap(Map<String, dynamic> map) {
     return DayTask(
-      date: map['date'] ?? '',
+      date:  '',
       status: fromString(map['status'] ?? 'pending'),
       scheduledTimeSlot: map['scheduledTimeSlot'] ?? '',
       scheduledTimeLabel: map['scheduledTimeLabel'] ?? '',

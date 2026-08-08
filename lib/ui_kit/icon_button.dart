@@ -29,8 +29,8 @@ class IconButton extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: isPrimary ? 19.0 : 9.0,
-            vertical: 9,
+            horizontal: isPrimary ? 19.0 : 10.0,
+            vertical: 10,
           ),
           child: U.Image.icon(path: icon, size: size),
         ),

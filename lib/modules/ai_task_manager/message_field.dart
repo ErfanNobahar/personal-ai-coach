@@ -15,22 +15,32 @@ class MessageField extends StatelessWidget {
       // color: U.Theme.field,
       child: Container(
         padding: EdgeInsets.only(top: 10, left: 10, bottom: 10, right: 10),
-        decoration: BoxDecoration(color: U.Theme.white.withValues(alpha: 0.3),borderRadius: BorderRadius.circular(50)),
+        decoration: BoxDecoration(
+          color: U.Theme.white.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(50),
+        ),
         child: Row(
           children: [
             Expanded(
               child: U.TextInput(
                 // maxLines: null,
                 // minLines: 1,
-                color: U.Theme.field ,
-              // expands:true,
+                color: U.Theme.field,
+                // expands:true,
                 borderRadius: 50.0,
                 controller: context.read<AiTaskManagerCubit>().messageCtrl,
                 onEditingComplete: onSubmit,
               ),
             ),
-          SizedBox(width: 16,),
-          U.IconButton(icon: U.Icons.subtract, onTapped: (){}, size: 22)
+            SizedBox(width: 16),
+            U.IconButton(
+              icon: U.Icons.subtract,
+              onTapped: () async {
+                await context.read<AiTaskManagerCubit>().onMessageSent();
+              },
+              size: 22,
+              isPrimary: false,
+            ),
           ],
         ),
       ),

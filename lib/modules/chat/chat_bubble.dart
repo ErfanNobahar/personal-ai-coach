@@ -19,8 +19,8 @@ class ChatBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: rtl
-                    ? U.Theme.background
-                    : U.Theme.secondaryButton,
+                    ? U.Theme.background.withValues(alpha: 0.9)
+                    : U.Theme.secondaryButton.withValues(alpha: 0.7),
                 border: Border.all(
                   width: rtl ? 1 : 0,
                   color: !rtl ? U.Theme.surface.withValues(alpha: 0.0) : U.Theme. secondaryButton,

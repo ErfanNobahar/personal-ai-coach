@@ -75,9 +75,9 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     final temp = res.where((e) {
       // print('${e.day} vssssss ${T.DateFormater.formater(DateTime.now())}');
       return e.day == T.DateFormater.monthFormater(DateTime.now());
-    }).first;
+    }).firstOrNull;
 
-    final updatedSpecificTasks = temp.copyWith(
+    final updatedSpecificTasks = temp?.copyWith(
       tasks: temp.tasks
           .map(
             (e) => e.copyWith(
@@ -94,9 +94,11 @@ class ScheduleCubit extends Cubit<ScheduleState> {
           )
           .toList(),
     );
-    final int index = res.indexWhere((element) => element.day == temp.day);
-    res.removeAt(index);
-    res.insert(index, updatedSpecificTasks);
+    final int index = res.indexWhere((element) => element.day == temp?.day);
+    if (temp != null) {
+      res.removeAt(index);
+      res.insert(index, updatedSpecificTasks!);
+    }
     await _repo.updateDays(res);
     emit(state.copyWith(dailyTasks: res, selectedDay: res[0]));
   }
