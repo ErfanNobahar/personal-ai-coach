@@ -34,7 +34,7 @@ class RoadmapCubit extends Cubit<RoadmapState> {
 
   List<int> ids = [];
   void onExpandedCountChanged(int stepperId, bool shouldExpand) {
-    if (!ids.contains(stepperId)) {
+    if (!ids.contains(stepperId)) { 
       ids.add(stepperId);
       final index = ids.indexWhere((element) => element == stepperId) + 1;
       emit(state.copyWith(count: index));
@@ -46,6 +46,14 @@ class RoadmapCubit extends Cubit<RoadmapState> {
       }
     }
   }
+
+  Future<void> onRoadmapCreated() async {
+    emit(state.copyWith(loading: true));
+    await _repo.addRoadmap(state.roadmap!);
+    emit(state.copyWith(loading: false));
+  }
+
+
 
   void onInit() {
     emit(state.copyWith(roadmap: initialRoadmap, goal: initialGoal));

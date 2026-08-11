@@ -84,15 +84,16 @@ class ChatCubit extends Cubit<ChatState> {
     );
     WeeklyTasks weeklyTasks = WeeklyTasks.fromMap(weekJson);
 
+    // await _repo.addRoadmap(roadmap);
+    print('the fucking roadmappppppppp');
+    print(roadmap);
     final specificTasks = weeklyTasks.days
         .asMap()
         .entries
         .map(
           ((e) => SpecificTasks(
             day: T.DateFormater.monthFormater(
-              e.key == 1
-                  ? DateTime.now()
-                  : DateTime.now().add(Duration(days: e.key - 1)),
+            DateTime.now().add(Duration(days: e.key +1)),
             ),
             tasks: [e.value],
           )),

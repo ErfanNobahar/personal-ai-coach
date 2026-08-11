@@ -21,6 +21,9 @@ class Theme {
   static const outline = Color(0xFFCBCDFB);
   static const outlineHigh = Color(0xFF321C98);
 
+  // neutrals
+  static const neutral = Color(0xFFF8FCFF);
+
   // Surface
   static const surface = Color(0xFFCBFBF9);
   static const surfaceLight = Color(0xFFBAA9F6);

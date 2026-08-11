@@ -1,9 +1,11 @@
 import 'package:personal_ai_coach/data_providers/hive/hive_db.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/roadmap.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
+import 'package:personal_ai_coach/ui_kit/duration_picker_dlg.dart';
 
 import 'models/task.dart';
 
-enum Keys { weeklyTasks }
+enum Keys { weeklyTasks, roadMap }
 
 abstract class BusinessBox {
   static String boxName = 'business';
@@ -65,54 +67,145 @@ abstract class BusinessBox {
   }) async {
     List<SpecificTasks> newTasks = [...tasks];
     final existingTasks = await getWeeklyTasks();
-
+    List<SpecificTasks> test1 = [];
+    test1.addAll([...existingTasks, ...newTasks]);
+    print('tesssssssssssssssssss1111111111111111111111111111');
+    print(test1.length);
+    Map<int, List<SpecificTasks>> mapedTasks = {};
+    for (var i = 0; i < test1.length; i++) {
+      mapedTasks.addAll({
+        i: test1.where((e) {
+          if (e.day == test1[i].day) {
+            // print('${e.day} vs ${test1[i].day} vs $i');
+          }
+          return e.day == test1[i].day;
+        }).toList(),
+      });
+    }
+    List<SpecificTasks> filteredTasks = [];
+    mapedTasks.removeWhere((key, value) {
+      print('value.lengthssssssssssssssss');
+      print(value.length);
+      return value.length == 1;
+    });
+    // List<SpecificTasks> newMaped =
+    // filteredTasks.addAll();
     List<SpecificTasks> rescheduledTasks = [];
-    if (conflictCheck) {
-      if (existingTasks.isNotEmpty) {
-        final resByDay = {for (var r in existingTasks) r.day: r};
 
-        newTasks = newTasks.map((taskGroup) {
-          final matchedDay = resByDay[taskGroup.day];
-          if (matchedDay == null) return taskGroup;
-          final inComingDailySchedule = taskGroup.tasks
-              .map((e) => e.primaryTask.scheduledStartTime)
-              .toList();
-          final existingDailySchedule = matchedDay.tasks
-              .map((e) => e.primaryTask.scheduledStartTime)
-              .toList();
+    print('filteredTasksssssssssfvvvvvvvv bitchhhh');
+    // print(mapedTasks);
 
-          final finalTasks = taskGroup.tasks.map((element) {
-            if (existingDailySchedule.contains(inComingDailySchedule[0])) {
-              final temp = element.copyWith(
-                primaryTask: element.primaryTask.reschedule(
-                  occupiedTimes: existingDailySchedule,
-                  scheduledStartTime: element.primaryTask.scheduledStartTime,
+    List<SpecificTasks> shouldntCheck = [];
+    for (var i = 0; i < test1.length; i++) {
+      if (conflictCheck) {
+        // print('mapedTasks.keys');
+        // print(' mapedTasks:${mapedTasks} mapedTasks.keys${mapedTasks.keys}');
+        if (mapedTasks.keys.toList().contains(i)) {
+          print('111111111111');
+            print('shouldntCheck');
+            print(!shouldntCheck.contains(test1[i]));
+          if (!shouldntCheck.contains(test1[i])) {
+            List<String> existingTimes = [];
+            // print('!shouldntCheck.contains(test1[i])');
+            // print(!shouldntCheck.contains(test1[i]));
+            List<TimeSlot> incomingTimes = [];
+            existingTimes = [
+              ...test1[i].tasks.map((e) => e.primaryTask.scheduledStartTime),
+            ];
+            incomingTimes = [
+              ...mapedTasks[i]!.first.tasks.map(
+                (e) => TimeSlot(
+                  startMinutes:
+                      int.parse(
+                        e.primaryTask.scheduledStartTime.split(':')[0],
+                      ) *
+                      60,
+                  endMinutes:
+                      ((int.parse(
+                            e.primaryTask.scheduledStartTime.split(':')[0],
+                          ) *
+                          60) +
+                      e.primaryTask.estimatedMinutes),
                 ),
-              );
-              matchedDay.addToList(task: temp);
-              rescheduledTasks.add(matchedDay);
-              return temp;
-            } else {
-              matchedDay.addToList(task: element);
-              rescheduledTasks.add(matchedDay);
-              return element;
-            }
-          }).toList();
+              ),
+            ];
+            List<String> icomingTimes2 = incomingTimes.convertToInt
+                .map((e) => '${e.toString().padLeft(2, '0')}:00')
+                .toList();
+            final tasks = [...test1[i].tasks];
 
-          return taskGroup.copyWith(tasks: finalTasks);
-        }).toList();
+            final incomingTasks = mapedTasks[i]!.last.tasks
+                .map(
+                  (e) => e.copyWith(
+                    primaryTask: e.primaryTask.reschedule(
+                      occupiedTimes: icomingTimes2,
+                      scheduledStartTime: e.primaryTask.scheduledStartTime,
+                    ),
+                  ),
+                )
+                .toList();
+            tasks.addAll([...incomingTasks]);
+            // final tempTask =
+
+            filteredTasks.add(test1[i].copyWith(tasks: tasks));
+            shouldntCheck.add(mapedTasks[i]!.last);
+          }
+        } else {
+          print('2222222222222222222');
+          filteredTasks.add(test1[i]);
+        }
+        print('iiiiiiiiiiiiiiiiiiiii');
+        print(i);
       } else {
-        rescheduledTasks = [...newTasks];
+        filteredTasks = [...newTasks];
       }
     }
-    final temp = List<SpecificTasks>.from(
-      !conflictCheck ? rescheduledTasks : newTasks,
-    ).map((e) => e.toMap()).toList();
+
+    // if (conflictCheck) {
+    //   if (existingTasks.isNotEmpty) {
+    //     final resByDay = {for (var r in existingTasks) r.day: r};
+    //     newTasks = newTasks.map((taskGroup) {
+    //       final matchedDay = resByDay[taskGroup.day];
+    //       if (matchedDay == null) return taskGroup;
+    //       final inComingDailySchedule = taskGroup.tasks
+    //           .map((e) => e.primaryTask.scheduledStartTime)
+    //           .toList();
+    //       final existingDailySchedule = matchedDay.tasks
+    //           .map((e) => e.primaryTask.scheduledStartTime)
+    //           .toList();
+
+    //       final finalTasks = taskGroup.tasks.map((element) {
+    //         if (existingDailySchedule.contains(inComingDailySchedule[0])) {
+    //           final temp = element.copyWith(
+    //             primaryTask: element.primaryTask.reschedule(
+    //               occupiedTimes: existingDailySchedule,
+    //               scheduledStartTime: element.primaryTask.scheduledStartTime,
+    //             ),
+    //           );
+    //           matchedDay.addToList(task: temp);
+    //           rescheduledTasks.add(matchedDay);
+    //           return temp;
+    //         } else {
+    //           matchedDay.addToList(task: element);
+    //           rescheduledTasks.add(matchedDay);
+    //           return element;
+    //         }
+    //       }).toList();
+
+    //       return taskGroup.copyWith(tasks: finalTasks);
+    //     }).toList();
+    //   } else {
+    //     rescheduledTasks = [...newTasks];
+    //   }
+    // }
+    // final temp = List<SpecificTasks>.from(
+    //   !conflictCheck ? rescheduledTasks : newTasks,
+    // ).map((e) => e.toMap()).toList();
     HiveDB.set(
       boxName: boxName,
       key: Keys.weeklyTasks.index.toString(),
       value: List<SpecificTasks>.from(
-        conflictCheck ? rescheduledTasks : newTasks,
+        filteredTasks,
       ).map((e) => e.toMap()).toList(),
     );
   }
@@ -158,6 +251,26 @@ abstract class BusinessBox {
       key: Keys.weeklyTasks.index.toString(),
       value: updated.map((e) => e.toMap()).toList(),
     );
+  }
+
+  static Future<void> createRoadmap(Roadmap roadmap) async {
+    final res = readRoadmap();
+    final temp = [...res];
+    temp.add(roadmap);
+    await HiveDB.set(
+      boxName: boxName,
+      key: Keys.roadMap.index.toString(),
+      value: temp.map((e) => e.toMap()).toList(),
+    );
+  }
+
+  static List<Roadmap> readRoadmap() {
+    final res = HiveDB.get(
+      boxName: boxName,
+      key: Keys.roadMap.index.toString(),
+    );
+    final list = List.from(res).map((e) => Roadmap.fromMap(e)).toList();
+    return list;
   }
 
   static Future<void> updateTasks(DayTask task, {bool isNew = false}) async {

@@ -1,6 +1,7 @@
 import 'package:personal_ai_coach/data_providers/business_ws/business_ws.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_box.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/message.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/roadmap.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 
@@ -188,7 +189,9 @@ class BusinessRepository {
     late List<Message> messagesList;
     messagesList = [...messages];
     messagesList.insert(0, followUpQuestionPrompt);
-    print('=============messagesList.map((e) => e.toMap()).toList()===========================================');
+    print(
+      '=============messagesList.map((e) => e.toMap()).toList()===========================================',
+    );
     print(messagesList.map((e) => e.toMap()).toList());
     final res = await BusinessWs.client.post(
       url: BusinessWs.urls.cerebrasAi,
@@ -280,6 +283,14 @@ class BusinessRepository {
   Future<SpecificTasks?> readByDay(String date) async {
     final res = await BusinessBox.readByDay(date);
     return res;
+  }
+
+  Future<void> addRoadmap(Roadmap roadmap) async {
+    await BusinessBox.createRoadmap(roadmap);
+  }
+
+  List<Roadmap> readRoadmaps() {
+    return BusinessBox.readRoadmap();
   }
 
   Future<List<Message>> readChatMessages() async {

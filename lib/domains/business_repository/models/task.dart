@@ -121,7 +121,7 @@ class DayTask extends Equatable {
 
   factory DayTask.fromMap(Map<String, dynamic> map) {
     return DayTask(
-      date:  '',
+      date: '',
       status: fromString(map['status'] ?? 'pending'),
       scheduledTimeSlot: map['scheduledTimeSlot'] ?? '',
       scheduledTimeLabel: map['scheduledTimeLabel'] ?? '',
@@ -230,6 +230,7 @@ class PrimaryTask extends Equatable {
     required List<String> occupiedTimes,
     required String conflictingTime,
   }) {
+    print('$conflictingTime vs $occupiedTimes');
     final currentTime = dayTimes.indexWhere((e) => e == conflictingTime);
     if (occupiedTimes.contains(conflictingTime)) {
       return findSlot(
@@ -337,18 +338,18 @@ class PrimaryTask extends Equatable {
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 
-@override
-List<Object?> get props => [
-  id,
-  type,
-  whyItMatters,
-  title,
-  description,          // add this
-  scheduledStartTime,
-  scheduledEndTime,      // recommend adding
-  estimatedMinutes,      // recommend adding
-  suggestedSearches,     // recommend adding
-];
+  @override
+  List<Object?> get props => [
+    id,
+    type,
+    whyItMatters,
+    title,
+    description, // add this
+    scheduledStartTime,
+    scheduledEndTime, // recommend adding
+    estimatedMinutes, // recommend adding
+    suggestedSearches, // recommend adding
+  ];
 }
 
 extension Primary on List<DayTask> {
