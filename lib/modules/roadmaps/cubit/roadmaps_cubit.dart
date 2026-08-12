@@ -9,7 +9,9 @@ class RoadmapsCubit extends Cubit<RoadmapsState> {
 
   RoadmapsCubit(BusinessRepository repo)
     : _repo = repo,
-      super(RoadmapsState.init());
+      super(RoadmapsState.init()) {
+    onInit();
+  }
 
   ////////////Functions
   Future<List<Roadmap>> getRoadmaps() async {
@@ -21,6 +23,9 @@ class RoadmapsCubit extends Cubit<RoadmapsState> {
   void onInit() async {
     emit(state.copyWith(loading: true));
     final res = await getRoadmaps();
+    print('sssssssssssssssss');
+    print(res);
+
     emit(
       state.copyWith(
         loading: false,
@@ -30,5 +35,8 @@ class RoadmapsCubit extends Cubit<RoadmapsState> {
             : RoadmapsStateStatus.filled,
       ),
     );
+    print('state.roadmaps[0].id');
+    print(state.roadmaps[0].id);
+    print(state.roadmaps[1].id);
   }
 }

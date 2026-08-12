@@ -83,24 +83,62 @@ class ChatCubit extends Cubit<ChatState> {
       tasksRes['message']['content'],
     );
     WeeklyTasks weeklyTasks = WeeklyTasks.fromMap(weekJson);
-
-    // await _repo.addRoadmap(roadmap);
-    print('the fucking roadmappppppppp');
-    print(roadmap);
+    final updated = roadmap.milestones
+        .map(
+          (e) => e.startWeek == 1
+              ? e.copyWith(
+                  weeklyObjectives: e.weeklyObjectives
+                      .map(
+                        (element) => element.week == 1
+                            ? element.copyWith(
+                                weeklyTasks: weeklyTasks.copyWith(
+                                  days: weeklyTasks.days
+                                      .asMap()
+                                      .entries
+                                      .map(
+                                        (day) => day.value.copyWith(
+                                          date: day.key == 1
+                                              ? T.DateFormater.monthFormater(
+                                                  DateTime.now(),
+                                                )
+                                              : T.DateFormater.monthFormater(
+                                                  DateTime.now().add(
+                                                    Duration(days: day.key - 1),
+                                                  ),
+                                                ),
+                                        ),
+                                      )
+                                      .toList(),
+                                ),
+                              )
+                            : element,
+                      )
+                      .toList(),
+                )
+              : e,
+        )
+        .toList();
+    final updatedRoadMap = roadmap.copyWith(milestones: updated);
+    print('ssssssssssssssssssssssssssss');
+    print(updatedRoadMap.toMap());
     final specificTasks = weeklyTasks.days
         .asMap()
         .entries
         .map(
           ((e) => SpecificTasks(
             day: T.DateFormater.monthFormater(
-            DateTime.now().add(Duration(days: e.key +1)),
+              e.key == 1
+                  ? DateTime.now()
+                  : DateTime.now().add(Duration(days: e.key - 1)),
             ),
             tasks: [e.value],
           )),
         )
         .toList();
     await _repo.createSchedule(specificTasks);
+    await _repo.addRoadmap(updatedRoadMap);
     emit(state.copyWith(loading: false));
-    return (roadmap: roadmap, tasks: weeklyTasks);
+
+    return (roadmap: updatedRoadMap, tasks: weeklyTasks);
   }
 }

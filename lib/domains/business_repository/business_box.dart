@@ -36,14 +36,11 @@ abstract class BusinessBox {
     for (var element in temp) {
       element.tasks.sortByHour();
     }
-    print('temp.length');
-    print(temp.length);
+
     return temp;
   }
 
   static Future<bool> checkIfTaskExists(DayTask task) async {
-    print('checkIfTaskExists: ${task.primaryTask.description}');
-    print('===============================================');
     final res = await getWeeklyTasks();
     final temp = res
         .where(
@@ -69,8 +66,8 @@ abstract class BusinessBox {
     final existingTasks = await getWeeklyTasks();
     List<SpecificTasks> test1 = [];
     test1.addAll([...existingTasks, ...newTasks]);
-    print('tesssssssssssssssssss1111111111111111111111111111');
-    print(test1.length);
+    // print('tesssssssssssssssssss1111111111111111111111111111');
+    // print(test1.length);
     Map<int, List<SpecificTasks>> mapedTasks = {};
     for (var i = 0; i < test1.length; i++) {
       mapedTasks.addAll({
@@ -84,8 +81,8 @@ abstract class BusinessBox {
     }
     List<SpecificTasks> filteredTasks = [];
     mapedTasks.removeWhere((key, value) {
-      print('value.lengthssssssssssssssss');
-      print(value.length);
+      // print('value.lengthssssssssssssssss');
+      // print(value.length);
       return value.length == 1;
     });
     // List<SpecificTasks> newMaped =
@@ -102,8 +99,8 @@ abstract class BusinessBox {
         // print(' mapedTasks:${mapedTasks} mapedTasks.keys${mapedTasks.keys}');
         if (mapedTasks.keys.toList().contains(i)) {
           print('111111111111');
-            print('shouldntCheck');
-            print(!shouldntCheck.contains(test1[i]));
+          print('shouldntCheck');
+          print(!shouldntCheck.contains(test1[i]));
           if (!shouldntCheck.contains(test1[i])) {
             List<String> existingTimes = [];
             // print('!shouldntCheck.contains(test1[i])');
@@ -269,8 +266,29 @@ abstract class BusinessBox {
       boxName: boxName,
       key: Keys.roadMap.index.toString(),
     );
-    final list = List.from(res).map((e) => Roadmap.fromMap(e)).toList();
-    return list;
+    if (res != null) {
+      final list = List.from(
+        res,
+      ).map((e) => Roadmap.fromMap(asStringKeyedMap(e))).toList();
+      return list;
+    }
+    return [];
+  }
+
+  static Future<void> updateRoadmap(Roadmap roadmap) async {
+    final res = readRoadmap();
+    print(res.toString());
+    final index = res.indexWhere((e) {
+      print('${e.id} vsssssss ${roadmap.id}');
+      return e.id == roadmap.id;
+    });
+    res.removeAt(index);
+    res.insert(index, roadmap);
+    await HiveDB.set(
+      boxName: boxName,
+      key: Keys.roadMap.index.toString(),
+      value: res.map((e) => e.toMap()).toList(),
+    );
   }
 
   static Future<void> updateTasks(DayTask task, {bool isNew = false}) async {

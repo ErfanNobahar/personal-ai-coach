@@ -22,7 +22,6 @@ class WeeklyTasks {
     required this.progressSnapshot,
     required this.insight,
   });
-
   factory WeeklyTasks.fromMap(Map<String, dynamic> map) {
     return WeeklyTasks(
       type: map['type'] ?? '',
@@ -30,13 +29,17 @@ class WeeklyTasks {
       weekStartDate: map['weekStartDate'] ?? '',
       weekEndDate: map['weekEndDate'] ?? '',
       milestoneContext: MilestoneContext.fromMap(
-        map['milestoneContext'] as Map<String, dynamic>? ?? {},
+        map['milestoneContext'] != null
+            ? Map<String, dynamic>.from(map['milestoneContext'] as Map)
+            : {},
       ),
-      days: List.from(
-        map['days'] ?? [],
-      ).map((e) => DayTask.fromMap(e)).toList(),
+      days: List.from(map['days'] ?? [])
+          .map((e) => DayTask.fromMap(Map<String, dynamic>.from(e as Map)))
+          .toList(),
       progressSnapshot: ProgressSnapshot.fromMap(
-        map['progressSnapshot'] as Map<String, dynamic>? ?? {},
+        map['progressSnapshot'] != null
+            ? Map<String, dynamic>.from(map['progressSnapshot'] as Map)
+            : {},
       ),
       insight: map['insight'] ?? '',
     );
@@ -53,6 +56,28 @@ class WeeklyTasks {
       'progressSnapshot': progressSnapshot.toMap(),
       'insight': insight,
     };
+  }
+
+  WeeklyTasks copyWith({
+    String? type,
+    int? weekNumber,
+    String? weekStartDate,
+    String? weekEndDate,
+    MilestoneContext? milestoneContext,
+    List<DayTask>? days,
+    ProgressSnapshot? progressSnapshot,
+    String? insight,
+  }) {
+    return WeeklyTasks(
+      type: type ?? this.type,
+      weekNumber: weekNumber ?? this.weekNumber,
+      weekStartDate: weekStartDate ?? this.weekStartDate,
+      weekEndDate: weekEndDate ?? this.weekEndDate,
+      milestoneContext: milestoneContext ?? this.milestoneContext,
+      days: days ?? this.days,
+      progressSnapshot: progressSnapshot ?? this.progressSnapshot,
+      insight: insight ?? this.insight,
+    );
   }
 }
 
@@ -121,7 +146,7 @@ class DayTask extends Equatable {
 
   factory DayTask.fromMap(Map<String, dynamic> map) {
     return DayTask(
-      date: '',
+      date: map['date'],
       status: fromString(map['status'] ?? 'pending'),
       scheduledTimeSlot: map['scheduledTimeSlot'] ?? '',
       scheduledTimeLabel: map['scheduledTimeLabel'] ?? '',
@@ -156,6 +181,8 @@ class DayTask extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
+    print('fuckkkkkkkkkkkkkkkkkkkkkkkkkk');
+    print(date);
     return {
       'date': date,
       'status': status.get,

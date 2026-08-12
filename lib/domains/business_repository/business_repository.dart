@@ -293,6 +293,10 @@ class BusinessRepository {
     return BusinessBox.readRoadmap();
   }
 
+  Future<void> updateroadmap(Roadmap roadmap) async {
+    await BusinessBox.updateRoadmap(roadmap);
+  }
+
   Future<List<Message>> readChatMessages() async {
     final res = [Message.ai(content: 'content')];
     Future.delayed(Duration(seconds: 2));

@@ -59,8 +59,6 @@ class _SchedulePageState extends State<SchedulePage> {
         },
         child: BlocConsumer<ScheduleCubit, ScheduleState>(
           listenWhen: (previous, current) {
-            print('previous.dailyTasks.length != current.dailyTasks.length');
-            print(previous.dailyTasks.length != current.dailyTasks.length);
             return
             // ((previous.loading != current.loading) ||
             (previous.dailyTasks.length != current.dailyTasks.length
