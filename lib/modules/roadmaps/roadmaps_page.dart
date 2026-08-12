@@ -9,6 +9,7 @@ import 'package:personal_ai_coach/modules/roadmaps/grid_item.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class RoadmapsPage extends StatelessWidget {
+  static String route = '/roadmapspage';
   const RoadmapsPage({super.key});
 
   @override
@@ -27,6 +28,7 @@ class RoadmapsPage extends StatelessWidget {
             return state.loading
                 ? Center(child: CircularProgressIndicator())
                 : Scaffold(
+                    backgroundColor: U.Theme.background,
                     body: switch (state.status) {
                       RoadmapsStateStatus.empty => Center(
                         child: Column(
@@ -36,22 +38,29 @@ class RoadmapsPage extends StatelessWidget {
                             U.OutlineButton(
                               title: 'craete now!',
                               onTap: () {
+                           
                                 GoRouter.of(context).pushNamed(ChatPge.route);
                               },
                             ),
                           ],
                         ),
                       ),
-                      RoadmapsStateStatus.filled => GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          mainAxisSpacing: 15,
-                          crossAxisSpacing: 20,
-                          crossAxisCount:
-                              MediaQuery.of(context).size.width ~/ 200,
+                      RoadmapsStateStatus.filled => Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                mainAxisSpacing: 15,
+                                crossAxisSpacing: 20,
+                                // mainAxisExtent:144,
+                                crossAxisCount:
+                                    MediaQuery.of(context).size.width ~/ 180,
+                              ),
+                          itemBuilder: (BuildContext context, int index) {
+                            return GridItem(roadmap: state.roadmaps[index]);
+                          },
+                          itemCount: state.roadmaps.length,
                         ),
-                        itemBuilder: (BuildContext context, int index) {
-                          return GridItem(roadmap: state.roadmaps[index]);
-                        },
                       ),
                       RoadmapsStateStatus.error => Center(
                         child: U.Text(text: 'You havent created any roadmaps'),

@@ -4,6 +4,7 @@ import 'package:personal_ai_coach/modules/ai_task_manager/task_manger_page.dart'
 import 'package:personal_ai_coach/modules/chat/chat_page.dart';
 import 'package:personal_ai_coach/modules/home/home.dart';
 import 'package:personal_ai_coach/modules/roadmap/roadmap_page.dart';
+import 'package:personal_ai_coach/modules/roadmaps/roadmaps_page.dart';
 import 'package:personal_ai_coach/modules/schedule/schedule_page.dart';
 import 'package:personal_ai_coach/modules/schedule/task_creation_dlg.dart';
 import 'package:personal_ai_coach/modules/task/task_page.dart';
@@ -55,7 +56,7 @@ final router = GoRouter(
               path: TaskCreationPage.route,
               name: TaskCreationPage.route,
               builder: (context, state) {
-                return TaskCreationPage(task: state.extra as dynamic,);
+                return TaskCreationPage(task: state.extra as dynamic);
               },
             ),
           ],
@@ -93,6 +94,17 @@ final router = GoRouter(
               name: TaskMangerPage.route,
               builder: (context, state) {
                 return TaskMangerPage();
+              },
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: RoadmapsPage.route,
+              name: RoadmapsPage.route,
+              builder: (context, state) {
+                return RoadmapsPage();
               },
             ),
           ],

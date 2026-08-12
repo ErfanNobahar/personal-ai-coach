@@ -87,7 +87,7 @@ class _StepperState extends State<Stepper> {
           final isExpanded = expandedIndex == index;
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.only(bottom: 20),
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -95,7 +95,7 @@ class _StepperState extends State<Stepper> {
                   Positioned(
                     left: 5,
                     top: widget.useDashedLine ? 20 : 25,
-                    bottom: widget.useDashedLine ? -18 : -23,
+                    bottom: widget.useDashedLine ? -26 : -32,
                     child: widget.useDashedLine
                         ? SizedBox(
                             width: 3,
@@ -267,16 +267,20 @@ class _StepperState extends State<Stepper> {
                             child: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: item.itemBackground,
+                                color: U.Theme.outlineHigh,
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              child: Column(
-                                children: [
-                                  item.child,
-                                  if (isExpanded && item.loading)
-                                    Center(child: _buildLoader()),
+                              child: Align(
+                                alignment: AlignmentGeometry.xy(1.0, 0),
 
-                                ],
+                                child: Column(
+                                  children: [
+                                    item.child,
+                                    if (isExpanded && item.loading)
+                                      // _buildLoader(),
+                                      SizedBox(height: 3),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -360,12 +364,14 @@ class _StepperState extends State<Stepper> {
                           ),
                           child: Row(
                             children: [
-                              Expanded(child: Column(
-                                children: [
-                                  item.child,
-                      if (item.loading) _buildLoader(),
-                                ],
-                              )),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    item.child,
+                                    if (item.loading) _buildLoader(),
+                                  ],
+                                ),
+                              ),
                               if (item.onTap != null)
                                 GestureDetector(
                                   onTap: item.onTap,
@@ -398,17 +404,22 @@ class _StepperState extends State<Stepper> {
   }
 
   Widget _buildLoader() {
-    return Column(
-      children: [
-        const SizedBox(height: 7),
-        LoadingAnimationWidget.fourRotatingDots(
-          color: U.Theme.primary,
-          size: 20,
-        ),
-      ],
+    return Align(
+      alignment: AlignmentGeometry.xy(0.14, 0),
+      child: Column(
+        children: [
+          const SizedBox(height: 7),
+          LoadingAnimationWidget.fourRotatingDots(
+            color: U.Theme.primary,
+            size: 20,
+          ),
+          SizedBox(height: 6),
+        ],
+      ),
     );
   }
 }
+
 class StepperItem {
   final bool isDisabled;
   final bool isDone;
@@ -429,7 +440,7 @@ class StepperItem {
     required this.isDone,
     required this.title,
     this.subTitle,
-    this.itemBackground,
+    this.itemBackground = U.Theme.background,
     required this.child,
     this.onTap,
   });
