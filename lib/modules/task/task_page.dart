@@ -15,16 +15,19 @@ class TaskDetailPage extends StatelessWidget {
   final String? milestoneTitle;
   final DayTask? initialTask;
   final ScheduleCubit? scheduleCubit;
-
+  final String? inComingRoute;
   const TaskDetailPage({
     super.key,
     required this.milestoneTitle,
     this.initialTask,
     this.scheduleCubit,
-  });
+    String? inComingRoute,
+  }) : inComingRoute = inComingRoute ?? '';
 
   @override
   Widget build(BuildContext context) {
+    print('inComingRoute');
+    print(inComingRoute);
     var dialogRes;
     return MultiBlocProvider(
       providers: [
@@ -161,7 +164,10 @@ class TaskDetailPage extends StatelessWidget {
                           const SizedBox(height: 32),
                           _ActionButtons(
                             skipped:
-                                state.task!.status != DayTaskStatus.pending,
+                                ((state.task!.status !=
+                                    DayTaskStatus.pending) ||
+                                inComingRoute!.contains('/roadmap') ||
+                                inComingRoute!.contains('/roadmapspage')),
                             onComplete: () {
                               context.read<TaskCubit>().onStatusChanged(
                                 state.task!.copyWith(
@@ -225,7 +231,7 @@ class _MilestoneBreadcrumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [
+      children: [ 
         Icon(Icons.map_outlined, size: 14, color: U.Theme.quaternaryText),
         const SizedBox(width: 6),
         Flexible(

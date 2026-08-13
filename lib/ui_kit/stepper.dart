@@ -160,13 +160,13 @@ class _StepperState extends State<Stepper> {
     return Column(
       children: [
         const SizedBox(height: 13),
-        item.isDone
+        item.isDone != null
             ? Container(
                 height: 13,
                 width: 13,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.green,
+                  color: item.isDone! ? Colors.green : U.Theme.shadow,
                 ),
               )
             : Container(
@@ -422,7 +422,7 @@ class _StepperState extends State<Stepper> {
 
 class StepperItem {
   final bool isDisabled;
-  final bool isDone;
+  final bool? isDone;
   final bool inProgress;
   final bool loading;
   final EdgeInsetsGeometry padding;
@@ -437,7 +437,7 @@ class StepperItem {
     this.inProgress = false,
     this.loading = false,
     this.padding = const EdgeInsets.only(left: 16.0),
-    required this.isDone,
+    this.isDone,
     required this.title,
     this.subTitle,
     this.itemBackground = U.Theme.background,

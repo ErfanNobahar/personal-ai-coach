@@ -1,3 +1,4 @@
+import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 import 'dart:core';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,32 @@ class WeeklyTasks {
       ),
       insight: map['insight'] ?? '',
     );
+  }
+
+  bool get isCurrent {
+    final now = DateTime.now();
+    if (days.isNotEmpty) {
+      final startDate = T.DateFormater.dateFromString(days.first.date);
+      final endDate = T.DateFormater.dateFromString(days.last.date);
+      return now.isAfter(startDate) && now.isBefore(endDate);
+    } else {
+      return false;
+    }
+  }
+
+  String? get weeklyStatus {
+    final res = days
+        .where(
+          (e) =>
+              e.status == DayTaskStatus.completed ||
+              e.status == DayTaskStatus.skipped,
+        )
+        .toList();
+    if (res.isNotEmpty) {
+      return res.length == days.length ? 'completed' : 'pending';
+    } else {
+      return null;
+    }
   }
 
   Map<String, dynamic> toMap() {
@@ -115,6 +142,7 @@ extension Status on DayTaskStatus {
 }
 
 class DayTask extends Equatable {
+  final String roadmapId;
   final String date;
   final DayTaskStatus status;
   final String scheduledTimeSlot;
@@ -123,6 +151,7 @@ class DayTask extends Equatable {
   final List<SupportingTask> supportingTasks;
 
   const DayTask({
+    required this.roadmapId,
     required this.date,
     required this.status,
     required this.scheduledTimeSlot,
@@ -146,6 +175,7 @@ class DayTask extends Equatable {
 
   factory DayTask.fromMap(Map<String, dynamic> map) {
     return DayTask(
+      roadmapId: map['roadmapId'] ?? '',
       date: map['date'],
       status: fromString(map['status'] ?? 'pending'),
       scheduledTimeSlot: map['scheduledTimeSlot'] ?? '',
@@ -163,6 +193,7 @@ class DayTask extends Equatable {
     );
   }
   DayTask copyWith({
+    String? roadmapId,
     String? date,
     DayTaskStatus? status,
     String? scheduledTimeSlot,
@@ -171,6 +202,7 @@ class DayTask extends Equatable {
     List<SupportingTask>? supportingTasks,
   }) {
     return DayTask(
+      roadmapId: roadmapId ?? this.roadmapId,
       date: date ?? this.date,
       status: status ?? this.status,
       scheduledTimeSlot: scheduledTimeSlot ?? this.scheduledTimeSlot,
@@ -181,10 +213,9 @@ class DayTask extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    print('fuckkkkkkkkkkkkkkkkkkkkkkkkkk');
-    print(date);
     return {
       'date': date,
+      'roadmapId': roadmapId,
       'status': status.get,
       'scheduledTimeSlot': scheduledTimeSlot,
       'scheduledTimeLabel': scheduledTimeLabel,

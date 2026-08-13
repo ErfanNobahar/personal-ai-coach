@@ -89,7 +89,6 @@ abstract class BusinessBox {
     // filteredTasks.addAll();
     List<SpecificTasks> rescheduledTasks = [];
 
-    print('filteredTasksssssssssfvvvvvvvv bitchhhh');
     // print(mapedTasks);
 
     List<SpecificTasks> shouldntCheck = [];
@@ -250,6 +249,38 @@ abstract class BusinessBox {
     );
   }
 
+  static Future<Roadmap> readRoadmapTasks(Roadmap roadmap) async {
+    final res = readRoadmap();
+    final temp = res.firstWhere((e) => e.id == roadmap.id);
+    final tasks = await getWeeklyTasks();
+    final weeklyTasks = tasks
+        .map(
+          (e) =>
+              e.tasks.firstWhere((element) => element.roadmapId == roadmap.id),
+        )
+        .toList();
+    final updated = temp.copyWith(
+      milestones: temp.milestones
+          .map(
+            (e) => e.copyWith(
+              weeklyObjectives: e.weeklyObjectives
+                  .map(
+                    (element) => element.weeklyTasks.isCurrent
+                        ? element.copyWith(
+                            weeklyTasks: element.weeklyTasks.copyWith(
+                              days: weeklyTasks,
+                            ),
+                          )
+                        : element,
+                  )
+                  .toList(),
+            ),
+          )
+          .toList(),
+    );
+    return updated;
+  }
+
   static Future<void> createRoadmap(Roadmap roadmap) async {
     final res = readRoadmap();
     final temp = [...res];
@@ -277,7 +308,6 @@ abstract class BusinessBox {
 
   static Future<void> updateRoadmap(Roadmap roadmap) async {
     final res = readRoadmap();
-    print(res.toString());
     final index = res.indexWhere((e) {
       print('${e.id} vsssssss ${roadmap.id}');
       return e.id == roadmap.id;
@@ -288,6 +318,49 @@ abstract class BusinessBox {
       boxName: boxName,
       key: Keys.roadMap.index.toString(),
       value: res.map((e) => e.toMap()).toList(),
+    );
+  }
+
+  static Future<void> updateRoadmapTasks(DayTask task) async {
+    final roadmap = readRoadmap();
+    final temp = roadmap.firstWhere((e) => e.id == task.roadmapId);
+    final List<Milestone> list = [];
+    // for (var element in temp.milestones) {
+    //   for (var pelement in element.weeklyObjectives) {
+    //     for (var bb in pelement.weeklyTasks.days) {
+    //       if (bb.date == task.date) {}
+    //     }
+    //   }
+    // }
+    for (var element in temp.milestones) {
+      list.add(
+        element.copyWith(
+          weeklyObjectives: element.weeklyObjectives
+              .map(
+                (e) => e.copyWith(
+                  weeklyTasks: e.weeklyTasks.copyWith(
+                    days: e.weeklyTasks.days.map((b) {
+                      if (b.date == task.date) {
+                        return task;
+                      } else {
+                        return b;
+                      }
+                    }).toList(),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      );
+    }
+    temp.copyWith(milestones: list);
+    final index = roadmap.indexWhere((e) => e.id == task.roadmapId);
+    roadmap.removeAt(index);
+    roadmap.insert(index, temp);
+    HiveDB.set(
+      boxName: boxName,
+      key: Keys.roadMap.index.toString(),
+      value: roadmap.map((e) => e.toMap()).toList(),
     );
   }
 

@@ -9,7 +9,7 @@ import 'package:personal_ai_coach/modules/roadmaps/grid_item.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class RoadmapsPage extends StatelessWidget {
-  static String route = '/roadmapspage';
+  static String route = '/roadmaps';
   const RoadmapsPage({super.key});
 
   @override
@@ -38,7 +38,6 @@ class RoadmapsPage extends StatelessWidget {
                             U.OutlineButton(
                               title: 'craete now!',
                               onTap: () {
-                           
                                 GoRouter.of(context).pushNamed(ChatPge.route);
                               },
                             ),

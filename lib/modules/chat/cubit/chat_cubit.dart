@@ -83,6 +83,22 @@ class ChatCubit extends Cubit<ChatState> {
       tasksRes['message']['content'],
     );
     WeeklyTasks weeklyTasks = WeeklyTasks.fromMap(weekJson);
+    weeklyTasks = weeklyTasks.copyWith(
+      days: weeklyTasks.days
+          .asMap()
+          .entries
+          .map(
+            (day) => day.value.copyWith(
+              roadmapId: roadmap.id,
+              date: day.key == 1
+                  ? T.DateFormater.monthFormater(DateTime.now())
+                  : T.DateFormater.monthFormater(
+                      DateTime.now().add(Duration(days: day.key - 1)),
+                    ),
+            ),
+          )
+          .toList(),
+    );
     final updated = roadmap.milestones
         .map(
           (e) => e.startWeek == 1
@@ -91,25 +107,27 @@ class ChatCubit extends Cubit<ChatState> {
                       .map(
                         (element) => element.week == 1
                             ? element.copyWith(
-                                weeklyTasks: weeklyTasks.copyWith(
-                                  days: weeklyTasks.days
-                                      .asMap()
-                                      .entries
-                                      .map(
-                                        (day) => day.value.copyWith(
-                                          date: day.key == 1
-                                              ? T.DateFormater.monthFormater(
-                                                  DateTime.now(),
-                                                )
-                                              : T.DateFormater.monthFormater(
-                                                  DateTime.now().add(
-                                                    Duration(days: day.key - 1),
-                                                  ),
-                                                ),
-                                        ),
-                                      )
-                                      .toList(),
-                                ),
+                                weeklyTasks: weeklyTasks,
+                                // weeklyTasks.copyWith(
+                                //   days: weeklyTasks.days
+                                //       .asMap()
+                                //       .entries
+                                //       .map(
+                                //         (day) => day.value.copyWith(
+                                //           roadmapId: roadmap.id,
+                                //           date: day.key == 1
+                                //               ? T.DateFormater.monthFormater(
+                                //                   DateTime.now(),
+                                //                 )
+                                //               : T.DateFormater.monthFormater(
+                                //                   DateTime.now().add(
+                                //                     Duration(days: day.key - 1),
+                                //                   ),
+                                //                 ),
+                                //         ),
+                                //       )
+                                //       .toList(),
+                                // ),
                               )
                             : element,
                       )
@@ -118,9 +136,10 @@ class ChatCubit extends Cubit<ChatState> {
               : e,
         )
         .toList();
+    print('roadmap.iddddddddddd+++++++++++++++');
+    print(roadmap.id);
     final updatedRoadMap = roadmap.copyWith(milestones: updated);
-    print('ssssssssssssssssssssssssssss');
-    print(updatedRoadMap.toMap());
+
     final specificTasks = weeklyTasks.days
         .asMap()
         .entries

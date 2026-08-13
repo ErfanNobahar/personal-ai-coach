@@ -14,7 +14,11 @@ final rootNavKey = GlobalKey<NavigatorState>();
 final router = GoRouter(
   initialLocation: SchedulePage.route,
   navigatorKey: rootNavKey,
-
+  redirect: (context, state) {
+    // print('state.fullPath');
+    // print(state.name);
+    // print(state.);
+  },
   routes: [
     // GoRoute(
     //   path: Chat.route,
@@ -40,6 +44,7 @@ final router = GoRouter(
                   builder: (context, state) {
                     final extra = state.extra as Map<String, dynamic>;
                     return TaskDetailPage(
+                      inComingRoute: extra['path'] as String? ,
                       milestoneTitle: extra['milestone'] as String?,
                       initialTask: extra['task'] as dynamic,
                       scheduleCubit: extra['cubit'] as dynamic,

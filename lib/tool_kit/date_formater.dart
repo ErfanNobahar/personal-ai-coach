@@ -9,6 +9,10 @@ abstract class DateFormater {
     return DateFormat('EEE d, y').format(time); // Saturday, Jul 18, 2026
   }
 
+  static DateTime dateFromString(String dateString) {
+    return DateFormat('MMM d, y').parse(dateString);
+  }
+
   // static String formater(DateTime time) {
   // return DateFormat('MMM d, y').format(time); // Saturday, Jul 18, 2026
   // }

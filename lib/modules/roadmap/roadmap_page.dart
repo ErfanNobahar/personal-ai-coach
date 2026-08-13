@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/roadmap.dart';
-import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/roadmap/cubit/roadmap_cubit.dart';
 import 'package:personal_ai_coach/modules/task/task_page.dart';
 import 'package:personal_ai_coach/ui_kit/stepper.dart';
+import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class RoadmapPage extends StatelessWidget {
@@ -83,9 +83,11 @@ class RoadmapPage extends StatelessWidget {
                               alpha: 1.0,
                             ),
                             subTitle: '${item.title}',
-                            inProgress: item.order == 1,
+                            inProgress: item.weeklyObjectives.any(
+                              (element) => element.weeklyTasks.isCurrent,
+                            ),
                             isDisabled: item.weeklyObjectives.isEmpty,
-                            isDone: false,
+                            // isDone: false,
                             title: item.title,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -93,11 +95,9 @@ class RoadmapPage extends StatelessWidget {
                                 id: 2,
                                 primary: false,
 
-                                // count: state.count,
                                 onExapndedCountChanged: context
                                     .read<RoadmapCubit>()
                                     .onExpandedCountChanged,
-                                // isMoveable: true,
                                 items: [
                                   ...item.weeklyObjectives.expand(
                                     (weeklyobjectives) => [
@@ -109,16 +109,20 @@ class RoadmapPage extends StatelessWidget {
                                             .withValues(alpha: 0.93),
                                         subTitle:
                                             "week: ${weeklyobjectives.week.toString()}",
-                                        inProgress: weeklyobjectives.week == 2,
-                                        isDone: weeklyobjectives.week == 1,
+                                        inProgress: weeklyobjectives
+                                            .weeklyTasks
+                                            .isCurrent,
+                                        isDone:
+                                            weeklyobjectives
+                                                    .weeklyTasks
+                                                    .weeklyStatus ==
+                                                'completed'
+                                            ? true
+                                            : null,
                                         title: weeklyobjectives.focus,
                                         onTap: weeklyobjectives.week > 2
                                             ? null
                                             : () {
-                                                // print('heyyyyyyyyyyyyyyyy');
-                                                // print(
-                                                //   'currentMilestone: ${item.toMap()} currentWeek: ${e.week.toString()} ',
-                                                // );
                                                 context
                                                     .read<RoadmapCubit>()
                                                     .onWeeklyTasksCreated(
@@ -135,11 +139,6 @@ class RoadmapPage extends StatelessWidget {
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
-                                                    // U.Text(
-                                                    //   text:
-                                                    //       "week: ${e.week.toString()}",
-                                                    // ),
-                                                    // SizedBox(height: 5),
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.only(
@@ -150,13 +149,6 @@ class RoadmapPage extends StatelessWidget {
                                                             .outcome,
                                                       ),
                                                     ),
-                                                    // if (state.loading)
-                                                    //   Column(
-                                                    //     children: [
-                                                    //       SizedBox(height: 5),
-                                                    //       CircularProgressIndicator(),
-                                                    //     ],
-                                                    //   ),
                                                     U.Stepper(
                                                       id: 3,
                                                       primary: false,
@@ -170,6 +162,20 @@ class RoadmapPage extends StatelessWidget {
                                                       items: [
                                                         ...weeklyobjectives.weeklyTasks.days.map(
                                                           (e) => StepperItem(
+                                                            isDone:
+                                                                e.status ==
+                                                                    DayTaskStatus
+                                                                        .skipped
+                                                                ?false: e.status ==
+                                                                          DayTaskStatus
+                                                                              .completed
+                                                                      ? true
+                                                                : null,
+                                                            inProgress:
+                                                                T.DateFormater.monthFormater(
+                                                                  DateTime.now(),
+                                                                ) ==
+                                                                e.date,
                                                             itemBackground: U
                                                                 .Theme
                                                                 .white
@@ -178,7 +184,6 @@ class RoadmapPage extends StatelessWidget {
                                                                 ),
                                                             padding:
                                                                 EdgeInsets.zero,
-                                                            isDone: false,
                                                             title: e.date,
                                                             child: Row(
                                                               // mainAxisAlignment:
@@ -343,6 +348,8 @@ class RoadmapPage extends StatelessWidget {
                                                                       TaskDetailPage
                                                                           .route,
                                                                       extra: {
+                                                                        'path':
+                                                                            RoadmapPage.route,
                                                                         'milestone':
                                                                             item.title,
                                                                         'task':

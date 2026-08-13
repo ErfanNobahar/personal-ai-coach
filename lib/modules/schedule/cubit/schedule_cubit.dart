@@ -24,6 +24,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
            initialTasks ?? [],
            initialTask ??
                DayTask(
+                 roadmapId: '',
                  date: T.DateFormater.monthFormater(DateTime.now()),
                  status: DayTaskStatus.pending,
                  scheduledTimeSlot: '',

@@ -92,6 +92,7 @@ class RoadmapCubit extends Cubit<RoadmapState> {
       final updatedTasks = weeklyTasks.copyWith(
         days: weeklyTasks.days.asMap().entries.map((e) {
           return e.value.copyWith(
+            roadmapId: state.roadmap!.id,
             date: T.DateFormater.monthFormater(
               state.roadmap!.dateCreated.add(
                 Duration(
@@ -160,7 +161,12 @@ class RoadmapCubit extends Cubit<RoadmapState> {
     emit(state.copyWith(loading: false));
   }
 
-  void onInit() {
+  void onInit() async {
     emit(state.copyWith(roadmap: initialRoadmap, goal: initialGoal));
+    print('++++++++++++++++++++++++++++++++++++++++++++++++');
+    final res = await _repo.readRoadmapTasks(state.roadmap!);
+    print('res.milestones[0].weeklyObjectives[0].weeklyTasks.toMap()');
+    print(res.milestones[0].weeklyObjectives[0].weeklyTasks.toMap());
+    emit(state.copyWith(roadmap: res));
   }
 }
