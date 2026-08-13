@@ -259,19 +259,36 @@ abstract class BusinessBox {
               e.tasks.firstWhere((element) => element.roadmapId == roadmap.id),
         )
         .toList();
+    print('weeklyTasksstrtttttttttttt');
+    print(weeklyTasks.getRange(0, 6));
+    print('weeklyTasks.getRange(0, 6)');
+    print(weeklyTasks.getRange(6, 13));
     final updated = temp.copyWith(
       milestones: temp.milestones
           .map(
             (e) => e.copyWith(
               weeklyObjectives: e.weeklyObjectives
                   .map(
-                    (element) => element.weeklyTasks.isCurrent
-                        ? element.copyWith(
-                            weeklyTasks: element.weeklyTasks.copyWith(
-                              days: weeklyTasks,
-                            ),
-                          )
-                        : element,
+                    (element) => element.copyWith(
+                      weeklyTasks: element.weeklyTasks.copyWith(
+                        days:
+                            ((((element.week - 1) * 7) ) <
+                                    weeklyTasks.length &&
+                                (((element.week - 1) * 7) + 6) <
+                                    weeklyTasks.length)
+                            ? weeklyTasks
+                                  .getRange(
+                                    element.week == 1
+                                        ? 0
+                                        : ((element.week - 1) * 7) ,
+                                    element.week == 1
+                                        ? 7
+                                        : ((element.week - 1) * 7) + 7,
+                                  )
+                                  .toList()
+                            : element.weeklyTasks.days,
+                      ),
+                    ),
                   )
                   .toList(),
             ),

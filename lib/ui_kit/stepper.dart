@@ -166,7 +166,7 @@ class _StepperState extends State<Stepper> {
                 width: 13,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: item.isDone! ? Colors.green : U.Theme.shadow,
+                  color: item.isDone! ? Colors.green : Color(0xFFE49B9B),
                 ),
               )
             : Container(
