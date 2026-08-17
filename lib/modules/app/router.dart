@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:personal_ai_coach/modules/ai_insight/ai_insights_page.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/task_manger_page.dart';
 import 'package:personal_ai_coach/modules/chat/chat_page.dart';
 import 'package:personal_ai_coach/modules/home/home.dart';
@@ -44,7 +45,7 @@ final router = GoRouter(
                   builder: (context, state) {
                     final extra = state.extra as Map<String, dynamic>;
                     return TaskDetailPage(
-                      inComingRoute: extra['path'] as String? ,
+                      inComingRoute: extra['path'] as String?,
                       milestoneTitle: extra['milestone'] as String?,
                       initialTask: extra['task'] as dynamic,
                       scheduleCubit: extra['cubit'] as dynamic,
@@ -70,15 +71,10 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: RoadmapPage.route,
-              name: RoadmapPage.route,
+              path: AiInsightsPage.route,
+              name: AiInsightsPage.route,
               builder: (context, state) {
-                final extra = state.extra as Map<String, dynamic>;
-                return RoadmapPage(
-                  goal: extra['goal'] as String?,
-                  roadMap: extra['roadMap'] as dynamic,
-                  tasks: extra['tasks'] as dynamic,
-                );
+                return AiInsightsPage();
               },
             ),
           ],

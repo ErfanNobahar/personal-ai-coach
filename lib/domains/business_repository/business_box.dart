@@ -201,7 +201,7 @@ abstract class BusinessBox {
       boxName: boxName,
       key: Keys.weeklyTasks.index.toString(),
       value: List<SpecificTasks>.from(
-        filteredTasks,
+        filteredTasks.sortByDay,
       ).map((e) => e.toMap()).toList(),
     );
   }
@@ -272,15 +272,14 @@ abstract class BusinessBox {
                     (element) => element.copyWith(
                       weeklyTasks: element.weeklyTasks.copyWith(
                         days:
-                            ((((element.week - 1) * 7) ) <
-                                    weeklyTasks.length &&
+                            ((((element.week - 1) * 7)) < weeklyTasks.length &&
                                 (((element.week - 1) * 7) + 6) <
                                     weeklyTasks.length)
                             ? weeklyTasks
                                   .getRange(
                                     element.week == 1
                                         ? 0
-                                        : ((element.week - 1) * 7) ,
+                                        : ((element.week - 1) * 7),
                                     element.week == 1
                                         ? 7
                                         : ((element.week - 1) * 7) + 7,

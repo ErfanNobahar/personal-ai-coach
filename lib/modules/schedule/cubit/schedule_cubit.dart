@@ -101,7 +101,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       res.insert(index, updatedSpecificTasks!);
     }
     await _repo.updateDays(res);
-    emit(state.copyWith(dailyTasks: res, selectedDay: res[0]));
+    emit(state.copyWith(dailyTasks: res));
   }
 
   /////////// Methods

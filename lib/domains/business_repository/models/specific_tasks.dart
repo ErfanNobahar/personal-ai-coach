@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 
 class SpecificTasks extends Equatable {
   final String day;
@@ -31,4 +32,34 @@ class SpecificTasks extends Equatable {
 
   @override
   List<Object?> get props => [day, tasks];
+}
+
+extension Specific on List<SpecificTasks> {
+  List<SpecificTasks> get sortByDay {
+    final res = List<SpecificTasks>.from(this)
+      ..sort(
+        (a, b) => T.DateFormater.dateFromString(
+          a.day,
+        ).compareTo(T.DateFormater.dateFromString(b.day)),
+      );
+    return res;
+  }
+
+  ({int completed, int skipped, int pending}) get getDetails {
+    int completed = 0;
+    int skipped = 0;
+    int pending = 0;
+    for (var i = 0; i < length; i++) {
+      for (var element = 0; element < this[i].tasks.length; element++) {
+        if (this[i].tasks[element].status == DayTaskStatus.completed) {
+          completed++;
+        } else if (this[i].tasks[element].status == DayTaskStatus.skipped) {
+          skipped++;
+        } else {
+          pending++;
+        }
+      }
+    }
+    return (completed: completed, skipped: skipped, pending: pending);
+  }
 }
