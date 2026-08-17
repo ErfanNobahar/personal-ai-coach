@@ -18,11 +18,12 @@ class OverviewCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           U.Text(
-            text: 'Tasks Completed this week: ${tasks.getDetails.completed}',
+            text:
+                'Tasks Completed this week:  % ${((tasks.getDetails.completed * 100) ~/ tasks.getDetails.taskCount).toString()}',
             textWeight: U.TextWeight.bold,
             textSize: U.TextSize.s14,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 28),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

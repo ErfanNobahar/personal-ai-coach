@@ -48,8 +48,8 @@ class AiInsightsPage extends StatelessWidget {
               ),
             ],
             pages: [
-              Padding(padding: const EdgeInsets.all(8.0), child: Overview()),
-              Padding(padding: const EdgeInsets.all(8.0), child: Overview()),
+              Overview(),
+              Overview(),
             ],
             tabController: ScrollController(),
             pageController: PageController(),

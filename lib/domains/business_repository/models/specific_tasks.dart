@@ -45,12 +45,14 @@ extension Specific on List<SpecificTasks> {
     return res;
   }
 
-  ({int completed, int skipped, int pending}) get getDetails {
+  ({int completed, int skipped, int pending, int taskCount}) get getDetails {
     int completed = 0;
     int skipped = 0;
     int pending = 0;
+    int tasksCount = 0;
     for (var i = 0; i < length; i++) {
       for (var element = 0; element < this[i].tasks.length; element++) {
+        tasksCount++;
         if (this[i].tasks[element].status == DayTaskStatus.completed) {
           completed++;
         } else if (this[i].tasks[element].status == DayTaskStatus.skipped) {
@@ -60,6 +62,11 @@ extension Specific on List<SpecificTasks> {
         }
       }
     }
-    return (completed: completed, skipped: skipped, pending: pending);
+    return (
+      completed: completed,
+      skipped: skipped,
+      pending: pending,
+      taskCount: tasksCount,
+    );
   }
 }
