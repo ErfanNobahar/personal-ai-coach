@@ -251,18 +251,19 @@ abstract class BusinessBox {
 
   static Future<Roadmap> readRoadmapTasks(Roadmap roadmap) async {
     final res = readRoadmap();
-    final temp = res.firstWhere((e) => e.id == roadmap.id);
+
+    final temp = res.firstWhere((e) {
+      return e.id == roadmap.id;
+    });
     final tasks = await getWeeklyTasks();
     final weeklyTasks = tasks
         .map(
-          (e) =>
-              e.tasks.firstWhere((element) => element.roadmapId == roadmap.id),
+          (e) => e.tasks.where((element) {
+            return element.roadmapId == roadmap.id;
+          }).firstOrNull,
         )
         .toList();
-    print('weeklyTasksstrtttttttttttt');
-    print(weeklyTasks.getRange(0, 6));
-    print('weeklyTasks.getRange(0, 6)');
-    print(weeklyTasks.getRange(6, 13));
+    List<DayTask> nonNullList = weeklyTasks.whereType<DayTask>().toList();
     final updated = temp.copyWith(
       milestones: temp.milestones
           .map(
@@ -272,16 +273,19 @@ abstract class BusinessBox {
                     (element) => element.copyWith(
                       weeklyTasks: element.weeklyTasks.copyWith(
                         days:
-                            ((((element.week - 1) * 7)) < weeklyTasks.length &&
+                            ((((element.week - 1) * 7)) < nonNullList.length &&
                                 (((element.week - 1) * 7) + 6) <
-                                    weeklyTasks.length)
-                            ? weeklyTasks
+                                    nonNullList.length)
+                            ? nonNullList
                                   .getRange(
                                     element.week == 1
                                         ? 0
                                         : ((element.week - 1) * 7),
                                     element.week == 1
                                         ? 7
+                                        : ((element.week - 1) * 7) + 7 >
+                                              nonNullList.length
+                                        ? nonNullList.length
                                         : ((element.week - 1) * 7) + 7,
                                   )
                                   .toList()

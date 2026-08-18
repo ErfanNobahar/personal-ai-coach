@@ -56,7 +56,7 @@ class AiInsightCubit extends Cubit<AiInsightState> {
         : finalList = res
               .getRange(
                 dayIndex,
-                dayIndex + 7,
+                dayIndex + 7 > res.length ?res.length-1:dayIndex + 7 ,
                 // list + 7 > res.length ? res.length : list + 7
               )
               .toList();
