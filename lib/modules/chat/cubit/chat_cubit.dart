@@ -72,7 +72,11 @@ class ChatCubit extends Cubit<ChatState> {
     final Map<String, dynamic> roadmapJson = jsonDecode(
       res['message']['content'],
     );
+    print('===========================================');
+    print(roadmapJson.toString());
     final roadmap = Roadmap.fromMap(roadmapJson);
+    print('++++++++++++++++++++++++++++++++++++++++++++++++++');
+    print(roadmap);
     final tasksRes = await _repo.createWeeklyTasks(
       Message.user(
         content:
@@ -156,8 +160,15 @@ class ChatCubit extends Cubit<ChatState> {
         .toList();
     await _repo.createSchedule(specificTasks);
     await _repo.addRoadmap(updatedRoadMap);
+    print('roadmap.toMap()ppppppppppppppp');
+    print(roadmap.toMap());
+
     emit(state.copyWith(loading: false));
 
     return (roadmap: updatedRoadMap, tasks: weeklyTasks);
   }
+
+  // void printing() {
+  //   print(state.);
+  // }
 }

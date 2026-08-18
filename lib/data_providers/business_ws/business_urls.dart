@@ -9,5 +9,7 @@ class BusinessServers {
 
 class BusinessUrls {
   // final createGoal = 'https://api.groq.com/openai/v1/chat/completions';
-  final cerebrasAi = 'https://api.cerebras.ai/v1/chat/completions';
+  final cerebrasAi = 'https://opencode.ai/zen/v1/chat/completions'
+  //  'https://api.cerebras.ai/v1/chat/completions'
+  ;
 }

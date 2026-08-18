@@ -197,7 +197,7 @@ class BusinessRepository {
       url: BusinessWs.urls.cerebrasAi,
       data: {
         // "model": "llama-3.3-70b-versatile",
-        "model": "gemma-4-31b",
+        "model": "deepseek-v4-flash-free",
         "messages": messagesList.map((e) => e.toMap()).toList(),
       },
     );
@@ -212,7 +212,7 @@ class BusinessRepository {
     final res = await BusinessWs.client.post(
       url: BusinessWs.urls.cerebrasAi,
       data: {
-        "model": "gemma-4-31b",
+        "model": "deepseek-v4-flash-free",
         "messages": messageListt.map((e) => e.toMap()).toList(),
       },
     );
@@ -226,7 +226,7 @@ class BusinessRepository {
     final res = await BusinessWs.client.post(
       url: BusinessWs.urls.cerebrasAi,
       data: {
-        "model": "gemma-4-31b",
+        "model": "deepseek-v4-flash-free",
         "messages": messageList.map((e) => e.toMap()).toList(),
       },
     );
@@ -242,7 +242,7 @@ class BusinessRepository {
     final res = await BusinessWs.client.post(
       url: BusinessWs.urls.cerebrasAi,
       data: {
-        "model": "gemma-4-31b",
+        "model": "deepseek-v4-flash-free",
         "messages": messagesList.map((e) => e.toMap()).toList(),
       },
     );

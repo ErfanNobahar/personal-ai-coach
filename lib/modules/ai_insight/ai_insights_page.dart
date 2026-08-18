@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/modules/ai_insight/cubit/ai_insight_cubit.dart';
+import 'package:personal_ai_coach/modules/ai_insight/goals.dart';
 import 'package:personal_ai_coach/modules/ai_insight/overview.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
@@ -49,7 +50,7 @@ class AiInsightsPage extends StatelessWidget {
             ],
             pages: [
               Overview(),
-              Overview(),
+              Expanded(child: Goals()),
             ],
             tabController: ScrollController(),
             pageController: PageController(),
