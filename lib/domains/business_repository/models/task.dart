@@ -235,6 +235,30 @@ class DayTask extends Equatable {
   ];
 }
 
+extension TaskList on List<DayTask> {
+  ({int completed, int skipped, int pending, int taskCount}) get getDetails {
+    int completed = 0;
+    int skipped = 0;
+    int pending = 0;
+    int tasksCount = 0;
+    for (var i = 0; i < length; i++) {
+      if (this[i].status == DayTaskStatus.completed) {
+        completed++;
+      } else if (this[i].status == DayTaskStatus.skipped) {
+        skipped++;
+      } else {
+        pending++;
+      }
+    }
+    return (
+      completed: completed,
+      skipped: skipped,
+      pending: pending,
+      taskCount: tasksCount,
+    );
+  }
+}
+
 class PrimaryTask extends Equatable {
   final String id;
   final String title;

@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-
 class ScrollableTabview extends StatefulWidget {
   final List<Widget> headers;
   final List<Widget> pages;
   final ScrollController tabController;
   final PageController pageController;
-
-  /// Called ONLY when the active page settles on a whole integer.
-  /// [progress] is a double between 0.0 (first page) and 1.0 (last page).
   final Function(double progress) onPageCountChanged;
+
+  /// If provided, the header row uses this fixed height instead of
+  /// flexing to `headerFlex` of the available space.
+  final double? headerHeight;
+
+  /// Only used when [headerHeight] is null.
+  final int headerFlex;
+  final int pageFlex;
 
   const ScrollableTabview({
     super.key,
@@ -17,6 +21,9 @@ class ScrollableTabview extends StatefulWidget {
     required this.tabController,
     required this.pageController,
     required this.onPageCountChanged,
+    this.headerHeight,
+    this.headerFlex = 19,
+    this.pageFlex = 81,
   }) : assert(headers.length == pages.length);
 
   @override
@@ -159,39 +166,39 @@ class _ScrollableTabviewState extends State<ScrollableTabview> {
       _syncSource = null;
     }
   }
-
   @override
   Widget build(BuildContext context) {
+    final headerList = NotificationListener<ScrollNotification>(
+      onNotification: _onTabNotification,
+      child: ListView.separated(
+        controller: widget.tabController,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        physics: const ClampingScrollPhysics(),
+        itemCount: widget.headers.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        itemBuilder: (context, index) {
+          final isActive = index == _activeIndex;
+          return GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _onTabTap(index),
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 150),
+              opacity: isActive ? 1 : 0.6,
+              child: widget.headers[index],
+            ),
+          );
+        },
+      ),
+    );
+
     return Column(
       children: [
+        widget.headerHeight != null
+            ? SizedBox(height: widget.headerHeight, child: headerList)
+            : Expanded(flex: widget.headerFlex, child: headerList),
         Expanded(
-          flex: 19,
-          child: NotificationListener<ScrollNotification>(
-            onNotification: _onTabNotification,
-            child: ListView.separated(
-              controller: widget.tabController,
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              physics: const ClampingScrollPhysics(),
-              itemCount: widget.headers.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 14),
-              itemBuilder: (context, index) {
-                final isActive = index == _activeIndex;
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => _onTabTap(index),
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 150),
-                    opacity: isActive ? 1 : 0.6,
-                    child: widget.headers[index],
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 81,
+          flex: widget.headerHeight != null ? 1 : widget.pageFlex,
           child: NotificationListener<ScrollNotification>(
             onNotification: _onPageNotification,
             child: PageView(
