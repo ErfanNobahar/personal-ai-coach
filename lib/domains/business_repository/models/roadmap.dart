@@ -74,6 +74,21 @@ class Roadmap {
       'milestones': milestones.map((e) => e.toMap()).toList(),
     };
   }
+
+  int getProgress(Roadmap roadmap) {
+    final int completeds = roadmap.milestones.fold(
+      0,
+      (previousValue, e) =>
+          previousValue +
+          e.weeklyObjectives.fold(0, (previousValue, element) {
+            // print('element.weeklyTasks.days.getDetails.completed');
+            // print(element.weeklyTasks.days.getDetails.completed);
+            return previousValue +
+                element.weeklyTasks.days.getDetails.completed;
+          }),
+    );
+    return ((completeds * 100) / (roadmap.totalDurationWeeks * 7)).ceil();
+  }
 }
 
 class Milestone {

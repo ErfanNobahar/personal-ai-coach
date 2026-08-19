@@ -97,7 +97,7 @@ class AiInsightsPage extends StatelessWidget {
                   onPageCountChanged: (s) {},
                 ),
               ),
-              SizedBox(height: 100,)
+              // SizedBox(height: 10,)
             ],
           ),
         ),

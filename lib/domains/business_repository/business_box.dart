@@ -299,6 +299,7 @@ abstract class BusinessBox {
           )
           .toList(),
     );
+    BusinessBox.updateRoadmap(updated);
     return updated;
   }
 

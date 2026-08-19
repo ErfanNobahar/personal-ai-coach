@@ -41,7 +41,7 @@ class Overview extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: OverviewCard(tasks: state.weeklyTasks),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 9.0,horizontal: 13),
                     child: Row(
@@ -121,6 +121,7 @@ class Overview extends StatelessWidget {
                       ],
                     ),
                   ),
+                SizedBox(height: 140,)
                 ],
               );
       },

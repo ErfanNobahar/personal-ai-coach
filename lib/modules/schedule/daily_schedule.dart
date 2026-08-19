@@ -50,19 +50,36 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: SizedBox(
         width: double.infinity,
         child: Row(
           children: [
             Expanded(
-              flex: 10,
+              flex: 14,
               child: Center(
-                child: U.Text(
-                  text: isCurrent()
-                      ? 'NOW'
-                      : task.primaryTask.scheduledStartTime,
-                  color: U.Theme.tertiaryText,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    U.Text(
+                      textSize: U.TextSize.s14,
+                      text: isCurrent()
+                          ? 'NOW'
+                          : task.primaryTask.scheduledStartTime,
+                      color: U.Theme.tertiaryText,
+                    ),
+                    SizedBox(height: 5,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(width: 4,),
+                        EstimatedTimeText(
+                          startTime: task.primaryTask.scheduledStartTime,
+                          estimatedMinutes: task.primaryTask.estimatedMinutes,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -78,7 +95,7 @@ class TaskCard extends StatelessWidget {
                     final temp = await TaskDetailDialog.show(
                       context,
                       task: task,
-                      cubit: context.read<HomeCubit>()
+                      cubit: context.read<HomeCubit>(),
                     );
                     //  context.read<ScheduleCubit>().onRefresh();
                   } else {
@@ -288,5 +305,42 @@ class _TaskProgressCardState extends State<TaskProgressCard>
         ),
       ],
     );
+  }
+}
+
+class EstimatedTimeText extends StatelessWidget {
+  final String startTime; // e.g. "19:00"
+  final int estimatedMinutes; // e.g. 45
+  final TextStyle? style;
+
+  const EstimatedTimeText({
+    super.key,
+    required this.startTime,
+    required this.estimatedMinutes,
+    this.style,
+  });
+
+  String _calculateEndTime() {
+    final parts = startTime.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+
+    final totalMinutes = hour * 60 + minute + estimatedMinutes;
+
+    // Wrap around if it goes past 24h (optional, remove if not needed)
+    final normalizedMinutes = totalMinutes % (24 * 60);
+
+    final endHour = normalizedMinutes ~/ 60;
+    final endMinute = normalizedMinutes % 60;
+
+    final hh = endHour.toString().padLeft(2, '0');
+    final mm = endMinute.toString().padLeft(2, '0');
+
+    return '$hh:$mm';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return U.Text( text:_calculateEndTime(), textSize: U.TextSize.s14,textWeight: U.TextWeight.sm,);
   }
 }

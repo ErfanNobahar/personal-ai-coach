@@ -239,7 +239,6 @@ class ScheduleCubit extends Cubit<ScheduleState> {
         ),
       ),
     );
-    print('cukkkkkkkkkkkkkk;');
     print(state.task?.primaryTask.scheduledStartTime);
   }
   // Future<void> setTodaysStatus(){
