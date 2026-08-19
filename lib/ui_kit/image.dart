@@ -53,6 +53,9 @@ class Icons {
   static const String down = 'assets/icons/down.png';
   static const String calendar = 'assets/icons/calendar.png';
   static const String subtract = 'assets/icons/subtract.png';
+  static const String ai = 'assets/icons/ai.png';
+  static const String chart = 'assets/icons/chart.png';
+  static const String week = 'assets/icons/week.png';
 }
 
 class Images {

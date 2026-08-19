@@ -1,11 +1,12 @@
 import 'package:personal_ai_coach/data_providers/hive/hive_db.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/goal.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/roadmap.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/ui_kit/duration_picker_dlg.dart';
 
 import 'models/task.dart';
 
-enum Keys { weeklyTasks, roadMap }
+enum Keys { weeklyTasks, roadMap, goal }
 
 abstract class BusinessBox {
   static String boxName = 'business';
@@ -324,6 +325,19 @@ abstract class BusinessBox {
       return list;
     }
     return [];
+  }
+
+  static List<Goal> readGoals() {
+    final roadmaps = BusinessBox.readRoadmap();
+    final res = HiveDB.get(boxName: boxName, key: Keys.goal.index.toString());
+    if (res == null && roadmaps.isEmpty) {
+      return [];
+    } else {
+      final temp = roadmaps
+          .map((e) => Goal(roadmapId: e.id, roadmap: e))
+          .toList();
+      return temp;
+    }
   }
 
   static Future<void> updateRoadmap(Roadmap roadmap) async {

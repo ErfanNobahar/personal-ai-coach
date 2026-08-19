@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/goal.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/roadmap.dart';
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 
@@ -56,16 +58,26 @@ class AiInsightCubit extends Cubit<AiInsightState> {
         : finalList = res
               .getRange(
                 dayIndex,
-                dayIndex + 7 > res.length ?res.length-1:dayIndex + 7 ,
+                dayIndex + 7 > res.length ? res.length - 1 : dayIndex + 7,
                 // list + 7 > res.length ? res.length : list + 7
               )
               .toList();
+    print('finalList');
+    print(finalList.length);
     return finalList;
+  }
+
+  List<Goal> get getGoals {
+    // final roadmaps = _repo.readRoadmaps();
+    final List<Goal> goals = _repo.getGoals();
+    return goals;
   }
 
   ///////////////////// Events
   void onInit() async {
+    emit(state.copyWith(loading: true));
     final tasks = await getTasks();
-    emit(state.copyWith(weeklyTasks: tasks));
+    final goals = getGoals;
+    emit(state.copyWith(weeklyTasks: tasks, loading: false, goals: goals));
   }
 }

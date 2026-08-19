@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/modules/ai_insight/cubit/ai_insight_cubit.dart';
 import 'package:personal_ai_coach/modules/ai_insight/goals.dart';
+import 'package:personal_ai_coach/modules/ai_insight/history.dart';
 import 'package:personal_ai_coach/modules/ai_insight/overview.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
@@ -25,36 +25,80 @@ class AiInsightsPage extends StatelessWidget {
               end: AlignmentGeometry.bottomCenter,
             ),
           ),
-          child: U.ScrollableTabview(
-            headers: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  height: 40,
-                  width: 99,
-                  color: U.Theme.outlineHigh,
-                  child: U.Text(text: '1111'),
+          child: Column(
+            children: [
+              U.AppBar(title: 'AI Insights'),
+              Expanded(
+                child: U.ScrollableTabview(
+                  headerHeight: 70,
+                  headers: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: U.Theme.primary,
+                        ),
+                        child: Center(
+                          child: U.Text(
+                            color: U.Theme.secondaryText,
+                            text: 'Current Week',
+                            textWeight: U.TextWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: U.Theme.primary,
+                        ),
+                        child: Center(
+                          child: U.Text(
+                            color: U.Theme.secondaryText,
+                            text: 'Goals',
+                            textWeight: U.TextWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        width: 110,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: U.Theme.primary,
+                        ),
+                        child: Center(
+                          child: U.Text(
+                            color: U.Theme.secondaryText,
+                            text: 'History',
+                            textWeight: U.TextWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  pages: [
+                    Overview(),
+                    Expanded(child: Goals()),
+                    History(),
+                  ],
+                  tabController: ScrollController(),
+                  pageController: PageController(),
+                  onPageCountChanged: (s) {},
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  height: 40,
-                  width: 99,
-                  color: U.Theme.outlineHigh,
-                  child: U.Text(text: '1111'),
-                ),
-              ),
+              SizedBox(height: 100,)
             ],
-            pages: [
-              Overview(),
-              Expanded(child: Goals()),
-            ],
-            tabController: ScrollController(),
-            pageController: PageController(),
-            onPageCountChanged: (s) {},
           ),
         ),
       ),
