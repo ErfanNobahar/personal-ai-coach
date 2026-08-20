@@ -124,14 +124,14 @@ class ProposedAction extends Equatable {
     this.task,
   });
 
-  factory ProposedAction.fromMap(Map<String, dynamic> map) {
+factory ProposedAction.fromMap(Map<String, dynamic> map) {
     final taskMap = map['task'];
     return ProposedAction(
       actionType: map['actionType'] ?? '',
       taskId: map['taskId'],
       taskIds: List<String>.from(map['taskIds'] ?? []),
       isPrimaryTask: map['isPrimaryTask'] == true,
-      date: '',
+      date: map['date'] ?? '', // <-- FIX: Read date from map
       newStartTime: map['newStartTime'],
       task: taskMap != null
           ? ProposedTaskPayload.fromMap(asStringMap(taskMap))

@@ -7,6 +7,7 @@ import 'package:personal_ai_coach/domains/business_repository/business_repositor
 import 'package:personal_ai_coach/domains/business_repository/models/ai_response.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/message.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
+import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 
 part 'ai_task_manager_state.dart';
 
@@ -24,8 +25,8 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     emit(state.copyWith(loading: true));
     final res = await _repo.readSchedule();
     emit(state.copyWith(loading: false, tasks: res));
-    print('res.toString()');
-    print(res.toString());
+    // print('res.toString()');
+    // print(res.toString());
   }
 
   String _extractJson(String raw) {
@@ -33,10 +34,10 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
 
     // Strip ```json ... ``` or ``` ... ``` fences if present
     if (s.startsWith('```')) {
-      s = s.replaceFirst(RegExp(r'^```(json)?', caseSensitive: false), '');
-      if (s.endsWith('```')) {
-        s = s.substring(0, s.length - 3);
-      }
+      // Remove opening fence
+      s = s.replaceFirst(RegExp(r'^```(json)?\s*', caseSensitive: false), '');
+      // Remove closing fence - handle potential whitespace and trailing backticks
+      s = s.replaceFirst(RegExp(r'\s*```\s*$'), '');
       s = s.trim();
     }
 
@@ -48,13 +49,27 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
       s = s.substring(start, end + 1);
     }
 
+    // Additional cleanup: remove any remaining backticks or stray characters
+    s = s.replaceAll(RegExp(r'[`]'), '').trim();
+
     return s;
   }
 
   Future<void> onMessageSent() async {
     final list = [...state.messages];
     final sentMessagesList = [...state.messages];
-    sentMessagesList.add(Message.user(content: 'tasks of the user: ${state.tasks.toString()}'));
+    final todaysTasks = state.tasks.firstWhere((e) {
+      print('${T.DateFormater.dateFromString(e.day)} vsssss ${DateTime.now()}');
+      return T.DateFormater.dateFromString(e.day).day == DateTime.now().day;
+    });
+    print('todaysTasks.day');
+    print(todaysTasks.day);
+    sentMessagesList.add(
+      Message.user(
+        content:
+            'tasks of the user: ${todaysTasks.tasks.map((e) => e.toMap()).toList()}',
+      ),
+    );
     final today = DateTime.now();
     final formattedToday =
         '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
