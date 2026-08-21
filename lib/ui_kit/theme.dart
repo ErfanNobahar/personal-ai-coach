@@ -4,7 +4,7 @@ class Theme {
   static const Color background = Color(0xFFF7F7F7);
   static const Color primary = Color(0xFF4E38B2);
   static const Color white = Color(0xFFFFFFFF);
-  // static   const  primary = Color(value)
+  static const Color onSecondaryBackground = Color(0xFFF9F8FF);
   static const Color onBackground = Color(0xFFD8CEFF);
 
   static final afternoonPallet = LinearBackground(
@@ -12,6 +12,7 @@ class Theme {
     background2: Color(0xFFE3F0FF),
     background3: Color(0xFFE8C2FF),
   );
+  
   // Text colors
   static const primaryText = Color(0xFF352A7C);
   static const secondaryText = Color(0xFFFFFFFF);
@@ -35,11 +36,11 @@ class Theme {
 
   // Buttons
   static const secondaryButton = Color(0xFF917AE5);
-  // static const secondaryButton = Color(0xFF352A7C);
   static const tertiaryButton = Color(0xFFB8B2D6);
 
   // Border
   static const primaryBorder = Color(0xFF9D89E8);
+  static const secondaryBorder = Color(0xFFF2A9FA);
 
   // Shadow
   static const shadow = Color(0xFF143C6D);

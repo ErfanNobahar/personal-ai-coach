@@ -114,7 +114,7 @@ class OutlineButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: align,
                 children: [
-                  if (leading != null) ...[SizedBox(width: 15), leading!],
+                  if (leading != null) ...[ leading!],
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),

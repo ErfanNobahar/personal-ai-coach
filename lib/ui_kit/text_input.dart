@@ -21,10 +21,10 @@ class TextInput extends StatefulWidget {
     required this.controller,
     this.maxLines,
     this.minLines = 1,
-    this.borderRadius = 50.0,
+    this.borderRadius = 15.0,
     this.expandedBorderRadius = 20.0,
     this.expands = false,
-    this.color = U.Theme.divider,
+    this.color = U.Theme.white,
     this.inputBorder = InputBorder.none,
     this.hint = '',
     this.autoFocus = false,
@@ -93,7 +93,7 @@ class _TextInputState extends State<TextInput> {
 
   @override
   Widget build(BuildContext context) {
-    final bool multiline = widget.expandOnMultiline && isMultiline;
+    final bool multiline = widget.expandOnMultiline;
     final double height = widget.expandOnMultiline
         ? (multiline ? expandedHeight : collapsedHeight)
         : widget.fixedHeight;
@@ -110,7 +110,7 @@ class _TextInputState extends State<TextInput> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isFocused ? U.Theme.primaryBorder : widget.color,
+            color: isFocused ? U.Theme.surfaceHigh : U.Theme.surfaceHigh.withValues(alpha: 0.5),
           ),
           borderRadius: BorderRadius.circular(radius),
           color: widget.color,
@@ -118,6 +118,7 @@ class _TextInputState extends State<TextInput> {
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         child: TextField(
+          style: TextStyle(fontSize: fontSize,fontWeight: FontWeight.w500),
           onEditingComplete: widget.onEditingComplete,
           focusNode: focusNode,
           controller: widget.controller,
@@ -125,7 +126,7 @@ class _TextInputState extends State<TextInput> {
           minLines: widget.minLines,
           expands: widget.expands,
           decoration: InputDecoration(
-            hint: U.Text(text: widget.hint),
+            hint: U.Text(text: widget.hint, textSize: U.TextSize.s16,textWeight: U.TextWeight.sm,),
             fillColor: widget.color,
             contentPadding: EdgeInsets.zero,
             isDense: true,

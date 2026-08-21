@@ -14,7 +14,7 @@ class ChatBubble extends StatelessWidget {
       child: Row(
         children: [
           Flexible(
-            flex: 65,
+            flex: 75,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
@@ -44,7 +44,7 @@ class ChatBubble extends StatelessWidget {
               ),
             ),
           ),
-          Flexible(flex: 35, child: SizedBox()),
+          Flexible(flex: 25, child: SizedBox()),
         ],
       ),
     );

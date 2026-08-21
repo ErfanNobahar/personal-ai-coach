@@ -65,7 +65,7 @@ class TaskCreationPage extends StatelessWidget {
                     children: [
                       U.AppBar(title: 'newTask', blur: true),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 13.0),
                         child: Divider(height: 2),
                       ),
                       const SizedBox(height: 10),
@@ -79,16 +79,17 @@ class TaskCreationPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
                         child: U.TextInput(
-                          color: U.Theme.onBackground,
+                          hint: 'Task title',
+                          color: U.Theme.white,
                           controller: cubit.taskTitleCtrl,
                           onEditingComplete: () {
                             FocusScope.of(context).nextFocus();
                           },
                         ),
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: U.Text(
@@ -99,11 +100,11 @@ class TaskCreationPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
                         child: SizedBox(
                           height: 160,
                           child: U.TextInput(
-                            color: U.Theme.onBackground,
+                            color: U.Theme.white,
                             maxLines: null,
                             hint: 'Task description',
                             controller: cubit.taskDescriptionCtrl,
@@ -115,29 +116,29 @@ class TaskCreationPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 15),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: U.Text(
+                          text: 'Select Time',
+                          textWeight: U.TextWeight.semiBold,
+                          textSize: U.TextSize.s16,
+                          color: U.Theme.primaryText,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0,vertical: 5),
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: U.Theme.secondaryButton.withValues(
-                              alpha: 0.2,
-                            ),
-                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(color: U.Theme.surfaceHigh.withValues(alpha: 0.6)),
+                            color: U.Theme.white,
+                            borderRadius: BorderRadius.circular(10),
                           ),
+
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 18.0,
-                                ),
-                                child: U.Text(
-                                  text: 'Select Time',
-                                  textWeight: U.TextWeight.bold,
-                                  textSize: U.TextSize.s16,
-                                  color: U.Theme.primaryText,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 5),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0,
@@ -261,7 +262,7 @@ class TaskCreationPage extends StatelessWidget {
                           },
                         ),
                       ),
-                      const SizedBox(height: 125),
+                      const SizedBox(height: 185),
                     ],
                   ),
                   // Positioned(

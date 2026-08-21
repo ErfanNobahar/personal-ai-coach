@@ -79,7 +79,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     U.Image.icon(
-                                      color: U.Theme.primaryText,
+                                      color: U.Theme.onSecondaryBackground,
 
                                       path: U.Icons.calendar,
                                       size: 22,
@@ -94,7 +94,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
                                       ),
                                       curve: Curves.easeInOut,
                                       child: U.Image.icon(
-                                        color: U.Theme.primaryText,
+                                        color: U.Theme.onSecondaryBackground,
                                         path: U.Icons.down,
                                         size: 22,
                                       ),
