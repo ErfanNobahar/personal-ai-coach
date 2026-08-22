@@ -56,6 +56,7 @@ class Icons {
   static const String ai = 'assets/icons/ai.png';
   static const String chart = 'assets/icons/chart.png';
   static const String week = 'assets/icons/week.png';
+  static const String task = 'assets/icons/task.png';
 }
 
 class Images {

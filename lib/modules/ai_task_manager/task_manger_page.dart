@@ -1,15 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/ai_response.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/cubit/ai_task_manager_cubit.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/message_field.dart';
+import 'package:personal_ai_coach/modules/ai_task_manager/task_confiramtion_card.dart';
+import 'package:personal_ai_coach/modules/ai_task_manager/task_deletion_card.dart';
 import 'package:personal_ai_coach/modules/chat/chat_bubble.dart';
+import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class TaskMangerPage extends StatelessWidget {
   static String route = '/taskmanager';
 
   const TaskMangerPage({super.key});
+
+  Widget getAction(String action, ChatResponse response) {
+    Widget temp;
+    print('++++++++++++++++++++++++++++++++++++++++');
+    print(action);
+    switch (action) {
+      case 'add_task':
+        temp = TaskConfiramtionCard(response: response);
+
+      case 'delete_task':
+        temp = Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 8),
+          child: TaskDeletionCard(response: response),
+        );
+
+      case 'reschedule_task':
+        temp = TaskConfiramtionCard(response: response);
+      default:
+        temp = SizedBox();
+    }
+    if (action == 'delete_task') {}
+    print('=====================================');
+    print(temp);
+    return temp;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +67,7 @@ class TaskMangerPage extends StatelessWidget {
                     if (state.messages.isNotEmpty)
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0),
                           child: ListView.separated(
                             itemCount: state.messages.length,
                             itemBuilder: (context, index) {
@@ -48,14 +77,27 @@ class TaskMangerPage extends StatelessWidget {
                                     rtl: state.messages[index].role == 'user',
                                     text: state.messages[index].content,
                                   ),
-                                  if(index== state.messages.length-1)
+
+                                  if (state.actions.keys
+                                          .where((e) => e == index)
+                                          .toList()
+                                          .isNotEmpty &&
+                                      state.actions.isNotEmpty)
+                                    getAction(
+                                      state
+                                          .actions[index]!
+                                          .proposedAction!
+                                          .actionType,
+                                      state.actions[index]!,
+                                    ),
+                                  if (index == state.messages.length - 1)
                                     SizedBox(height: 190),
                                 ],
                               );
                             },
                             separatorBuilder:
                                 (BuildContext context, int index) {
-                                  if (index == state.messages.length -1) {
+                                  if (index == state.messages.length - 1) {
                                     return SizedBox(height: 115);
                                   }
                                   return SizedBox(height: 12);

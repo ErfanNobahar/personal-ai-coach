@@ -124,7 +124,7 @@ class ProposedAction extends Equatable {
     this.task,
   });
 
-factory ProposedAction.fromMap(Map<String, dynamic> map) {
+  factory ProposedAction.fromMap(Map<String, dynamic> map) {
     final taskMap = map['task'];
     return ProposedAction(
       actionType: map['actionType'] ?? '',

@@ -93,7 +93,7 @@ class BusinessRepository {
         'user\'s own daily tasks, and only within these strict rules.\n'
         'ALLOWED: reschedule a task (primary or supporting) with status "pending" to a new start time or a '
         'different future date; delete a task (primary or supporting) with status "pending"; add a new optional '
-        'supporting task, or a new primary task only if the target day currently has none; answer read-only '
+        'supporting task, or a new primary task; answer read-only '
         'questions about the user\'s own schedule or progress.\n'
         'NEVER ALLOWED, under any phrasing, justification, or persistence by the user: changing the status of a '
         'task marked "completed" or "skipped"; rescheduling or deleting any task dated in the past; modifying a '
@@ -189,6 +189,7 @@ class BusinessRepository {
     // print('messagesList.map((e) => e.toMap()).toList()');
     // print(messagesList.map((e) => e.toMap()).toList());
     final res = await BusinessWs.client.post(
+      accessToken: 'naU0rAAWOoBoZ574mqNYm2IV9RQUgnHp',
       url: BusinessWs.urls.cerebrasAi,
       data: {
         "model": "mistral-large-latest",

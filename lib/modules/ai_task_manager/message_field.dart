@@ -23,11 +23,11 @@ class MessageField extends StatelessWidget {
           children: [
             Expanded(
               child: U.TextInput(
-                // maxLines: 2,
-                // minLines: 1,
+                maxLines: null,
+                minLines: null,
                 expandOnMultiline: true,
                 // color: U.Theme.white,
-                // expands: true,
+                expands: true,
                 borderRadius: 50.0,
                 controller: context.read<AiTaskManagerCubit>().messageCtrl,
                 onEditingComplete: onSubmit,

@@ -7,6 +7,7 @@ import 'package:personal_ai_coach/domains/business_repository/business_repositor
 import 'package:personal_ai_coach/domains/business_repository/models/ai_response.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/message.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 
 part 'ai_task_manager_state.dart';
@@ -55,6 +56,8 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     return s;
   }
 
+  Map<int, ChatResponse> actions = {};
+
   Future<void> onMessageSent() async {
     final list = [...state.messages];
     final sentMessagesList = [...state.messages];
@@ -92,14 +95,36 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     final Map<String, dynamic> taskJson = jsonDecode(_extractJson(rawContent));
     final temp = ChatResponse.fromMap(taskJson);
     list.add(Message.ai(content: temp.message));
+    if (temp.proposedAction != null) {
+      actions.addEntries(<int, ChatResponse>{list.length - 1: temp}.entries);
+      findTasks(actions.entries.last.value.proposedAction!.taskIds);
+    }
     print('temppppppppppppppppppp');
     print(temp.toMap());
-    emit(state.copyWith(loading: false, messages: list));
+    emit(state.copyWith(loading: false, messages: list, actions: actions));
     print('state.messages.length');
     print(
       state.messages.map((e) {
         print(e.content);
       }),
     );
+  }
+
+  Future<void> findTasks(List<String> ids) async {
+    emit(state.copyWith(loading: true));
+    final res = await _repo.readSchedule();
+    // List<DayTask?> temp ;
+    // for (var element in res) {
+    // if(element.tasks.contains(element))
+    // }
+    List<DayTask> temp = res
+        .expand(
+          (e) => e.tasks.where((element) {
+            return ids.contains(element.primaryTask.id);
+          }),
+        )
+        .toList();
+    List<DayTask> nonNullList = temp.whereType<DayTask>().toList();
+    emit(state.copyWith(modifiedTasks: nonNullList, loading: false));
   }
 }
