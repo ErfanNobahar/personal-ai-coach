@@ -10,7 +10,7 @@ enum ButtonText { primary, secondary }
 class Button extends StatelessWidget {
   final bool disabled;
   final String title;
-  final Function() onTap;
+  final void Function()? onTap;
   final ButtonColor buttonColor;
   final ButtonText? buttonText;
   final MainAxisSize size;

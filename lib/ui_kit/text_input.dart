@@ -5,15 +5,16 @@ class TextInput extends StatefulWidget {
   final TextEditingController controller;
   final int? maxLines;
   final int? minLines;
-  final double borderRadius; // radius when single line / static mode
-  final double expandedBorderRadius; // radius when multi line
+  final double borderRadius;
+  final double expandedBorderRadius;
   final bool expands;
   final InputBorder inputBorder;
   final Color color;
   final String hint;
   final bool autoFocus;
-  final bool expandOnMultiline; // <-- toggle
-  final double fixedHeight; // used when expandOnMultiline is false
+  final bool expandOnMultiline;
+  final double fixedHeight;
+  final bool disabled; // <-- NEW
   final Function() onEditingComplete;
 
   const TextInput({
@@ -30,6 +31,7 @@ class TextInput extends StatefulWidget {
     this.autoFocus = false,
     this.expandOnMultiline = false,
     this.fixedHeight = 55,
+    this.disabled = false, // <-- NEW
     required this.onEditingComplete,
   });
 
@@ -45,11 +47,11 @@ class _TextInputState extends State<TextInput> {
   static const double collapsedHeight = 55;
   static const double expandedHeight = 96;
   static const double horizontalPadding = 32;
-  static const double fontSize = 14; // match your actual field's text style
+  static const double fontSize = 14;
 
   @override
   void initState() {
-    if (widget.autoFocus) {
+    if (widget.autoFocus && !widget.disabled) {
       focusNode.requestFocus();
     }
     focusNode.addListener(() {
@@ -60,6 +62,15 @@ class _TextInputState extends State<TextInput> {
       widget.controller.addListener(_checkMultiline);
     }
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(TextInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Remove focus if widget becomes disabled
+    if (widget.disabled && !oldWidget.disabled && focusNode.hasFocus) {
+      focusNode.unfocus();
+    }
   }
 
   @override
@@ -101,27 +112,40 @@ class _TextInputState extends State<TextInput> {
         ? (multiline ? widget.expandedBorderRadius : widget.borderRadius)
         : widget.borderRadius;
 
+    // Disabled state colors
+    final Color borderColor = widget.disabled
+        ? U.Theme.surfaceHigh.withValues(alpha: 0.2)
+        : isFocused
+        ? U.Theme.surfaceHigh
+        : U.Theme.surfaceHigh.withValues(alpha: 0.5);
+
+    final Color backgroundColor = widget.disabled
+        ? widget.color.withValues(alpha: 0.6)
+        : widget.color;
+
     return GestureDetector(
-      onTap: () {
-        focusNode.requestFocus();
-      },
+      onTap: widget.disabled ? null : () => focusNode.requestFocus(),
       child: AnimatedContainer(
         height: height,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: isFocused
-                ? U.Theme.surfaceHigh
-                : U.Theme.surfaceHigh.withValues(alpha: 0.5),
-          ),
+          border: Border.all(color: borderColor),
           borderRadius: BorderRadius.circular(radius),
-          color: widget.color,
+          color: backgroundColor,
         ),
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         child: TextField(
-          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
-          onEditingComplete: widget.onEditingComplete,
+          enabled: !widget.disabled, // <-- disables interaction
+          readOnly: widget.disabled, // <-- prevents text changes
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w500,
+            color: widget.disabled
+                ? U.Theme.tertiaryText.withValues(alpha: 0.4) // dimmed text
+                : null,
+          ),
+          onEditingComplete: widget.disabled ? null : widget.onEditingComplete,
           focusNode: focusNode,
           controller: widget.controller,
           maxLines: widget.maxLines,
@@ -133,7 +157,10 @@ class _TextInputState extends State<TextInput> {
               textSize: U.TextSize.s16,
               textWeight: U.TextWeight.sm,
             ),
-            fillColor: widget.color,
+            hintStyle: widget.disabled
+                ? TextStyle(color: U.Theme.tertiaryText.withValues(alpha: 0.2))
+                : null,
+            fillColor: backgroundColor,
             contentPadding: EdgeInsets.zero,
             isDense: true,
             border: widget.inputBorder,

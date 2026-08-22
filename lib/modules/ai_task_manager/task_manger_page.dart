@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/ai_response.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/cubit/ai_task_manager_cubit.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/message_field.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/task_confiramtion_card.dart';
@@ -15,7 +16,12 @@ class TaskMangerPage extends StatelessWidget {
 
   const TaskMangerPage({super.key});
 
-  Widget getAction(String action, ChatResponse response) {
+  Widget getAction(
+    String action,
+    ChatResponse response, {
+    bool disabled = false,
+    List<DayTask> tasks = const [],
+  }) {
     Widget temp;
     print('++++++++++++++++++++++++++++++++++++++++');
     print(action);
@@ -25,8 +31,12 @@ class TaskMangerPage extends StatelessWidget {
 
       case 'delete_task':
         temp = Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 8),
-          child: TaskDeletionCard(response: response),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
+          child: TaskDeletionCard(
+            response: response,
+            isdisabled: disabled,
+            tasks: tasks,
+          ),
         );
 
       case 'reschedule_task':
@@ -34,9 +44,6 @@ class TaskMangerPage extends StatelessWidget {
       default:
         temp = SizedBox();
     }
-    if (action == 'delete_task') {}
-    print('=====================================');
-    print(temp);
     return temp;
   }
 
@@ -89,6 +96,10 @@ class TaskMangerPage extends StatelessWidget {
                                           .proposedAction!
                                           .actionType,
                                       state.actions[index]!,
+                                      disabled:
+                                          index !=
+                                          state.actions.entries.last.key,
+                                      tasks: state.modifiedTasks[index]!,
                                     ),
                                   if (index == state.messages.length - 1)
                                     SizedBox(height: 190),
@@ -112,7 +123,12 @@ class TaskMangerPage extends StatelessWidget {
                   bottom: 120,
                   right: 0,
                   left: 0,
-                  child: Expanded(child: MessageField(onSubmit: () {})),
+                  child: Expanded(
+                    child: MessageField(
+                      isDisabled: state.chattingStatus,
+                      onSubmit: () {},
+                    ),
+                  ),
                 ),
               ],
             ),

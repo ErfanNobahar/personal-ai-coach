@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/ai_response.dart';
+import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/cubit/ai_task_manager_cubit.dart';
 import 'package:personal_ai_coach/modules/home/cubit/home_cubit.dart';
 import 'package:personal_ai_coach/modules/schedule/task_detail_dlg.dart';
@@ -9,8 +10,15 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class TaskDeletionCard extends StatelessWidget {
   final ChatResponse response;
+  final bool isdisabled;
+  final List<DayTask> tasks;
 
-  const TaskDeletionCard({super.key, required this.response});
+  const TaskDeletionCard({
+    super.key,
+    required this.response,
+    this.isdisabled = false,
+    required this.tasks,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,116 +27,134 @@ class TaskDeletionCard extends StatelessWidget {
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.only(top: 12),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                color: U.Theme.onSecondaryBackground,
-                border: Border.all(
-                  color: U.Theme.outline.withValues(alpha: 0.5),
-                  width: 1,
+            child: Opacity(
+              opacity: isdisabled ? 0.6 : 1.0,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  color: U.Theme.onSecondaryBackground,
+                  border: Border.all(
+                    color: U.Theme.outline.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: U.Theme.shadow.withValues(alpha: 0.24),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: U.Theme.shadow.withValues(alpha: 0.24),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header: warning icon + message
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: U.Theme.secondaryBorder.withValues(
-                            alpha: 0.18,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header: warning icon + message
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: U.Theme.secondaryBorder.withValues(
+                              alpha: 0.18,
+                            ),
+                            shape: BoxShape.circle,
                           ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.priority_high_rounded,
-                          size: 16,
-                          color: U.Theme.secondaryBorder,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: U.Text(
-                            text:
-                                'Are you sure you want to continue with the deletion?',
-                            textWeight: U.TextWeight.bold,
-                            textSize: U.TextSize.s16,
+                          child: Icon(
+                            Icons.priority_high_rounded,
+                            size: 16,
+                            color: U.Theme.secondaryBorder,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: U.Text(
+                              text:
+                                  'Are you sure you want to continue with the deletion?',
+                              textWeight: U.TextWeight.bold,
+                              textSize: U.TextSize.s16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
-                  const SizedBox(height: 18),
-                  Container(
-                    height: 1.7,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          U.Theme.secondaryBorder.withValues(alpha: 0.8),
-                          U.Theme.secondaryBorder.withValues(alpha: 0.2),
-                        ],
+                    const SizedBox(height: 18),
+                    Container(
+                      height: 1.7,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            U.Theme.secondaryBorder.withValues(alpha: 0.8),
+                            U.Theme.secondaryBorder.withValues(alpha: 0.2),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
 
-                  const SizedBox(height: 18),
+                    const SizedBox(height: 18),
 
-                  // Section label
-                  Row(
-                    children: [
-                      U.Image.icon(path: U.Icons.task, size: 16),
-                      const SizedBox(width: 8),
-                      U.Text(
-                        text: 'SELECTED TASKS',
-                        textWeight: U.TextWeight.semiBold,
-                        textSize: U.TextSize.s12,
-                        color: U.Theme.quaternaryText,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Container(
-                          height: 1,
-                          color: U.Theme.outline.withValues(alpha: 0.25),
+                    // Section label
+                    Row(
+                      children: [
+                        U.Image.icon(path: U.Icons.task, size: 16),
+                        const SizedBox(width: 8),
+                        U.Text(
+                          text: 'SELECTED TASKS',
+                          textWeight: U.TextWeight.semiBold,
+                          textSize: U.TextSize.s12,
+                          color: U.Theme.quaternaryText,
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Container(
+                            height: 1,
+                            color: U.Theme.outline.withValues(alpha: 0.25),
+                          ),
+                        ),
+                      ],
+                    ),
 
-                  const SizedBox(height: 14),
+                    const SizedBox(height: 14),
 
-                  // Task list
-                  ...state.modifiedTasks.asMap().entries.map(
-                    (e) => _TaskTile(index: e.key, task: e.value),
-                  ),
-                  const SizedBox(height: 11),
-                  Divider(color: U.Theme.secondaryBorder,),
-                  const SizedBox(height: 3),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: U.Button(title: 'accept', onTap: () async {},buttonColor: U.ButtonColor.secondary,),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: U.OutlineButton(title: 'clarify', onTap: () {},foregroundColor: U.OutLineButtonForeground.primary,color: U.OutLineButtonColor.secondary,),
-                      ),
-                    ],
-                  ),
-                ],
+                    // Task list
+                    ...tasks.asMap().entries.map(
+                      (e) => _TaskTile(index: e.key, task: e.value),
+                    ),
+                    const SizedBox(height: 11),
+                    Divider(color: U.Theme.secondaryBorder),
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: U.Button(
+                            title: 'accept',
+                            onTap: isdisabled ? null : () {},
+                            buttonColor: U.ButtonColor.secondary,
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: U.OutlineButton(
+                            title: 'Clarify',
+                            onTap: isdisabled
+                                ? null
+                                : () {
+                                    context
+                                        .read<AiTaskManagerCubit>()
+                                        .onClarifytaped();
+                                  },
+                            foregroundColor: U.OutLineButtonForeground.primary,
+                            color: U.OutLineButtonColor.secondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );

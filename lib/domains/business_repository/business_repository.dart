@@ -1,3 +1,4 @@
+import 'package:personal_ai_coach/data_providers/api_keys.dart';
 import 'package:personal_ai_coach/data_providers/business_ws/business_ws.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_box.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/goal.dart';
@@ -144,6 +145,8 @@ class BusinessRepository {
     print(messagesList.map((e) => e.toMap()).toList());
     final res = await BusinessWs.client.post(
       url: BusinessWs.urls.cerebrasAi,
+      accessToken:
+          ApiKeys.mistralKey,
       data: {
         // "model": "llama-3.3-70b-versatile",
         "model": "deepseek-v4-flash-free",
@@ -160,6 +163,8 @@ class BusinessRepository {
     messageListt.add(message);
     final res = await BusinessWs.client.post(
       url: BusinessWs.urls.cerebrasAi,
+      accessToken:
+          ApiKeys.mistralKey,
       data: {
         "model": "deepseek-v4-flash-free",
         "messages": messageListt.map((e) => e.toMap()).toList(),
@@ -173,6 +178,8 @@ class BusinessRepository {
     messageList.insert(0, weeklyTasksGenerationPrompt);
     messageList.add(message);
     final res = await BusinessWs.client.post(
+      accessToken:
+          ApiKeys.mistralKey,
       url: BusinessWs.urls.cerebrasAi,
       data: {
         "model": "deepseek-v4-flash-free",
@@ -189,7 +196,7 @@ class BusinessRepository {
     // print('messagesList.map((e) => e.toMap()).toList()');
     // print(messagesList.map((e) => e.toMap()).toList());
     final res = await BusinessWs.client.post(
-      accessToken: 'naU0rAAWOoBoZ574mqNYm2IV9RQUgnHp',
+      accessToken: ApiKeys.mistralKey,
       url: BusinessWs.urls.cerebrasAi,
       data: {
         "model": "mistral-large-latest",

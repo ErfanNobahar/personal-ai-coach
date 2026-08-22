@@ -62,17 +62,15 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     final list = [...state.messages];
     final sentMessagesList = [...state.messages];
     final todaysTasks = state.tasks.firstWhere((e) {
-      print('${T.DateFormater.dateFromString(e.day)} vsssss ${DateTime.now()}');
       return T.DateFormater.dateFromString(e.day).day == DateTime.now().day;
     });
-    print('todaysTasks.day');
-    print(todaysTasks.day);
     sentMessagesList.add(
       Message.user(
         content:
             'tasks of the user: ${todaysTasks.tasks.map((e) => e.toMap()).toList()}',
       ),
     );
+
     final today = DateTime.now();
     final formattedToday =
         '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
@@ -80,12 +78,7 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     sentMessagesList.add(
       Message.user(content: 'Todays date : $formattedToday'),
     );
-    // sentMessagesList.add(
-    //   Message.user(
-    //     content:
-    //         'these are the class models in my application and remember that some parameters of this class could be null also there is the specificstasks model class that has these as its parameters and the date of that days tasks are its first parameter class DayTask extends Equatable {final String date;final DayTaskStatus status;final String scheduledTimeSlot;final String scheduledTimeLabel;final PrimaryTask primaryTask;final List<SupportingTask> supportingTasks;const DayTask({required this.date,required this.status,required this.scheduledTimeSlot,required this.scheduledTimeLabel,required this.primaryTask,required this.supportingTasks,}); class PrimaryTask extends Equatable {final String id;final String title;final String description;final int estimatedMinutes;final String scheduledStartTime; // "HH:mm"final String scheduledEndTime; // "HH:mm"final String type;final String whyItMatters;final List<SuggestedSearch> suggestedSearches;const PrimaryTask({required this.id,required this.title,required this.description,required this.estimatedMinutes,required this.scheduledStartTime,required this.scheduledEndTime,required this.type,required this.whyItMatters,required this.suggestedSearches,});',
-    //   ),
-    // );
+
     sentMessagesList.add(Message.user(content: messageCtrl.text));
     list.add(Message.user(content: messageCtrl.text));
 
@@ -97,7 +90,11 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     list.add(Message.ai(content: temp.message));
     if (temp.proposedAction != null) {
       actions.addEntries(<int, ChatResponse>{list.length - 1: temp}.entries);
-      findTasks(actions.entries.last.value.proposedAction!.taskIds);
+      findTasks(
+        actions.entries.last.value.proposedAction!.taskIds,
+        actions.entries.last.key,
+      );
+      emit(state.copyWith(chattingStatus: ChattingStatus.disabled));
     }
     print('temppppppppppppppppppp');
     print(temp.toMap());
@@ -110,7 +107,68 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     );
   }
 
-  Future<void> findTasks(List<String> ids) async {
+  void onClarifytaped() {
+    emit(state.copyWith(chattingStatus: ChattingStatus.clarifing));
+  }
+
+  Future<void> onClarified() async {
+    emit(state.copyWith(chattingStatus: ChattingStatus.clarifing));
+    final list = [...state.messages];
+    final sentMessagesList = [...state.messages];
+    final todaysTasks = state.tasks.firstWhere((e) {
+      return T.DateFormater.dateFromString(e.day).day == DateTime.now().day;
+    });
+    sentMessagesList.add(
+      Message.user(
+        content:
+            'tasks of the user: ${todaysTasks.tasks.map((e) => e.toMap()).toList()}',
+      ),
+    );
+
+    final today = DateTime.now();
+    final formattedToday =
+        '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    sentMessagesList.add(
+      Message.user(content: 'Todays date : $formattedToday'),
+    );
+    sentMessagesList.add(
+      Message.user(
+        content:
+            'your last proposal to the users request was ${actions.entries.last.value.toMap()}, and now he is making this clarificattion/change about your propsal',
+      ),
+    );
+
+    sentMessagesList.add(Message.user(content: messageCtrl.text));
+    list.add(Message.user(content: messageCtrl.text));
+
+    final res = await _repo.createTaskResponse(sentMessagesList);
+    final rawContent = res['message']['content'] as String;
+    final Map<String, dynamic> taskJson = jsonDecode(_extractJson(rawContent));
+    final temp = ChatResponse.fromMap(taskJson);
+    list.add(Message.ai(content: temp.message));
+    if (temp.proposedAction != null) {
+      // actions.remove(actions.entries.last.key);
+      actions.addEntries(<int, ChatResponse>{list.length - 1: temp}.entries);
+      findTasks(
+        actions.entries.last.value.proposedAction!.taskIds,
+        actions.entries.last.key,
+      );
+    }
+    print('-----------------------------------------------  ');
+    print(actions);
+    emit(
+      state.copyWith(
+        loading: false,
+        messages: list,
+        chattingStatus: ChattingStatus.disabled,
+        actions: actions,
+      ),
+    );
+  }
+
+  Map<int, List<DayTask>> mapedTasks = {};
+  Future<void> findTasks(List<String> ids, int key) async {
     emit(state.copyWith(loading: true));
     final res = await _repo.readSchedule();
     // List<DayTask?> temp ;
@@ -125,6 +183,7 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
         )
         .toList();
     List<DayTask> nonNullList = temp.whereType<DayTask>().toList();
-    emit(state.copyWith(modifiedTasks: nonNullList, loading: false));
+    mapedTasks.addEntries(<int, List<DayTask>>{key: nonNullList}.entries);
+    emit(state.copyWith(modifiedTasks: mapedTasks, loading: false));
   }
 }

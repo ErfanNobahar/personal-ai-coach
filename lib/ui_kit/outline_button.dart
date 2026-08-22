@@ -10,7 +10,7 @@ enum OutLineButtonForeground { primary, secondary, tertiary }
 class OutlineButton extends StatelessWidget {
   final bool disabled;
   final String title;
-  final Function() onTap;
+  final void Function()? onTap;
   final OutLineButtonColor color;
   final OutLineButtonForeground foregroundColor;
   final OutlineButtonSize size;
@@ -114,7 +114,7 @@ class OutlineButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: align,
                 children: [
-                  if (leading != null) ...[ leading!],
+                  if (leading != null) ...[leading!],
                   Flexible(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
