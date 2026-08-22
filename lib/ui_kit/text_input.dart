@@ -93,7 +93,7 @@ class _TextInputState extends State<TextInput> {
 
   @override
   Widget build(BuildContext context) {
-    final bool multiline = widget.expandOnMultiline;
+    final bool multiline = isMultiline;
     final double height = widget.expandOnMultiline
         ? (multiline ? expandedHeight : collapsedHeight)
         : widget.fixedHeight;
@@ -110,7 +110,9 @@ class _TextInputState extends State<TextInput> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: isFocused ? U.Theme.surfaceHigh : U.Theme.surfaceHigh.withValues(alpha: 0.5),
+            color: isFocused
+                ? U.Theme.surfaceHigh
+                : U.Theme.surfaceHigh.withValues(alpha: 0.5),
           ),
           borderRadius: BorderRadius.circular(radius),
           color: widget.color,
@@ -118,7 +120,7 @@ class _TextInputState extends State<TextInput> {
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         child: TextField(
-          style: TextStyle(fontSize: fontSize,fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
           onEditingComplete: widget.onEditingComplete,
           focusNode: focusNode,
           controller: widget.controller,
@@ -126,7 +128,11 @@ class _TextInputState extends State<TextInput> {
           minLines: widget.minLines,
           expands: widget.expands,
           decoration: InputDecoration(
-            hint: U.Text(text: widget.hint, textSize: U.TextSize.s16,textWeight: U.TextWeight.sm,),
+            hint: U.Text(
+              text: widget.hint,
+              textSize: U.TextSize.s16,
+              textWeight: U.TextWeight.sm,
+            ),
             fillColor: widget.color,
             contentPadding: EdgeInsets.zero,
             isDense: true,
