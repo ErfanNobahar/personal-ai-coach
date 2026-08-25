@@ -62,7 +62,14 @@ final router = GoRouter(
               path: TaskCreationPage.route,
               name: TaskCreationPage.route,
               builder: (context, state) {
-                return TaskCreationPage(task: state.extra as dynamic);
+                Map<String, dynamic>? extra =
+                    state.extra as Map<String, dynamic>?;
+                print('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee');
+                print(extra);
+                return TaskCreationPage(
+                  task: extra?['task'] as dynamic,
+                  cubit: extra?['cubit'] as dynamic,
+                );
               },
             ),
           ],

@@ -30,7 +30,6 @@ class ScheduleCubit extends Cubit<ScheduleState> {
                  scheduledTimeSlot: '',
                  scheduledTimeLabel: '',
                  primaryTask: PrimaryTask(
-                   id: 'id',
                    title: '',
                    description: '',
                    estimatedMinutes: 0,
@@ -119,6 +118,14 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     emit(state.copyWith(loading: false));
   }
 
+  void onTaskAsigned(DayTask? task) {
+    if (task != null) {
+      taskDescriptionCtrl.text = task.primaryTask.description;
+      taskTitleCtrl.text = task.primaryTask.title;
+      emit(state.copyWith(task: task));
+    }
+  }
+
   void onPageCountChanged(double count) {
     // emit(state.copyWith(selectedDay: state.dailyTasks[count.floor()]));
     // print('state.selectedDay');
@@ -137,10 +144,12 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     return null;
   }
 
-  Future<bool> onTaskCreated() async {
+  void onTaskConfirmed() {
+    print('??????????????????????????????????????????');
+    print(state.task!.primaryTask.id);
     emit(
       state.copyWith(
-        loading: true,
+        loading: false,
         task: state.task!.copyWith(
           primaryTask: state.task!.primaryTask.copyWith(
             description: taskDescriptionCtrl.text,
@@ -149,6 +158,10 @@ class ScheduleCubit extends Cubit<ScheduleState> {
         ),
       ),
     );
+  }
+
+  Future<bool> onTaskCreated() async {
+    onTaskConfirmed();
     final ress = await _repo.checkIfTaskExists(state.task!);
     if (ress) {
       toast('Task already exists!');
@@ -171,9 +184,7 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     }
 
     await _repo.updateTasks(state.task!, isNew: initialTask == null);
-    print('1111111111111111111');
     await onRefresh();
-    print('2222222222222222222');
     toast('task created successfuly');
     emit(state.copyWith(loading: false));
     return true;
@@ -208,7 +219,6 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     );
 
     emit(state.copyWith(task: updatedTask, loading: false));
-    print(updatedTask);
   }
 
   void onHourChanged(String hour) {
@@ -221,8 +231,6 @@ class ScheduleCubit extends Cubit<ScheduleState> {
         ),
       ),
     );
-    print(hour);
-    print(state.task);
   }
 
   void onEstimatedTimeAssigned(TimeSlot slot) {

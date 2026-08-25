@@ -172,7 +172,7 @@ class TaskDeletionCard extends StatelessWidget {
 
 class _TaskTile extends StatelessWidget {
   final int index;
-  final dynamic task; // replace `dynamic` with your actual task entry type
+  final DayTask task; // replace `dynamic` with your actual task entry type
 
   const _TaskTile({required this.index, required this.task});
 
@@ -227,11 +227,7 @@ class _TaskTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                _RemoveButton(
-                  onTap: () {
-                    // TODO: swap for your cubit's actual removal method
-                  },
-                ),
+                _RemoveButton(onTap: () {}),
               ],
             ),
           ),

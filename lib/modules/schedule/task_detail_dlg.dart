@@ -4,21 +4,31 @@ import 'package:go_router/go_router.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
 import 'package:personal_ai_coach/modules/home/cubit/home_cubit.dart';
+import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/modules/schedule/task_creation_dlg.dart';
 import 'package:personal_ai_coach/modules/task/cubit/task_cubit.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class TaskDetailDialog extends StatelessWidget {
-  const TaskDetailDialog({super.key, required this.isReadonly});
+  const TaskDetailDialog({
+    super.key,
+    this.scheduleCubit,
+    required this.isReadonly,
+    required this.isEditonly,
+  });
   final bool isReadonly;
+  final bool isEditonly;
+  final ScheduleCubit? scheduleCubit;
   static const double _maxHeight = 480;
   static const double _maxWidth = 333;
 
   static Future<dynamic> show(
     BuildContext context, {
     bool isReadonly = false,
+    bool isEditonly = false,
     required DayTask task,
     HomeCubit? cubit,
+    ScheduleCubit? scheduleCubit,
   }) {
     return U.Dialog.show(
       useRootNavigator: true,
@@ -30,7 +40,11 @@ class TaskDetailDialog extends StatelessWidget {
           ),
           BlocProvider.value(value: cubit ?? HomeCubit()),
         ],
-        child: TaskDetailDialog(isReadonly: isReadonly),
+        child: TaskDetailDialog(
+          isReadonly: isReadonly,
+          isEditonly: isEditonly,
+          scheduleCubit: scheduleCubit,
+        ),
       ),
       maxHeight: _maxHeight,
       maxWidth: _maxWidth,
@@ -214,33 +228,36 @@ class TaskDetailDialog extends StatelessWidget {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Flexible(
-                                    flex: 65,
-                                    fit: FlexFit.tight,
-                                    child: U.Button(
-                                      disabled:
-                                          task.status ==
-                                              DayTaskStatus.completed ||
-                                          task.status == DayTaskStatus.skipped,
-                                      leading: Icon(
-                                        Icons.done_rounded,
-                                        color: U.Theme.white,
+                                  if (!isEditonly && !isReadonly)
+                                    Flexible(
+                                      flex: 65,
+                                      fit: FlexFit.tight,
+                                      child: U.Button(
+                                        disabled:
+                                            task.status ==
+                                                DayTaskStatus.completed ||
+                                            task.status ==
+                                                DayTaskStatus.skipped,
+                                        leading: Icon(
+                                          Icons.done_rounded,
+                                          color: U.Theme.white,
+                                        ),
+                                        title: 'Mark as Done',
+                                        onTap: () async {
+                                          await context
+                                              .read<TaskCubit>()
+                                              .onStatusChanged(
+                                                task.copyWith(
+                                                  status:
+                                                      DayTaskStatus.completed,
+                                                ),
+                                              );
+                                          context
+                                              .read<HomeCubit>()
+                                              .onItemsRefreshed();
+                                        },
                                       ),
-                                      title: 'Mark as Done',
-                                      onTap: () async {
-                                        await context
-                                            .read<TaskCubit>()
-                                            .onStatusChanged(
-                                              task.copyWith(
-                                                status: DayTaskStatus.completed,
-                                              ),
-                                            );
-                                        context
-                                            .read<HomeCubit>()
-                                            .onItemsRefreshed();
-                                      },
                                     ),
-                                  ),
                                   const SizedBox(width: 10),
                                   Flexible(
                                     flex: 35,
@@ -253,37 +270,49 @@ class TaskDetailDialog extends StatelessWidget {
                                       ),
                                       title: 'Edit',
                                       onTap: () {
+                                        print(
+                                          '.....................................',
+                                        );
+                                        print(task);
                                         GoRouter.of(context).pop();
+                                        if (scheduleCubit != null) {
+                                          scheduleCubit!.onTaskAsigned(task);
+                                        }
                                         GoRouter.of(context).pushNamed(
                                           TaskCreationPage.route,
-                                          extra: task,
+                                          extra: {
+                                            'task': task,
+                                            'cubit': scheduleCubit,
+                                          },
                                         );
                                       },
                                     ),
                                   ),
                                 ],
                               ),
-
                               const SizedBox(height: 10),
 
                               // Destructive action, visually separated
-                              U.OutlineButton(
-                                disabled:
-                                    task.status == DayTaskStatus.completed ||
-                                    task.status == DayTaskStatus.skipped,
-                                leading: Icon(
-                                  Icons.delete_outline_rounded,
-                                  color: Colors.red.shade400,
+                              if (!isEditonly && !isReadonly)
+                                U.OutlineButton(
+                                  disabled:
+                                      task.status == DayTaskStatus.completed ||
+                                      task.status == DayTaskStatus.skipped,
+                                  leading: Icon(
+                                    Icons.delete_outline_rounded,
+                                    color: Colors.red.shade400,
+                                  ),
+                                  title: 'Delete Task',
+                                  onTap: () async {
+                                    await context
+                                        .read<TaskCubit>()
+                                        .onTaskDeleted();
+                                    context
+                                        .read<HomeCubit>()
+                                        .onItemsRefreshed();
+                                    GoRouter.of(context).pop(true);
+                                  },
                                 ),
-                                title: 'Delete Task',
-                                onTap: () async {
-                                  await context
-                                      .read<TaskCubit>()
-                                      .onTaskDeleted();
-                                  context.read<HomeCubit>().onItemsRefreshed();
-                                  GoRouter.of(context).pop(true);
-                                },
-                              ),
                             ],
                           ),
 

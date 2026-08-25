@@ -8,6 +8,7 @@ import 'package:personal_ai_coach/modules/ai_task_manager/message_field.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/task_confiramtion_card.dart';
 import 'package:personal_ai_coach/modules/ai_task_manager/task_deletion_card.dart';
 import 'package:personal_ai_coach/modules/chat/chat_bubble.dart';
+import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
@@ -19,6 +20,7 @@ class TaskMangerPage extends StatelessWidget {
   Widget getAction(
     String action,
     ChatResponse response, {
+    required int key,
     bool disabled = false,
     List<DayTask> tasks = const [],
   }) {
@@ -27,8 +29,9 @@ class TaskMangerPage extends StatelessWidget {
     print(action);
     switch (action) {
       case 'add_task':
-        temp = TaskConfiramtionCard(response: response);
-
+        temp = TaskConfiramtionCard(
+          modifiedKeys: key,
+           tasks: tasks);
       case 'delete_task':
         temp = Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
@@ -40,7 +43,9 @@ class TaskMangerPage extends StatelessWidget {
         );
 
       case 'reschedule_task':
-        temp = TaskConfiramtionCard(response: response);
+        temp = TaskConfiramtionCard(
+          modifiedKeys: key,
+           tasks: tasks);
       default:
         temp = SizedBox();
     }
@@ -49,87 +54,107 @@ class TaskMangerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          AiTaskManagerCubit(repo: context.read<BusinessRepository>()),
-      child: BlocBuilder<AiTaskManagerCubit, AiTaskManagerState>(
-        builder: (context, state) {
-          return Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: U.Theme.afternoonPallet.getColors,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              AiTaskManagerCubit(repo: context.read<BusinessRepository>()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              ScheduleCubit(repo: context.read<BusinessRepository>()),
+        ),
+      ],
+      child: BlocListener<ScheduleCubit, ScheduleState>(
+        listenWhen: (previous, current) {
+          print('${previous.task} vsssss ${current.task}');
+          return previous.task != current.task;
+        },
+        listener: (context, state) {
+          context.read<AiTaskManagerCubit>().onTaskEdited(state.task!);
+        },
+        child: BlocBuilder<AiTaskManagerCubit, AiTaskManagerState>(
+          builder: (context, state) {
+            print('state.modifiedTasksssssssssssssss');
+            print(state.modifiedTasks);
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: U.Theme.afternoonPallet.getColors,
+                ),
               ),
-            ),
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    if (state.messages.isNotEmpty)
-                      Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: ListView.separated(
-                            itemCount: state.messages.length,
-                            itemBuilder: (context, index) {
-                              return Column(
-                                children: [
-                                  if (index == 0) SizedBox(height: 70),
-                                  ChatBubble(
-                                    rtl: state.messages[index].role == 'user',
-                                    text: state.messages[index].content,
-                                  ),
-                                  if (state.actions.keys
-                                          .where((e) => e == index)
-                                          .toList()
-                                          .isNotEmpty &&
-                                      state.actions.isNotEmpty)
-                                    getAction(
-                                      state
-                                          .actions[index]!
-                                          .proposedAction!
-                                          .actionType,
-                                      state.actions[index]!,
-                                      disabled:
-                                          index !=
-                                          state.actions.entries.last.key,
-                                      tasks: state.modifiedTasks[index]!,
+              child: Stack(
+                children: [
+                  Column(
+                    children: [
+                      if (state.messages.isNotEmpty)
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: ListView.separated(
+                              itemCount: state.messages.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    if (index == 0) SizedBox(height: 70),
+                                    ChatBubble(
+                                      rtl: state.messages[index].role == 'user',
+                                      text: state.messages[index].content,
                                     ),
-                                  if (index == state.messages.length - 1)
-                                    SizedBox(height: 190),
-                                ],
-                              );
-                            },
-                            separatorBuilder:
-                                (BuildContext context, int index) {
-                                  if (index == state.messages.length - 1) {
-                                    return SizedBox(height: 115);
-                                  }
-                                  return SizedBox(height: 12);
-                                },
+                                    if (state.actions.keys
+                                            .where((e) => e == index)
+                                            .toList()
+                                            .isNotEmpty &&
+                                        state.actions.isNotEmpty)
+                                      getAction(
+                                        key: index,
+                                        state
+                                            .actions[index]!
+                                            .proposedAction!
+                                            .actionType,
+                                        state.actions[index]!,
+                                        disabled:
+                                            index !=
+                                            state.actions.entries.last.key,
+                                        tasks: state.modifiedTasks[index]!,
+                                      ),
+                                    if (index == state.messages.length - 1)
+                                      SizedBox(height: 190),
+                                  ],
+                                );
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                    if (index == state.messages.length - 1) {
+                                      return SizedBox(height: 115);
+                                    }
+                                    return SizedBox(height: 12);
+                                  },
+                            ),
                           ),
                         ),
+                      // SizedBox(height: 115),
+                    ],
+                  ),
+                  U.AppBar(title: 'Enhance with AI!', blur: true),
+                  Positioned(
+                    bottom: 120,
+                    right: 0,
+                    left: 0,
+                    child: Expanded(
+                      child: MessageField(
+                        isDisabled: state.chattingStatus,
+                        onSubmit: () {},
                       ),
-                    // SizedBox(height: 115),
-                  ],
-                ),
-                U.AppBar(title: 'Enhance with AI!', blur: true),
-                Positioned(
-                  bottom: 120,
-                  right: 0,
-                  left: 0,
-                  child: Expanded(
-                    child: MessageField(
-                      isDisabled: state.chattingStatus,
-                      onSubmit: () {},
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

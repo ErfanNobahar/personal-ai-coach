@@ -26,6 +26,7 @@ class ScheduleState {
       status = ScheduleStatus.empty,
       selectedDay = null,
       selectedDayIndex = '';
+  
 
   ScheduleState copyWith({
     bool? loading,

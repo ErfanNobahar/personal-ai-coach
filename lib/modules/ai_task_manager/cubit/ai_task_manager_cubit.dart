@@ -61,13 +61,13 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
   Future<void> onMessageSent() async {
     final list = [...state.messages];
     final sentMessagesList = [...state.messages];
-    final todaysTasks = state.tasks.firstWhere((e) {
+    final todaysTasks = state.tasks.where((e) {
       return T.DateFormater.dateFromString(e.day).day == DateTime.now().day;
-    });
+    }).firstOrNull;
     sentMessagesList.add(
       Message.user(
         content:
-            'tasks of the user: ${todaysTasks.tasks.map((e) => e.toMap()).toList()}',
+            'tasks of the user: ${todaysTasks?.tasks.map((e) => e.toMap()).toList()}',
       ),
     );
 
@@ -90,15 +90,109 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     list.add(Message.ai(content: temp.message));
     if (temp.proposedAction != null) {
       actions.addEntries(<int, ChatResponse>{list.length - 1: temp}.entries);
-      findTasks(
-        actions.entries.last.value.proposedAction!.taskIds,
-        actions.entries.last.key,
-      );
+      temp.proposedAction!.actionType == 'add_task'
+          ? onAddTask(actions.entries.last.key, temp)
+          : findTasks(
+              actions.entries.last.value.proposedAction!.taskIds,
+              actions.entries.last.key,
+            );
       emit(state.copyWith(chattingStatus: ChattingStatus.disabled));
     }
     print('temppppppppppppppppppp');
     print(temp.toMap());
     emit(state.copyWith(loading: false, messages: list, actions: actions));
+  }
+
+  void onItemRemoved(int key, DayTask task) {
+    print('tasksssssssssssssssssss');
+    print(task);
+    Map<int, List<DayTask>> temp = Map.from(state.modifiedTasks);
+    final i = temp.update(
+      key,
+      (value) => value.where((e) => e != task).toList(),
+    );
+    print('${i} vsssss ${state.modifiedTasks}');
+    emit(state.copyWith(modifiedTasks: temp));
+    // final res = temp.entries.map(
+    //   (e) => e.key == key
+    //       ? <int, List<DayTask>>{
+    //           e.key: e.value
+    //               .map((element) => element == task ? null : element)
+    //               .nonNulls
+    //               .toList(),
+    //         }
+    //       : <int, List<DayTask>>{e.key: e.value},
+    // );
+    // if(res != null ){
+    // res.value.remove(task);
+    //   temp.
+    // }
+  }
+
+  void onAddTask(int key, ChatResponse res) {
+    List<DayTask> tasks = res.proposedAction!.tasks
+        .map(
+          (e) => DayTask(
+            roadmapId: '',
+            date: T.DateFormater.monthFormater(
+              T.DateFormater.dateFromString(e.date),
+            ),
+            status: DayTaskStatus.pending,
+            scheduledTimeSlot: '',
+            scheduledTimeLabel: '',
+            primaryTask: PrimaryTask(
+              title: e.title,
+              description: e.description,
+              estimatedMinutes: e.estimatedMinutes,
+              scheduledStartTime: e.scheduledStartTime,
+              scheduledEndTime: '',
+              type: e.type,
+              whyItMatters: e.whyItMatters,
+              suggestedSearches: e.suggestedSearches,
+            ),
+            supportingTasks: [],
+          ),
+        )
+        .toList();
+    mapedTasks.addEntries(<int, List<DayTask>>{key: tasks}.entries);
+    emit(state.copyWith(modifiedTasks: mapedTasks));
+  }
+
+  void onTaskEdited(DayTask task) {
+    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    print(task);
+
+    final Map<int, List<DayTask>> newModifiedTasks = {};
+    print('fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu');
+    print(state.modifiedTasks);
+    print(state.modifiedTasks.entries.first.value);
+    // Iterate through all entries in the current modifiedTasks
+    for (var entry in state.modifiedTasks.entries) {
+      final List<DayTask> updatedTasks = [];
+      bool taskFound = false;
+
+      for (var existingTask in entry.value) {
+        if (existingTask.primaryTask.id == task.primaryTask.id) {
+          // Replace with the updated task
+          updatedTasks.add(task);
+          taskFound = true;
+        } else {
+          updatedTasks.add(existingTask);
+        }
+      }
+      print('000000000000000000000000');
+      print(updatedTasks);
+      // If the task wasn't found, keep the original list
+      if (!taskFound) {
+        newModifiedTasks[entry.key] = entry.value;
+      } else {
+        newModifiedTasks[entry.key] = updatedTasks;
+      }
+    }
+
+    emit(state.copyWith(modifiedTasks: newModifiedTasks));
+    print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<doneeeeee');
+    print(newModifiedTasks);
   }
 
   void onClarifytaped() {
