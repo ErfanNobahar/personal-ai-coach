@@ -200,7 +200,6 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
   }
 
   Future<void> onClarified() async {
-    emit(state.copyWith(chattingStatus: ChattingStatus.clarifing));
     final list = [...state.messages];
     final sentMessagesList = [...state.messages];
     final todaysTasks = state.tasks.firstWhere((e) {
@@ -256,6 +255,25 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
 
   Future<void> onDeleteAccepted() async {
     await _repo.deleteTasks(state.modifiedTasks.entries.last.value);
+  }
+
+  Future<void> onAddtaskConfirmed() async {
+    List<DayTask> tasks = [];
+    tasks = state.modifiedTasks.entries.last.value;
+    List<String> times = tasks.map((e) => e.date).toList();
+    // List<String> newTimes = times.where((e)=>e.)
+    List<String> newTimes = [];
+    for (var element in times) {
+      if (!newTimes.contains(element)) {
+        newTimes.add(element);
+      }
+    }
+    List<List<DayTask>> temp = newTimes
+        .map((e) => tasks.where((element) => element.date == e).toList())
+        .toList();
+    _repo.updateDays(
+      temp.map((e) => SpecificTasks(day: e.first.date, tasks: e)).toList(),
+    );
   }
 
   Map<int, List<DayTask>> mapedTasks = {};

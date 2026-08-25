@@ -38,8 +38,19 @@ abstract class BusinessBox {
     for (var element in temp) {
       element.tasks.sortByHour();
     }
-
+    print('temp');
+    print(temp.length);
+    print(temp);
+    // setNull();
     return temp;
+  }
+
+  static void setNull() {
+    HiveDB.set(
+      boxName: boxName,
+      key: Keys.weeklyTasks.index.toString(),
+      value: [],
+    );
   }
 
   static Future<bool> checkIfTaskExists(DayTask task) async {
@@ -281,7 +292,6 @@ abstract class BusinessBox {
       key: Keys.weeklyTasks.index.toString(),
       value: updated.map((e) => e.toMap()).toList(),
     );
-
   }
 
   static Future<Roadmap> readRoadmapTasks(Roadmap roadmap) async {

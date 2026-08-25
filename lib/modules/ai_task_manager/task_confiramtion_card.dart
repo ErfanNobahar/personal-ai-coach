@@ -140,11 +140,21 @@ class TaskConfiramtionCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: U.Button(title: 'accept', onTap: () async {}),
+                    child: U.Button(
+                      title: 'Accept',
+                      onTap: () async {
+                        context.read<AiTaskManagerCubit>().onAddtaskConfirmed();
+                      },
+                    ),
                   ),
                   SizedBox(width: 6),
                   Expanded(
-                    child: U.OutlineButton(title: 'clarify', onTap: () {}),
+                    child: U.OutlineButton(
+                      title: 'clarify',
+                      onTap: () {
+                        context.read<AiTaskManagerCubit>().onClarified();
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -222,12 +232,10 @@ class _TaskTile extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 _RemoveButton(
-                  onTap: ()=>
-                    context.read<AiTaskManagerCubit>().onItemRemoved(
-                      modifiedKeys,
-                      task,
-                    )
-                 
+                  onTap: () => context.read<AiTaskManagerCubit>().onItemRemoved(
+                    modifiedKeys,
+                    task,
+                  ),
                 ),
               ],
             ),
