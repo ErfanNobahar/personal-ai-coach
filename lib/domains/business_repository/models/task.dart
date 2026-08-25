@@ -2,6 +2,8 @@ import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 import 'dart:core';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/parsing.dart';
+import 'package:uuid/uuid.dart';
 
 class WeeklyTasks {
   final String type;
@@ -270,8 +272,8 @@ class PrimaryTask extends Equatable {
   final String whyItMatters;
   final List<SuggestedSearch> suggestedSearches;
 
-  const PrimaryTask({
-    required this.id,
+  PrimaryTask({
+    String? id,
     required this.title,
     required this.description,
     required this.estimatedMinutes,
@@ -280,7 +282,7 @@ class PrimaryTask extends Equatable {
     required this.type,
     required this.whyItMatters,
     required this.suggestedSearches,
-  });
+  }) : id = (id == null || id == '') ? Uuid().v4() : id;
 
   static List<String> dayTimes = [
     '01:00',

@@ -104,69 +104,8 @@ class ChatResponse extends Equatable {
   ];
 }
 
-class ProposedAction extends Equatable {
-  final String actionType; // "reschedule_task" | "delete_task" | "add_task"
-  final String? taskId; // used for reschedule_task
-  final List<String> taskIds; // used for delete_task (can target more than one)
-  final bool isPrimaryTask;
-  final String date;
-  final String?
-  newStartTime; // reschedule_task only; end time is always computed client-side
-  final ProposedTaskPayload? task; // add_task only
-
-  const ProposedAction({
-    required this.actionType,
-    this.taskId,
-    this.taskIds = const [],
-    this.isPrimaryTask = false,
-    required this.date,
-    this.newStartTime,
-    this.task,
-  });
-
-  factory ProposedAction.fromMap(Map<String, dynamic> map) {
-    final taskMap = map['task'];
-    return ProposedAction(
-      actionType: map['actionType'] ?? '',
-      taskId: map['taskId'],
-      taskIds: List<String>.from(map['taskIds'] ?? []),
-      isPrimaryTask: map['isPrimaryTask'] == true,
-      date: map['date'] ?? '', // <-- FIX: Read date from map
-      newStartTime: map['newStartTime'],
-      task: taskMap != null
-          ? ProposedTaskPayload.fromMap(asStringMap(taskMap))
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'actionType': actionType,
-      'taskId': taskId,
-      'taskIds': taskIds,
-      'isPrimaryTask': isPrimaryTask,
-      'date': date,
-      'newStartTime': newStartTime,
-      'task': task?.toMap(),
-    };
-  }
-
-  @override
-  List<Object?> get props => [
-    actionType,
-    taskId,
-    taskIds,
-    isPrimaryTask,
-    date,
-    newStartTime,
-    task,
-  ];
-}
-
-/// Content-only payload for a newly proposed task. Deliberately has NO id
-/// and NO scheduledEndTime — both must always be generated/computed
-/// client-side via TaskFactory, never trusted from the AI response.
 class ProposedTaskPayload extends Equatable {
+  final String date; // now lives per-task, not on ProposedAction
   final String title;
   final String description;
   final int estimatedMinutes;
@@ -174,9 +113,10 @@ class ProposedTaskPayload extends Equatable {
   final String type;
   final String whyItMatters;
   final List<SuggestedSearch> suggestedSearches;
-  final bool optional; // only meaningful when added as a supporting task
+  final bool optional;
 
   const ProposedTaskPayload({
+    required this.date,
     required this.title,
     required this.description,
     required this.estimatedMinutes,
@@ -189,6 +129,7 @@ class ProposedTaskPayload extends Equatable {
 
   factory ProposedTaskPayload.fromMap(Map<String, dynamic> map) {
     return ProposedTaskPayload(
+      date: map['date'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       estimatedMinutes: map['estimatedMinutes'] ?? 0,
@@ -200,6 +141,30 @@ class ProposedTaskPayload extends Equatable {
         SuggestedSearch.fromMap,
       ),
       optional: map['optional'] == true,
+    );
+  }
+
+  ProposedTaskPayload copyWith({
+    String? date,
+    String? title,
+    String? description,
+    int? estimatedMinutes,
+    String? scheduledStartTime,
+    String? type,
+    String? whyItMatters,
+    List<SuggestedSearch>? suggestedSearches,
+    bool? optional,
+  }) {
+    return ProposedTaskPayload(
+      date: date ?? this.date,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      estimatedMinutes: estimatedMinutes ?? this.estimatedMinutes,
+      scheduledStartTime: scheduledStartTime ?? this.scheduledStartTime,
+      type: type ?? this.type,
+      whyItMatters: whyItMatters ?? this.whyItMatters,
+      suggestedSearches: suggestedSearches ?? this.suggestedSearches,
+      optional: optional ?? this.optional,
     );
   }
 
@@ -218,6 +183,7 @@ class ProposedTaskPayload extends Equatable {
 
   @override
   List<Object?> get props => [
+    date,
     title,
     description,
     estimatedMinutes,
@@ -226,6 +192,56 @@ class ProposedTaskPayload extends Equatable {
     whyItMatters,
     suggestedSearches,
     optional,
+  ];
+}
+
+class ProposedAction extends Equatable {
+  final String actionType;
+  final String? taskId;
+  final List<String> taskIds;
+  final bool isPrimaryTask;
+  final String? newStartTime;
+  final List<ProposedTaskPayload>
+  tasks; // replaces single `task` + top-level `date`
+
+  const ProposedAction({
+    required this.actionType,
+    this.taskId,
+    this.taskIds = const [],
+    this.isPrimaryTask = false,
+    this.newStartTime,
+    this.tasks = const [],
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'actionType': actionType,
+      'taskId': taskId,
+      'taskIds': taskIds,
+      'isPrimaryTask': isPrimaryTask,
+      'newStartTime': newStartTime,
+    };
+  }
+
+  factory ProposedAction.fromMap(Map<String, dynamic> map) {
+    return ProposedAction(
+      actionType: map['actionType'] ?? '',
+      taskId: map['taskId'],
+      taskIds: List<String>.from(map['taskIds'] ?? []),
+      isPrimaryTask: map['isPrimaryTask'] == true,
+      newStartTime: map['newStartTime'],
+      tasks: asModelList(map['tasks'], ProposedTaskPayload.fromMap),
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    actionType,
+    taskId,
+    taskIds,
+    isPrimaryTask,
+    newStartTime,
+    tasks,
   ];
 }
 

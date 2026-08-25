@@ -38,6 +38,8 @@ class TaskCreationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('---------------<<<<<<<<<>>>>>>>>>>>>>---------------------');
+    print(task);
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
@@ -49,12 +51,26 @@ class TaskCreationPage extends StatelessWidget {
               ),
         ),
       ],
-      child: BlocListener<HomeCubit, HomeState>(
-        listenWhen: (previous, current) => current.selectedIndex == 1,
-        listener: (context, state) {
-          print('objectsssssssssssss');
-          context.read<ScheduleCubit>().onRefresh();
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<HomeCubit, HomeState>(
+            listenWhen: (previous, current) => current.selectedIndex == 1,
+            listener: (context, state) {
+              context.read<ScheduleCubit>().onRefresh();
+            },
+          ),
+          // BlocListener<ScheduleCubit, ScheduleState>(
+          //   listenWhen: (previous, current) {
+          //     print('${current.task} ffuuuuufufufuck ${task}');
+          //     return (true);
+          //   },
+          //   listener: (context, state) {
+          //     print('heyyyyyyyyyyyyyy}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}');
+          //     context.read<ScheduleCubit>().onTaskAsigned(task);
+          //     // TODO: implement listener
+          //   },
+          // ),
+        ],
         child: BlocBuilder<ScheduleCubit, ScheduleState>(
           builder: (context, state) {
             final cubit = context.read<ScheduleCubit>();
@@ -126,11 +142,16 @@ class TaskCreationPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 5),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 18.0,vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18.0,
+                          vertical: 5,
+                        ),
                         child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            border: Border.all(color: U.Theme.surfaceHigh.withValues(alpha: 0.6)),
+                            border: Border.all(
+                              color: U.Theme.surfaceHigh.withValues(alpha: 0.6),
+                            ),
                             color: U.Theme.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -246,18 +267,24 @@ class TaskCreationPage extends StatelessWidget {
                         child: U.Button(
                           title: 'Create Task',
                           onTap: () async {
-                            final res = await context
-                                .read<ScheduleCubit>()
-                                .onTaskCreated();
-                            print('33333333333');
-                            await Future.delayed(Duration(seconds: 2));
-                            if (res && context.mounted) {
-                              await TaskDetailDialog.show(
-                                context,
-                                task: state.task!,
-                              );
-                              context.read<HomeCubit>().onItemsRefreshed();
-                              GoRouter.of(context).goNamed(SchedulePage.route);
+                            if (context.read<HomeCubit>().state.selectedIndex ==
+                                1) {
+                              final res = await context
+                                  .read<ScheduleCubit>()
+                                  .onTaskCreated();
+                              if (res && context.mounted) {
+                                await TaskDetailDialog.show(
+                                  context,
+                                  task: state.task!,
+                                );
+                                context.read<HomeCubit>().onItemsRefreshed();
+                                GoRouter.of(
+                                  context,
+                                ).goNamed(SchedulePage.route);
+                              }
+                            } else {
+                              context.read<ScheduleCubit>().onTaskConfirmed();
+                              GoRouter.of(context).pop();
                             }
                           },
                         ),
@@ -265,27 +292,6 @@ class TaskCreationPage extends StatelessWidget {
                       const SizedBox(height: 185),
                     ],
                   ),
-                  // Positioned(
-                  //   bottom: 80,
-                  //   right: 0,
-                  //   left: 0,
-                  //   child: Container(
-                  //     padding: const EdgeInsets.all(10),
-                  //     color: U.Theme.onBackground,
-                  //     child: U.Button(
-                  //       title: 'Create Task',
-                  //       onTap: () async {
-                  //         final res = await context
-                  //             .read<ScheduleCubit>()
-                  //             .onTaskCreated();
-                  //         if (res && context.mounted) {
-                  //           context.read<HomeCubit>().onItemsRefreshed();
-                  //           GoRouter.of(context).pop();
-                  //         }
-                  //       },
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             );
