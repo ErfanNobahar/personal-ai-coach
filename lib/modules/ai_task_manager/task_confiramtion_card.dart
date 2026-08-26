@@ -15,152 +15,179 @@ import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 class TaskConfiramtionCard extends StatelessWidget {
   final List<DayTask> tasks;
   final int modifiedKeys;
+  final bool isDiabled;
   const TaskConfiramtionCard({
     super.key,
     required this.tasks,
     required this.modifiedKeys,
+    required this.isDiabled,
   });
 
   @override
   Widget build(BuildContext context) {
-    print('<>>>>>>>>>>>>>>>>>>>>>>>>>><<><><><><><><><><><><>');
-    print(tasks);
-    return Column(
+    return Stack(
+      clipBehavior: Clip.antiAlias,
       children: [
-        SizedBox(height: 12),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          // height: 44,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: U.Theme.secondaryButton.withValues(alpha: 0.5),
-            ),
-            borderRadius: BorderRadius.circular(15),
-            color: U.Theme.onSecondaryBackground,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              U.Text(
-                text: 'Your task is ready do want to proceed',
-                textWeight: U.TextWeight.bold,
-                textSize: U.TextSize.s14,
+        Column(
+          children: [
+            SizedBox(height: 12),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              // height: 44,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: U.Theme.secondaryButton.withValues(alpha: 0.5),
+                ),
+                borderRadius: BorderRadius.circular(15),
+                color: U.Theme.onSecondaryBackground,
               ),
-              SizedBox(height: 5),
-              SizedBox(
-                width: 144,
-                child: Divider(color: U.Theme.secondaryBorder, thickness: 3),
-              ),
-              SizedBox(height: 15),
-              tasks.length == 1
-                  ? Column(
-                      children: [
-                        Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  U.Text(
+                    text: 'Your task is ready do want to proceed',
+                    textWeight: U.TextWeight.bold,
+                    textSize: U.TextSize.s14,
+                  ),
+                  SizedBox(height: 5),
+                  SizedBox(
+                    width: 144,
+                    child: Divider(
+                      color: U.Theme.secondaryBorder,
+                      thickness: 3,
+                    ),
+                  ),
+                  SizedBox(height: 15),
+                  tasks.length == 1
+                      ? Column(
                           children: [
-                            U.Text(text: 'Title:', textSize: U.TextSize.s14),
-                            SizedBox(width: 8),
-                            U.Text(text: tasks[0].primaryTask.title),
+                            Row(
+                              children: [
+                                U.Text(
+                                  text: 'Title:',
+                                  textSize: U.TextSize.s14,
+                                ),
+                                SizedBox(width: 8),
+                                U.Text(text: tasks[0].primaryTask.title),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              children: [
+                                U.Text(
+                                  text: 'Scheduled Date:',
+                                  textSize: U.TextSize.s14,
+                                ),
+                                SizedBox(width: 8),
+                                U.Text(
+                                  text: T.DateFormater.formatString(
+                                    tasks[0].date,
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                U.Text(
+                                  text:
+                                      ', ${tasks[0].primaryTask.scheduledStartTime}',
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                U.Text(
+                                  text: 'Description:',
+                                  textSize: U.TextSize.s14,
+                                ),
+                                SizedBox(width: 8),
+                                Flexible(
+                                  child: U.Text(
+                                    text: tasks[0].primaryTask.description,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Row(
+                              children: [
+                                U.Text(
+                                  text: 'Estimated Duration:',
+                                  textSize: U.TextSize.s14,
+                                ),
+                                SizedBox(width: 8),
+                                U.Text(
+                                  text: tasks[0].primaryTask.estimatedMinutes
+                                      .toString(),
+                                ),
+                              ],
+                            ),
                           ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
+                        )
+                      : Column(
                           children: [
-                            U.Text(
-                              text: 'Scheduled Date:',
-                              textSize: U.TextSize.s14,
-                            ),
-                            SizedBox(width: 8),
-                            U.Text(
-                              text: T.DateFormater.formatString(tasks[0].date),
-                            ),
-                            SizedBox(width: 8),
-                            U.Text(
-                              text:
-                                  ', ${tasks[0].primaryTask.scheduledStartTime}',
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            U.Text(
-                              text: 'Description:',
-                              textSize: U.TextSize.s14,
-                            ),
-                            SizedBox(width: 8),
-                            Flexible(
-                              child: U.Text(
-                                text: tasks[0].primaryTask.description,
+                            ...tasks.asMap().entries.map(
+                              (e) => _TaskTile(
+                                modifiedKeys: modifiedKeys,
+                                index: e.key,
+                                task: e.value,
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            U.Text(
-                              text: 'Estimated Duration:',
-                              textSize: U.TextSize.s14,
-                            ),
-                            SizedBox(width: 8),
-                            U.Text(
-                              text: tasks[0].primaryTask.estimatedMinutes
-                                  .toString(),
-                            ),
-                          ],
+                  SizedBox(height: 20),
+                  tasks.length == 1
+                      ? U.OutlineButton(
+                          foregroundColor: U.OutLineButtonForeground.primary,
+                          title: 'Edit',
+                          onTap: () async {
+                            final res = await GoRouter.of(context).pushNamed(
+                              TaskCreationPage.route,
+                              extra: tasks[0],
+                            );
+                          },
+                          leading: Icon(Icons.edit, color: U.Theme.primaryText),
+                        )
+                      : SizedBox(),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: U.Button(
+                          title: 'Accept',
+                          onTap: () async {
+                            context
+                                .read<AiTaskManagerCubit>()
+                                .onAddtaskConfirmed();
+                          },
                         ),
-                      ],
-                    )
-                  : Column(
-                      children: [
-                        ...tasks.asMap().entries.map(
-                          (e) => _TaskTile(
-                            modifiedKeys: modifiedKeys,
-                            index: e.key,
-                            task: e.value,
-                          ),
+                      ),
+                      SizedBox(width: 6),
+                      Expanded(
+                        child: U.OutlineButton(
+                          title: 'clarify',
+                          onTap: () {
+                            context.read<AiTaskManagerCubit>().onClarifytaped();
+                          },
                         ),
-                      ],
-                    ),
-              SizedBox(height: 20),
-              tasks.length == 1
-                  ? U.OutlineButton(
-                      foregroundColor: U.OutLineButtonForeground.primary,
-                      title: 'Edit',
-                      onTap: () async {
-                        final res = await GoRouter.of(
-                          context,
-                        ).pushNamed(TaskCreationPage.route, extra: tasks[0]);
-                      },
-                      leading: Icon(Icons.edit, color: U.Theme.primaryText),
-                    )
-                  : SizedBox(),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: U.Button(
-                      title: 'Accept',
-                      onTap: () async {
-                        context.read<AiTaskManagerCubit>().onAddtaskConfirmed();
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 6),
-                  Expanded(
-                    child: U.OutlineButton(
-                      title: 'clarify',
-                      onTap: () {
-                        context.read<AiTaskManagerCubit>().onClarified();
-                      },
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+        if (isDiabled)
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(125, 255, 255, 255),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              height: 444,
+              width: 333,
+            ),
+          ),
       ],
     );
   }
@@ -179,8 +206,6 @@ class _TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ScheduleCubit>();
-    print('1111111111111111111111111111111111');
-    print(task);
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(

@@ -135,17 +135,18 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     final t = state.task?.primaryTask;
     if (state.task == null) return 'please fill the required forms';
     if ((t?.title.trim().isEmpty ?? true)) return 'Title is required!';
-    if ((t?.description.trim().isEmpty ?? true))
+    if ((t?.description.trim().isEmpty ?? true)) {
       return 'Description is required!';
-    if (state.task?.date == null || state.task?.date == '')
+    }
+    if (state.task?.date == null || state.task?.date == '') {
       return 'Pick a date!';
+    }
     if (t?.scheduledStartTime == '') return 'Pick a time!';
     if (t?.estimatedMinutes == 0) return 'Pick an estimation!';
     return null;
   }
 
   void onTaskConfirmed() {
-    print('??????????????????????????????????????????');
     print(state.task!.primaryTask.id);
     emit(
       state.copyWith(
@@ -169,11 +170,13 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     }
 
     final ints = state.occupiedTimes.convertToInt;
-    if (ints.contains(
-      int.parse(state.task!.primaryTask.scheduledStartTime.split(':')[0]),
-    )) {
-      toast('task time conflicts!! please change the time');
-      return false;
+    if (state.task!.primaryTask.scheduledEndTime != '') {
+      if (ints.contains(
+        int.parse(state.task!.primaryTask.scheduledStartTime.split(':')[0]),
+      )) {
+        toast('task time conflicts!! please change the time');
+        return false;
+      }
     }
     final error = _validate();
     if (error != null) {
@@ -183,7 +186,15 @@ class ScheduleCubit extends Cubit<ScheduleState> {
       return false;
     }
 
-    await _repo.updateTasks(state.task!, isNew: initialTask == null);
+    // await _repo.updateTasks(state.task!, isNew: initialTask == null);
+    await _repo.createSchedule([
+      SpecificTasks(
+        day: T.DateFormater.monthFormater(
+          T.DateFormater.dateFromString(state.task!.date),
+        ),
+        tasks: [state.task!],
+      ),
+    ]);
     await onRefresh();
     toast('task created successfuly');
     emit(state.copyWith(loading: false));

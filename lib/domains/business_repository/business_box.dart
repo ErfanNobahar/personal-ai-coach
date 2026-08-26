@@ -32,15 +32,9 @@ abstract class BusinessBox {
         return SpecificTasks.fromMap(map);
       }).toList();
     }
-    // for (var element in temp) {
-    //   print(element.toMap());
-    // }
     for (var element in temp) {
       element.tasks.sortByHour();
     }
-    print('temp');
-    print(temp.length);
-    print(temp);
     // setNull();
     return temp;
   }
@@ -58,8 +52,6 @@ abstract class BusinessBox {
     final temp = res
         .where(
           (e) => e.tasks.any((b) {
-            print('b.primaryTask: ${b.primaryTask}');
-            print('task.primaryTask: ${task.primaryTask}\n');
             return b.primaryTask == task.primaryTask;
           }),
         )
@@ -85,24 +77,15 @@ abstract class BusinessBox {
     for (var i = 0; i < test1.length; i++) {
       mapedTasks.addAll({
         i: test1.where((e) {
-          if (e.day == test1[i].day) {
-            // print('${e.day} vs ${test1[i].day} vs $i');
-          }
+          if (e.day == test1[i].day) {}
           return e.day == test1[i].day;
         }).toList(),
       });
     }
     List<SpecificTasks> filteredTasks = [];
     mapedTasks.removeWhere((key, value) {
-      // print('value.lengthssssssssssssssss');
-      // print(value.length);
       return value.length == 1;
     });
-    // List<SpecificTasks> newMaped =
-    // filteredTasks.addAll();
-    List<SpecificTasks> rescheduledTasks = [];
-
-    // print(mapedTasks);
 
     List<SpecificTasks> shouldntCheck = [];
     for (var i = 0; i < test1.length; i++) {
@@ -110,8 +93,6 @@ abstract class BusinessBox {
         // print('mapedTasks.keys');
         // print(' mapedTasks:${mapedTasks} mapedTasks.keys${mapedTasks.keys}');
         if (mapedTasks.keys.toList().contains(i)) {
-          print('111111111111');
-          print('shouldntCheck');
           print(!shouldntCheck.contains(test1[i]));
           if (!shouldntCheck.contains(test1[i])) {
             List<String> existingTimes = [];
@@ -154,62 +135,17 @@ abstract class BusinessBox {
                 )
                 .toList();
             tasks.addAll([...incomingTasks]);
-            // final tempTask =
-
             filteredTasks.add(test1[i].copyWith(tasks: tasks));
             shouldntCheck.add(mapedTasks[i]!.last);
           }
         } else {
-          print('2222222222222222222');
           filteredTasks.add(test1[i]);
         }
-        print('iiiiiiiiiiiiiiiiiiiii');
-        print(i);
       } else {
         filteredTasks = [...newTasks];
       }
     }
 
-    // if (conflictCheck) {
-    //   if (existingTasks.isNotEmpty) {
-    //     final resByDay = {for (var r in existingTasks) r.day: r};
-    //     newTasks = newTasks.map((taskGroup) {
-    //       final matchedDay = resByDay[taskGroup.day];
-    //       if (matchedDay == null) return taskGroup;
-    //       final inComingDailySchedule = taskGroup.tasks
-    //           .map((e) => e.primaryTask.scheduledStartTime)
-    //           .toList();
-    //       final existingDailySchedule = matchedDay.tasks
-    //           .map((e) => e.primaryTask.scheduledStartTime)
-    //           .toList();
-
-    //       final finalTasks = taskGroup.tasks.map((element) {
-    //         if (existingDailySchedule.contains(inComingDailySchedule[0])) {
-    //           final temp = element.copyWith(
-    //             primaryTask: element.primaryTask.reschedule(
-    //               occupiedTimes: existingDailySchedule,
-    //               scheduledStartTime: element.primaryTask.scheduledStartTime,
-    //             ),
-    //           );
-    //           matchedDay.addToList(task: temp);
-    //           rescheduledTasks.add(matchedDay);
-    //           return temp;
-    //         } else {
-    //           matchedDay.addToList(task: element);
-    //           rescheduledTasks.add(matchedDay);
-    //           return element;
-    //         }
-    //       }).toList();
-
-    //       return taskGroup.copyWith(tasks: finalTasks);
-    //     }).toList();
-    //   } else {
-    //     rescheduledTasks = [...newTasks];
-    //   }
-    // }
-    // final temp = List<SpecificTasks>.from(
-    //   !conflictCheck ? rescheduledTasks : newTasks,
-    // ).map((e) => e.toMap()).toList();
     HiveDB.set(
       boxName: boxName,
       key: Keys.weeklyTasks.index.toString(),
@@ -227,8 +163,6 @@ abstract class BusinessBox {
 
   static Future<SpecificTasks> readSpecificTask(DayTask task) async {
     final res = await getWeeklyTasks();
-    // print('boooooooooooxtask');
-    // print(task);
     final temp = res
         .where(
           (e) => e.tasks.any((elements) {
@@ -264,7 +198,6 @@ abstract class BusinessBox {
 
   static Future<void> deleteTasks(List<DayTask> tasksToDelete) async {
     final weeklyTasks = await getWeeklyTasks();
-    // Group descriptions to delete by their day for quick lookup
     final Map<DateTime, Set<String>> descriptionsByDay = {};
     for (final task in tasksToDelete) {
       descriptionsByDay
@@ -404,13 +337,6 @@ abstract class BusinessBox {
     final roadmap = readRoadmap();
     final temp = roadmap.firstWhere((e) => e.id == task.roadmapId);
     final List<Milestone> list = [];
-    // for (var element in temp.milestones) {
-    //   for (var pelement in element.weeklyObjectives) {
-    //     for (var bb in pelement.weeklyTasks.days) {
-    //       if (bb.date == task.date) {}
-    //     }
-    //   }
-    // }
     for (var element in temp.milestones) {
       list.add(
         element.copyWith(

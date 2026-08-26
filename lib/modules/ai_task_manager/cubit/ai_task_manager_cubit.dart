@@ -155,6 +155,8 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
         )
         .toList();
     mapedTasks.addEntries(<int, List<DayTask>>{key: tasks}.entries);
+    print('4444444444444444444444444');
+    print(mapedTasks);
     emit(state.copyWith(modifiedTasks: mapedTasks));
   }
 
@@ -163,9 +165,6 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     print(task);
 
     final Map<int, List<DayTask>> newModifiedTasks = {};
-    print('fuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu');
-    print(state.modifiedTasks);
-    print(state.modifiedTasks.entries.first.value);
     // Iterate through all entries in the current modifiedTasks
     for (var entry in state.modifiedTasks.entries) {
       final List<DayTask> updatedTasks = [];
@@ -180,8 +179,6 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
           updatedTasks.add(existingTask);
         }
       }
-      print('000000000000000000000000');
-      print(updatedTasks);
       // If the task wasn't found, keep the original list
       if (!taskFound) {
         newModifiedTasks[entry.key] = entry.value;
@@ -228,6 +225,7 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
 
     sentMessagesList.add(Message.user(content: messageCtrl.text));
     list.add(Message.user(content: messageCtrl.text));
+    emit(state.copyWith(messages: list));
 
     final res = await _repo.createTaskResponse(sentMessagesList);
     final rawContent = res['message']['content'] as String;
@@ -237,10 +235,13 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     if (temp.proposedAction != null) {
       // actions.remove(actions.entries.last.key);
       actions.addEntries(<int, ChatResponse>{list.length - 1: temp}.entries);
-      findTasks(
-        actions.entries.last.value.proposedAction!.taskIds,
-        actions.entries.last.key,
-      );
+      temp.proposedAction!.actionType == 'add_task'
+          ? onAddTask(actions.entries.last.key, temp)
+          : findTasks(
+              actions.entries.last.value.proposedAction!.taskIds,
+              actions.entries.last.key,
+            );
+      emit(state.copyWith(chattingStatus: ChattingStatus.disabled));
     }
 
     emit(
@@ -271,7 +272,7 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     List<List<DayTask>> temp = newTimes
         .map((e) => tasks.where((element) => element.date == e).toList())
         .toList();
-    _repo.updateDays(
+    _repo.createSchedule(
       temp.map((e) => SpecificTasks(day: e.first.date, tasks: e)).toList(),
     );
   }

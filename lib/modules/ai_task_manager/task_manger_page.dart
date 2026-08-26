@@ -31,7 +31,9 @@ class TaskMangerPage extends StatelessWidget {
       case 'add_task':
         temp = TaskConfiramtionCard(
           modifiedKeys: key,
-           tasks: tasks);
+          isDiabled: disabled,
+          tasks: tasks,
+        );
       case 'delete_task':
         temp = Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
@@ -44,8 +46,10 @@ class TaskMangerPage extends StatelessWidget {
 
       case 'reschedule_task':
         temp = TaskConfiramtionCard(
+          isDiabled: disabled,
           modifiedKeys: key,
-           tasks: tasks);
+          tasks: tasks,
+        );
       default:
         temp = SizedBox();
     }

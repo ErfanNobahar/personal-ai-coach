@@ -146,15 +146,12 @@ class BusinessRepository {
         '"string", "options": [ { "id": "string", "label": "string" } ] } }',
   );
 
-  ///////////////
+  ////////////////////////////
+  
   Future<dynamic> createCredentials({required List<Message> messages}) async {
     late List<Message> messagesList;
     messagesList = [...messages];
     messagesList.insert(0, followUpQuestionPrompt);
-    print(
-      '=============messagesList.map((e) => e.toMap()).toList()===========================================',
-    );
-    print(messagesList.map((e) => e.toMap()).toList());
     final res = await BusinessWs.client.post(
       url: BusinessWs.urls.cerebrasAi,
       accessToken: ApiKeys.mistralKey,
@@ -202,8 +199,6 @@ class BusinessRepository {
     late List<Message> messagesList;
     messagesList = [...messages];
     messagesList.insert(0, taskManagementPrompt);
-    // print('messagesList.map((e) => e.toMap()).toList()');
-    // print(messagesList.map((e) => e.toMap()).toList());
     final res = await BusinessWs.client.post(
       accessToken: ApiKeys.mistralKey,
       url: BusinessWs.urls.cerebrasAi,
