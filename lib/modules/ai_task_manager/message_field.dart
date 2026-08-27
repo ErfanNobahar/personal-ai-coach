@@ -4,6 +4,7 @@ import 'package:personal_ai_coach/modules/ai_task_manager/cubit/ai_task_manager_
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class MessageField extends StatelessWidget {
+  final bool isExapnded;
   final ChattingStatus isDisabled;
   final void Function() onSubmit;
 
@@ -11,6 +12,7 @@ class MessageField extends StatelessWidget {
     super.key,
     required this.onSubmit,
     required this.isDisabled,
+    required this.isExapnded,
   });
 
   @override
@@ -24,12 +26,15 @@ class MessageField extends StatelessWidget {
           color: isDisabled == ChattingStatus.clarifing
               ? U.Theme.outlineHigh.withValues(alpha: 0.7)
               : U.Theme.white.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: BorderRadius.circular(isExapnded ? 20 : 50),
         ),
         child: Row(
           children: [
             Expanded(
               child: U.TextInput(
+                onExpanded: () {
+                  context.read<AiTaskManagerCubit>().onExpanded();
+                },
                 disabled: isDisabled == ChattingStatus.disabled,
                 maxLines: null,
                 minLines: null,
@@ -46,9 +51,9 @@ class MessageField extends StatelessWidget {
               isDisabled: isDisabled == ChattingStatus.disabled,
               icon: U.Icons.subtract,
               onTapped: () async {
-               isDisabled == ChattingStatus.enabled?
-                await context.read<AiTaskManagerCubit>().onMessageSent():
-                await context.read<AiTaskManagerCubit>().onClarified();
+                isDisabled == ChattingStatus.enabled
+                    ? await context.read<AiTaskManagerCubit>().onMessageSent()
+                    : await context.read<AiTaskManagerCubit>().onClarified();
               },
               size: 22,
               isPrimary: false,

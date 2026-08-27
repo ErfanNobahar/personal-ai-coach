@@ -149,6 +149,7 @@ class TaskMangerPage extends StatelessWidget {
                     left: 0,
                     child: Expanded(
                       child: MessageField(
+                        isExapnded: state.isExpanded  ,
                         isDisabled: state.chattingStatus,
                         onSubmit: () {},
                       ),

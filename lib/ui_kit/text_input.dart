@@ -16,6 +16,7 @@ class TextInput extends StatefulWidget {
   final double fixedHeight;
   final bool disabled; // <-- NEW
   final Function() onEditingComplete;
+  final Function()? onExpanded;
 
   const TextInput({
     super.key,
@@ -33,6 +34,7 @@ class TextInput extends StatefulWidget {
     this.fixedHeight = 55,
     this.disabled = false, // <-- NEW
     required this.onEditingComplete,
+     this.onExpanded,
   });
 
   @override
@@ -98,6 +100,7 @@ class _TextInputState extends State<TextInput> {
     if (overflowing != isMultiline) {
       setState(() {
         isMultiline = overflowing;
+        if (widget.onExpanded != null) widget.onExpanded!();
       });
     }
   }

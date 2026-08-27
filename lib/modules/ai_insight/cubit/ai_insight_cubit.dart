@@ -45,15 +45,24 @@ class AiInsightCubit extends Cubit<AiInsightState> {
     });
     print('list');
     print(list);
+    print('==========================');
+    print(temp);
     List<SpecificTasks> finalList;
     final nextMonday = d.subtract(
       Duration(days: (d.weekday - DateTime.monday) % 7),
     );
     final nextindex = res.indexWhere((e) {
+      print(
+        '${T.DateFormater.dateFromString(e.day).weekday}vsssssss ${nextMonday.weekday}',
+      );
       return T.DateFormater.dateFromString(e.day).weekday == nextMonday.weekday;
     });
+    print(nextindex);
+
     (temp == null)
-        ? finalList = res.getRange(0, nextindex).toList()
+        ? finalList = res
+              .getRange(0, nextindex == -1 ? res.length  : nextindex)
+              .toList()
         : finalList = res
               .getRange(
                 dayIndex,

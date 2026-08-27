@@ -160,26 +160,24 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     emit(state.copyWith(modifiedTasks: mapedTasks));
   }
 
-  void onTaskEdited(DayTask task) {
-    print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-    print(task);
+  void onExpanded() {
+    emit(state.copyWith(isExpanded: !state.isExpanded));
+  }
 
+  void onTaskEdited(DayTask task) {
     final Map<int, List<DayTask>> newModifiedTasks = {};
-    // Iterate through all entries in the current modifiedTasks
     for (var entry in state.modifiedTasks.entries) {
       final List<DayTask> updatedTasks = [];
       bool taskFound = false;
 
       for (var existingTask in entry.value) {
         if (existingTask.primaryTask.id == task.primaryTask.id) {
-          // Replace with the updated task
           updatedTasks.add(task);
           taskFound = true;
         } else {
           updatedTasks.add(existingTask);
         }
       }
-      // If the task wasn't found, keep the original list
       if (!taskFound) {
         newModifiedTasks[entry.key] = entry.value;
       } else {
