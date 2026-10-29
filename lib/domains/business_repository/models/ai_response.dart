@@ -68,14 +68,13 @@ class ChatResponse extends Equatable {
   factory ChatResponse.fromMap(Map<String, dynamic> map) {
     final proposedActionMap = map['proposedAction'];
     final clarificationMap = map['clarification'];
-    print('map ssssssssssss');
-    print(map['message'].runtimeType);
-    print(map['type']);
+    // print(proposedActionMap.isNotEmpty);
+    // print(proposedActionMap != {});
     return ChatResponse(
       type: map['type'] ?? '',
       intent: ChatIntent.fromString(map['intent']),
       message: map['message'] ?? '',
-      proposedAction: proposedActionMap != null
+      proposedAction: (proposedActionMap != null && proposedActionMap.isNotEmpty)
           ? ProposedAction.fromMap(asStringMap(proposedActionMap))
           : null,
       clarification: clarificationMap != null

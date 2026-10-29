@@ -142,7 +142,7 @@ class TaskConfiramtionCard extends StatelessWidget {
                           onTap: () async {
                             final res = await GoRouter.of(context).pushNamed(
                               TaskCreationPage.route,
-                              extra: tasks[0],
+                              extra: {'task': tasks[0]},
                             );
                           },
                           leading: Icon(Icons.edit, color: U.Theme.primaryText),

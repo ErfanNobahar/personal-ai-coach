@@ -80,8 +80,10 @@ class Overview extends StatelessWidget {
                             maped.addEntries(
                               <int, SpecificTasks>{
                                 T.DateFormater.dateFromString(
-                                  task[i].day,
-                                ).weekday -1: task[i],
+                                          task[i].day,
+                                        ).weekday -
+                                        1:
+                                    task[i],
                               }.entries,
                             );
                           }
@@ -119,7 +121,6 @@ class Overview extends StatelessWidget {
                                   //     state.weeklyTasks[index].day,
                                   //   ).weekday
                                   ],
-
                                   [
                                     TaskSegment(
                                       maped[index]!.tasks.getDetails.completed
@@ -138,7 +139,6 @@ class Overview extends StatelessWidget {
                                     TaskSegment(
                                       maped[index]!.tasks.getDetails.skipped
                                           .toDouble(),
-
                                       // state
                                       //     .weeklyTasks[index -
                                       //         T.DateFormater.dateFromString(

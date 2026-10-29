@@ -8,6 +8,7 @@ import 'package:personal_ai_coach/domains/business_repository/models/ai_response
 import 'package:personal_ai_coach/domains/business_repository/models/message.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/specific_tasks.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/task.dart';
+import 'package:personal_ai_coach/tool_kit/time_formater.dart';
 import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 
 part 'ai_task_manager_state.dart';
@@ -90,6 +91,8 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     list.add(Message.ai(content: temp.message));
     if (temp.proposedAction != null) {
       actions.addEntries(<int, ChatResponse>{list.length - 1: temp}.entries);
+      print('____________---------------_______________');
+      print(temp.proposedAction);
       temp.proposedAction!.actionType == 'add_task'
           ? onAddTask(actions.entries.last.key, temp)
           : findTasks(
@@ -144,7 +147,9 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
               title: e.title,
               description: e.description,
               estimatedMinutes: e.estimatedMinutes,
-              scheduledStartTime: e.scheduledStartTime,
+              scheduledStartTime: TimeFormater.normalizeTimeString(
+                e.scheduledStartTime,
+              ),
               scheduledEndTime: '',
               type: e.type,
               whyItMatters: e.whyItMatters,
@@ -197,13 +202,19 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
   Future<void> onClarified() async {
     final list = [...state.messages];
     final sentMessagesList = [...state.messages];
-    final todaysTasks = state.tasks.firstWhere((e) {
+    print('state.tasks');
+    print(state.tasks);
+    final todaysTasks = state.tasks.where((e) {
+      print('----------_____________-------');
+      print(
+        '${T.DateFormater.dateFromString(e.day).day} vssssss ${DateTime.now().day}',
+      );
       return T.DateFormater.dateFromString(e.day).day == DateTime.now().day;
-    });
+    }).firstOrNull;
     sentMessagesList.add(
       Message.user(
         content:
-            'tasks of the user: ${todaysTasks.tasks.map((e) => e.toMap()).toList()}',
+            'tasks of the user: ${todaysTasks?.tasks.map((e) => e.toMap()).toList()}',
       ),
     );
 

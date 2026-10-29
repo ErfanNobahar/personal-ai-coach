@@ -145,9 +145,94 @@ class BusinessRepository {
         '"suggestedSearches": [ { "query": "string" } ], "optional": true } }], "clarification": { "question": '
         '"string", "options": [ { "id": "string", "label": "string" } ] } }',
   );
-
+  // static const Map<String, dynamic> _tasksSchema = {
+  //   'type': 'chat_response',
+  //   'intent': 'string',
+  //   'message': 'string',
+  //   'proposedAction': {
+  //     'actionType': 'string',
+  //     'taskId': 'string',
+  //     'taskIds': ['string'],
+  //     'isPrimaryTask': true,
+  //     'newStartTime': 'string',
+  //     'tasks': [
+  //       {
+  //         'date': 'string',
+  //         'title': 'string',
+  //         'description': 'string',
+  //         'estimatedMinutes': 0,
+  //         'scheduledStartTime': 'string',
+  //         'type': 'string',
+  //         'whyItMatters': 'string',
+  //         'suggestedSearches': [
+  //           {'query': 'string'},
+  //         ],
+  //         'optional': true,
+  //       },
+  //     ],
+  //   },
+  //   'clarification': {
+  //     'question': 'string',
+  //     'options': [
+  //       {'id': 'string', 'label': 'string'},
+  //     ],
+  //   },
+  // };
+  static const Map<String, dynamic> _tasksSchema = {
+    'type': 'object',
+    'properties': {
+      'message': {'type': 'string'},
+      'proposedAction': {
+        'type': 'object',
+        'actionType': {'type': 'string'},
+        'isPrimaryTask': {'type': 'boolean'},
+        'tasks': {
+          'type': 'array',
+          'items': {
+            'type': 'object',
+            'properties': {
+              'date': {'type': 'string'},
+              'title': {'type': 'string'},
+              'description': {'type': 'string'},
+              'estimatedMinutes': {'type': 'integer'},
+              'scheduledStartTime': {'type': 'string'},
+              'type': {'type': 'string'},
+              'whyItMatters': {'type': 'string'},
+              'suggestedSearches': {
+                'type': 'array',
+                'items': {
+                  'type': 'object',
+                  'properties': {
+                    'query': {'type': 'string'}, // match SuggestedSearch
+                    'reason': {'type': 'string'}, // match SuggestedSearch
+                  },
+                  'required': ['query', 'reason'],
+                  'additionalProperties': false,
+                },
+              },
+              'optional': {'type': 'boolean'},
+            },
+            'required': [
+              'date',
+              'title',
+              'description',
+              'estimatedMinutes',
+              'scheduledStartTime',
+              'type',
+              'whyItMatters',
+              'suggestedSearches',
+              'optional',
+            ],
+            'additionalProperties': false,
+          },
+        },
+      },
+    },
+    'required': ['proposedAction', 'message'],
+    'additionalProperties': false,
+  };
   ////////////////////////////
-  
+
   Future<dynamic> createCredentials({required List<Message> messages}) async {
     late List<Message> messagesList;
     messagesList = [...messages];
@@ -196,6 +281,7 @@ class BusinessRepository {
   }
 
   Future<dynamic> createTaskResponse(List<Message> messages) async {
+    print('+++++++++++++++++++++++++++');
     late List<Message> messagesList;
     messagesList = [...messages];
     messagesList.insert(0, taskManagementPrompt);
@@ -203,11 +289,21 @@ class BusinessRepository {
       accessToken: ApiKeys.mistralKey,
       url: BusinessWs.urls.cerebrasAi,
       data: {
-        "model": "mistral-large-latest",
+        'response_format': {
+          'type': 'json_schema',
+          'json_schema': {
+            'name': 'proposed_tasks',
+            'strict': true,
+            'schema': _tasksSchema,
+          },
+        },
+        "model": "ministral-8b-2512",
         // "model": "llama-3.3-70b-versatile",
         "messages": messagesList.map((e) => e.toMap()).toList(),
       },
     );
+    print('-----------------------res.data-------------------------');
+    print(res.data);
     return res.data;
   }
 

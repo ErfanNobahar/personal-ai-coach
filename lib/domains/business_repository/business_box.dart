@@ -21,6 +21,7 @@ abstract class BusinessBox {
   }
 
   static Future<List<SpecificTasks>> getWeeklyTasks() async {
+    // setNull();
     final res = await HiveDB.get(
       boxName: boxName,
       key: Keys.weeklyTasks.index.toString(),
@@ -35,7 +36,6 @@ abstract class BusinessBox {
     for (var element in temp) {
       element.tasks.sortByHour();
     }
-    // setNull();
     return temp;
   }
 
@@ -71,8 +71,6 @@ abstract class BusinessBox {
     final existingTasks = await getWeeklyTasks();
     List<SpecificTasks> test1 = [];
     test1.addAll([...existingTasks, ...newTasks]);
-    // print('tesssssssssssssssssss1111111111111111111111111111');
-    // print(test1.length);
     Map<int, List<SpecificTasks>> mapedTasks = {};
     for (var i = 0; i < test1.length; i++) {
       mapedTasks.addAll({
@@ -93,7 +91,6 @@ abstract class BusinessBox {
         // print('mapedTasks.keys');
         // print(' mapedTasks:${mapedTasks} mapedTasks.keys${mapedTasks.keys}');
         if (mapedTasks.keys.toList().contains(i)) {
-          print(!shouldntCheck.contains(test1[i]));
           if (!shouldntCheck.contains(test1[i])) {
             List<String> existingTimes = [];
             // print('!shouldntCheck.contains(test1[i])');
