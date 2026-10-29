@@ -12,10 +12,10 @@ abstract class DateFormater {
   }
 
   /// Tries multiple formats so ISO strings like "2026-08-21" just work.
-  static DateTime dateFromString(String dateString) {
+static DateTime dateFromString(String dateString) {
     final trimmed = dateString.trim();
 
-    // 1. ISO 8601: 2026-08-21
+    // 1. ISO 8601 date only: 2026-08-21
     if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(trimmed)) {
       return DateFormat('yyyy-MM-dd').parse(trimmed);
     }
@@ -25,7 +25,12 @@ abstract class DateFormater {
       return DateFormat('MMM d, y').parse(trimmed);
     } catch (_) {}
 
-    // 3. ISO with time: 2026-08-21T14:30:00
+    // 3. ISO with hour only: 2026-09-10T21  → pad to full time
+    if (RegExp(r'^\d{4}-\d{2}-\d{2}T\d{2}$').hasMatch(trimmed)) {
+      return DateTime.parse('$trimmed:00:00');
+    }
+
+    // 4. ISO with time: 2026-08-21T14:30:00
     try {
       return DateTime.parse(trimmed);
     } catch (_) {}
