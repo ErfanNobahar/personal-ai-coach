@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:personal_ai_coach/modules/ai_task_manager/cubit/ai_task_manager_cubit.dart';
+import 'package:personal_ai_coach/modules/ai_task_manager/message_field.dart';
 import 'package:personal_ai_coach/modules/roadmap/roadmap_page.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
@@ -226,36 +228,78 @@ class _ChatPgeState extends State<ChatPge> {
                       end: AlignmentGeometry.bottomCenter,
                     ),
                   ),
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(child: U.AppBar(title: 'create')),
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Expanded(flex: 8, child: SizedBox()),
-                            Column(
+                  child: Stack(
+                    children: [
+                      CustomScrollView(
+                        slivers: [
+                          SliverToBoxAdapter(child: U.AppBar(title: 'create')),
+                          SliverFillRemaining(
+                            hasScrollBody: false,
+                            child: Stack(
                               children: [
-                                GestureDetector(
-                                  onTap: () async {},
-                                  child: U.Text(
-                                    text: 'describe your goal!',
-                                    textWeight: U.TextWeight.bold,
-                                    textSize: U.TextSize.s18,
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 20.0,
-                                  ),
-                                  child: GoalTextfield(),
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Spacer(flex: 1),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 120, // your maximum width
+                                          maxHeight: 120, // your maximum height
+                                        ),
+                                        child: FittedBox(
+                                          child: U.Image(
+                                            fit: BoxFit.contain,
+                                            path: U.Icons.orb,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 17),
+                                    U.CyclingTextShowcase(
+                                      texts: [
+                                        ' _CyclingTextShowcaseState extends State<CyclingTextShowcase> ',
+                                        'ddddddddddddd',
+                                        'U.CyclingTextShowcasef',
+                                        'sdfasd',
+                                      ],
+                                    ),
+                                    // Spacer(flex: 3),
+                                    // const Expanded(flex: 8, child: SizedBox()),
+                                    // Column(
+                                    //   children: [
+                                    //     GestureDetector(
+                                    //       onTap: () async {},
+                                    //       child: U.Text(
+                                    //         text: 'describe your goal!',
+                                    //         textWeight: U.TextWeight.bold,
+                                    //         textSize: U.TextSize.s18,
+                                    //       ),
+                                    //     ),
+                                    //     const SizedBox(height: 15),
+                                    //   ],
+                                    // ),
+                                        SizedBox(height: 200),
+                                    // const Expanded(flex: 20, child: SizedBox()),
+                                    // SizedBox(height: 140),
+                                    // Spacer(flex: 2),
+                                  ],
                                 ),
                               ],
                             ),
-                            const Expanded(flex: 20, child: SizedBox()),
-                          ],
+                          ),
+                        ],
+                      ),
+
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 82,
+                        child: GoalTextfield(
+                          onSubmit: () {},
+                          isDisabled: ChattingStatus.enabled,
+                          isExapnded: false,
                         ),
                       ),
                     ],
