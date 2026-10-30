@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:personal_ai_coach/domains/business_repository/business_repository.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/ai_response.dart';
 import 'package:personal_ai_coach/domains/business_repository/models/message.dart';
@@ -265,9 +266,12 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
 
   Future<void> onDeleteAccepted() async {
     await _repo.deleteTasks(state.modifiedTasks.entries.last.value);
+    emit(state.copyWith(isGoalAchieved: true));
+    toast('Task deleted!');
   }
 
   Future<void> onAddtaskConfirmed() async {
+    print('addddded');
     List<DayTask> tasks = [];
     tasks = state.modifiedTasks.entries.last.value;
     List<String> times = tasks.map((e) => e.date).toList();
@@ -284,6 +288,10 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     _repo.createSchedule(
       temp.map((e) => SpecificTasks(day: e.first.date, tasks: e)).toList(),
     );
+    emit(state.copyWith(isGoalAchieved: true));
+    toast('Tasks added');
+    print('state.isGoalAchieved');
+    print(state.isGoalAchieved);
   }
 
   Map<int, List<DayTask>> mapedTasks = {};
@@ -300,5 +308,19 @@ class AiTaskManagerCubit extends Cubit<AiTaskManagerState> {
     List<DayTask> nonNullList = temp.whereType<DayTask>().toList();
     mapedTasks.addEntries(<int, List<DayTask>>{key: nonNullList}.entries);
     emit(state.copyWith(modifiedTasks: mapedTasks, loading: false));
+  }
+
+  void onChatRseted() {
+    emit(
+      state.copyWith(
+        messages: [],
+        tasks: [],
+        modifiedTasks: {},
+        actions: {},
+        chattingStatus: ChattingStatus.enabled,
+        isGoalAchieved: false,
+      ),
+    );
+    messageCtrl.clear();
   }
 }

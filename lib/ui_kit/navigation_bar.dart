@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
@@ -19,7 +21,7 @@ class NavigationBar extends StatefulWidget {
 class _NavigationBarState extends State<NavigationBar> {
   final _sheetController = DraggableScrollableController();
 
-  static const double _collapsedHeightPx = 114;
+  static const double _collapsedHeightPx = 76;
   static const double _maxChildSize = 0.8;
 
   @override
@@ -55,14 +57,17 @@ class _NavigationBarState extends State<NavigationBar> {
                 .where((e) => !e.isPrimary)
                 .toList();
 
-            return Container(
-              decoration: BoxDecoration(
-                color: U.Theme.white.withValues(alpha: 0.5),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(25),
-                  topRight: Radius.circular(25),
-                ),
-              ),
+            return U.BlurredContainer(
+              // decoration: BoxDecoration(
+              //   color: U.Theme.white.withValues(alpha: 0.5),
+              //   borderRadius: const BorderRadius.only(
+              //     topLeft: Radius.circular(25),
+              //     topRight: Radius.circular(25),
+              //   ),
+              // ),
+              enable: true,
+              radius: 25,
+              scrollCtrl: ScrollController(),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: CustomScrollView(
@@ -101,15 +106,15 @@ class _NavigationBarState extends State<NavigationBar> {
                         },
                         child: Column(
                           children: [
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 7),
                             Container(
                               height: 5,
                               width: 40,
                               color: U.Theme.white,
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 7),
                             Container(
-                              height: 64,
+                              height: 48,
                               decoration: BoxDecoration(
                                 color: U.Theme.white.withValues(alpha: 0.9),
                                 borderRadius: BorderRadius.circular(50),
@@ -199,10 +204,10 @@ class PrimaryItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       color: isSelected ? U.Theme.outlineHigh.withValues(alpha: 0.4) : null,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(5.0),
         child: GestureDetector(
           onTap: onTap,
-          child: U.Image.icon(path: path, size: 36),
+          child: U.Image.icon(path: path, size: 32),
         ),
       ),
     );

@@ -9,7 +9,6 @@ import 'package:personal_ai_coach/modules/ai_task_manager/task_confiramtion_card
 import 'package:personal_ai_coach/modules/ai_task_manager/task_deletion_card.dart';
 import 'package:personal_ai_coach/modules/chat/chat_bubble.dart';
 import 'package:personal_ai_coach/modules/schedule/cubit/schedule_cubit.dart';
-import 'package:personal_ai_coach/tool_kit/tool_kit.dart' as T;
 import 'package:personal_ai_coach/ui_kit/ui_kit.dart' as U;
 
 class TaskMangerPage extends StatelessWidget {
@@ -107,6 +106,7 @@ class TaskMangerPage extends StatelessWidget {
                                       rtl: state.messages[index].role == 'user',
                                       text: state.messages[index].content,
                                     ),
+
                                     if (state.actions.keys
                                             .where((e) => e == index)
                                             .toList()
@@ -121,11 +121,45 @@ class TaskMangerPage extends StatelessWidget {
                                         state.actions[index]!,
                                         disabled:
                                             index !=
-                                            state.actions.entries.last.key,
+                                                state
+                                                    .actions
+                                                    .entries
+                                                    .last
+                                                    .key ||
+                                            state.isGoalAchieved,
                                         tasks: state.modifiedTasks[index]!,
                                       ),
                                     if (index == state.messages.length - 1)
-                                      SizedBox(height: 190),
+                                      Column(
+                                        children: [
+                                          if (state.isGoalAchieved) ...[
+                                            SizedBox(height: 17),
+                                            Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 5.0,
+                                                      horizontal: 18,
+                                                    ),
+                                                child: U.Text(
+                                                  isCentered: true,
+                                                  text:
+                                                      'You have proceeded with your actions, tap to proceed with other actions',
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 7),
+                                            U.Button(
+                                              title: 'reset',
+                                              onTap: context
+                                                  .read<AiTaskManagerCubit>()
+                                                  .onChatRseted,
+                                            ),
+                                            SizedBox(height: 12),
+                                          ],
+                                          SizedBox(height: 190),
+                                        ],
+                                      ),
                                   ],
                                 );
                               },
@@ -139,17 +173,18 @@ class TaskMangerPage extends StatelessWidget {
                             ),
                           ),
                         ),
+
                       // SizedBox(height: 115),
                     ],
                   ),
                   U.AppBar(title: 'Enhance with AI!', blur: true),
                   Positioned(
-                    bottom: 120,
+                    bottom: 90,
                     right: 0,
                     left: 0,
                     child: Expanded(
                       child: MessageField(
-                        isExapnded: state.isExpanded  ,
+                        isExapnded: state.isExpanded,
                         isDisabled: state.chattingStatus,
                         onSubmit: () {},
                       ),

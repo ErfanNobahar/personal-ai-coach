@@ -5,6 +5,7 @@ enum ChattingStatus { enabled, disabled, clarifing }
 class AiTaskManagerState extends Equatable {
   final bool loading;
   final bool isExpanded;
+  final bool isGoalAchieved;
   final ChattingStatus chattingStatus;
   final List<Message> messages;
   final Map<int, List<DayTask>> modifiedTasks;
@@ -18,11 +19,13 @@ class AiTaskManagerState extends Equatable {
     required this.modifiedTasks,
     required this.chattingStatus,
     required this.isExpanded,
+    required this.isGoalAchieved,
   });
 
   AiTaskManagerState.init()
     : tasks = [],
       loading = false,
+      isGoalAchieved = false,
       isExpanded = false,
       chattingStatus = ChattingStatus.enabled,
       messages = [],
@@ -32,6 +35,7 @@ class AiTaskManagerState extends Equatable {
   AiTaskManagerState copyWith({
     bool? loading,
     bool? isExpanded,
+    bool? isGoalAchieved,
     List<Message>? messages,
     Map<int, ChatResponse>? actions,
     List<SpecificTasks>? tasks,
@@ -40,6 +44,7 @@ class AiTaskManagerState extends Equatable {
   }) {
     return AiTaskManagerState(
       loading: loading ?? this.loading,
+      isGoalAchieved: isGoalAchieved ?? this.isGoalAchieved,
       isExpanded: isExpanded ?? this.isExpanded,
       messages: messages ?? this.messages,
       tasks: tasks ?? this.tasks,
@@ -52,6 +57,7 @@ class AiTaskManagerState extends Equatable {
   @override
   List<Object?> get props => [
     loading,
+    isGoalAchieved,
     isExpanded,
     messages,
     tasks,

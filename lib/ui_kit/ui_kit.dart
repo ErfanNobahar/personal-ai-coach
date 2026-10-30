@@ -16,3 +16,4 @@ export 'package:personal_ai_coach/ui_kit/text_input.dart';
 export 'package:personal_ai_coach/ui_kit/date_time_picker.dart';
 export 'package:personal_ai_coach/ui_kit/dashed_box.dart';
 export 'package:personal_ai_coach/ui_kit/cycling_text.dart';
+export 'package:personal_ai_coach/ui_kit/blured_container.dart';

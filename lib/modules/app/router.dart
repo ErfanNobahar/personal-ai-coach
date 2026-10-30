@@ -16,6 +16,8 @@ final router = GoRouter(
   initialLocation: SchedulePage.route,
   navigatorKey: rootNavKey,
   redirect: (context, state) {
+    print('state.fullPath!.contains(ChatPge.route)');
+    print(state.fullPath!.contains(ChatPge.route));
     // print('state.fullPath');
     // print(state.name);
     // print(state.);
@@ -27,8 +29,10 @@ final router = GoRouter(
     //   builder: (context, state) => Chat(),
     // ),
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          HomeSell(child: navigationShell),
+      builder: (context, state, navigationShell) => HomeSell(
+        hideNavbar: state.fullPath!.contains(ChatPge.route),
+        child: navigationShell,
+      ),
       branches: [
         StatefulShellBranch(
           routes: [

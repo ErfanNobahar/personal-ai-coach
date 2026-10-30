@@ -22,10 +22,11 @@ class ChatCubit extends Cubit<ChatState> {
 
   Future<void> onInit() async {}
 
-  Future<void> onGoalCreated({required Message message}) async {
+  Future<void> onGoalCreated({Message? message}) async {
     emit(state.copyWith(loading: true));
     final messagesList = [...state.messages];
-    messagesList.add(message);
+    final goal = message ?? Message.user(content: goalCtrl.text);
+    messagesList.add(goal);
     final res = await _repo.createCredentials(messages: messagesList);
     final Map<String, dynamic> questionJson = jsonDecode(
       res['message']['content'],
