@@ -22,7 +22,7 @@ class GoalTextfield extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<ChatCubit>();
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15),
       // color: U.Theme.field,
       child: Container(
         padding: EdgeInsets.only(top: 10, left: 10, bottom: 10, right: 10),

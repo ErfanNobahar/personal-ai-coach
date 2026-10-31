@@ -232,7 +232,10 @@ class _ChatPgeState extends State<ChatPge> {
                     children: [
                       CustomScrollView(
                         slivers: [
-                          SliverToBoxAdapter(child: U.AppBar(title: 'create')),
+                          SliverToBoxAdapter(
+                            child: U.AppBar(title: 'Create your Goal!'),
+                          ),
+                          SliverToBoxAdapter(child: SizedBox(height: 4)),
                           SliverFillRemaining(
                             hasScrollBody: false,
                             child: Stack(
@@ -256,14 +259,23 @@ class _ChatPgeState extends State<ChatPge> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 17),
-                                    U.CyclingTextShowcase(
-                                      texts: [
-                                        ' _CyclingTextShowcaseState extends State<CyclingTextShowcase> ',
-                                        'ddddddddddddd',
-                                        'U.CyclingTextShowcasef',
-                                        'sdfasd',
-                                      ],
+                                    SizedBox(height: 14),
+                                    Spacer(flex: 1),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 17.0,
+                                        ),
+                                        child: U.CyclingTextShowcase(
+                                          texts: [
+                                            ' _CyclingTextShowcaseState extends State<CyclingTextShowcase> ',
+                                            'ddddddddddddd',
+                                            'U.CyclingTextShowcasef',
+                                            'sdfasd',
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                     // Spacer(flex: 3),
                                     // const Expanded(flex: 8, child: SizedBox()),
@@ -280,7 +292,7 @@ class _ChatPgeState extends State<ChatPge> {
                                     //     const SizedBox(height: 15),
                                     //   ],
                                     // ),
-                                        SizedBox(height: 200),
+                                    SizedBox(height: 200),
                                     // const Expanded(flex: 20, child: SizedBox()),
                                     // SizedBox(height: 140),
                                     // Spacer(flex: 2),

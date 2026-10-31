@@ -69,9 +69,9 @@ class BlurredContainerState extends State<BlurredContainer> {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(widget.radius),
+      borderRadius: BorderRadius.only(topLeft: Radius.circular( widget.radius),topRight: Radius.circular( widget.radius),),
       // Important: clips the blur to bounds
-      child: BackdropFilter(
+child: BackdropFilter(
         filter: ImageFilter.blur(
           sigmaX: widget.enable ? 10.0 : 0.0,
           sigmaY: widget.enable ? 10.0 : 0.0,
@@ -84,7 +84,7 @@ class BlurredContainerState extends State<BlurredContainer> {
                   ) // Semi-transparent so blur shows
                 : Colors.white.withValues(alpha: 0.45),
             borderRadius: BorderRadiusDirectional.vertical(
-              bottom: Radius.circular(widget.radius),
+              top: Radius.circular(widget.radius),
             ),
           ),
           child: widget.child,

@@ -6,7 +6,14 @@ class AppBar extends StatelessWidget {
   final String title;
   final bool blur;
   final dynamic Function()? onPop;
-  const AppBar({super.key, required this.title, this.onPop, this.blur = false});
+  final bool isPrimary;
+  const AppBar({
+    super.key,
+    required this.title,
+    this.onPop,
+    this.blur = false,
+    this.isPrimary = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,18 +42,21 @@ class AppBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: () {
-                onPop != null ? onPop!() : GoRouter.of(context).pop();
-              },
-              child: U.Image(path: U.Icons.back, width: 28, height: 14),
-            ),
+            if (!isPrimary)
+              InkWell(
+                onTap: () {
+                  onPop != null ? onPop!() : GoRouter.of(context).pop();
+                },
+                child: U.Image(path: U.Icons.back, width: 28, height: 14),
+              )
+            else
+              SizedBox(width: 28,),
             U.Text(
               text: title,
               textSize: U.TextSize.s18,
               textWeight: U.TextWeight.bold,
             ),
-            InkWell(
+           if(!isPrimary) InkWell(
               onTap: () {
                 onPop != null ? onPop!() : GoRouter.of(context).pop();
               },
@@ -60,7 +70,7 @@ class AppBar extends StatelessWidget {
                   child: U.Image.icon(path: U.Icons.wrong, size: 14),
                 ),
               ),
-            ),
+            ) else SizedBox(width: 16,) ,
           ],
         ),
       ),

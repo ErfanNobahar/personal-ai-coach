@@ -14,7 +14,7 @@ class CyclingTextShowcase extends M.StatefulWidget {
     super.key,
     required this.texts,
     this.interval = const Duration(seconds: 3),
-    this.itemExtent = 42,
+    this.itemExtent = 39,
     this.highlightColor,
   });
 
@@ -96,7 +96,7 @@ class _CyclingTextShowcaseState extends M.State<CyclingTextShowcase> {
                 final t = (distance).clamp(0.0, 1.0);
 
                 // Interpolate size & color
-                final fontSize = lerpDouble(22, 16, t)!;
+                final fontSize = lerpDouble(20, 16, t)!;
                 final fontWeight = t < 0.5
                     ? M.FontWeight.w500
                     : M.FontWeight.w400;
