@@ -8,6 +8,13 @@ class OverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final details = tasks.getDetails;
+
+    // Safe percentage: 0 when there are no tasks, otherwise rounded.
+    final int percent = details.taskCount == 0
+        ? 0
+        : ((details.completed * 100) / details.taskCount).round();
+
     return Container(
       height: 155,
       padding: const EdgeInsets.all(16),
@@ -21,8 +28,7 @@ class OverviewCard extends StatelessWidget {
         children: [
           U.Text(
             color: U.Theme.secondaryText,
-            text:
-                'Tasks Completed this week:  % ${((tasks.getDetails.completed * 100) ~/ tasks.getDetails.taskCount).toString()}',
+            text: 'Tasks Completed this week:  $percent%',
             textWeight: U.TextWeight.bold,
             textSize: U.TextSize.s14,
           ),
@@ -31,15 +37,17 @@ class OverviewCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               U.Text(
-            color: U.Theme.secondaryText,
-                
-                text: 'completed: ${tasks.getDetails.completed}'),
+                color: U.Theme.secondaryText,
+                text: 'completed: ${details.completed}',
+              ),
               U.Text(
-            color: U.Theme.secondaryText,
-                text: 'skipped: ${tasks.getDetails.skipped}'),
+                color: U.Theme.secondaryText,
+                text: 'skipped: ${details.skipped}',
+              ),
               U.Text(
-            color: U.Theme.secondaryText,
-                text: 'pending: ${tasks.getDetails.pending}'),
+                color: U.Theme.secondaryText,
+                text: 'pending: ${details.pending}',
+              ),
             ],
           ),
         ],

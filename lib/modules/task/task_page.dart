@@ -206,7 +206,8 @@ class TaskDetailPage extends StatelessWidget {
                       right: 0,
                       top: 0,
                       child: U.AppBar(
-                        title: 'todays task',
+                        isPrimary: false,
+                        title: state.task!.primaryTask.title,
                         blur: true,
                         onPop: () {
                           GoRouter.of(context).pop(dialogRes != null);
@@ -231,7 +232,7 @@ class _MilestoneBreadcrumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: [ 
+      children: [
         Icon(Icons.map_outlined, size: 14, color: U.Theme.quaternaryText),
         const SizedBox(width: 6),
         Flexible(
